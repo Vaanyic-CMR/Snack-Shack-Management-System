@@ -1,0 +1,399 @@
+from genericpath import exists
+from tkinter import *
+from tkinter import ttk
+from tkinter.font import Font
+
+import math as m
+
+from .. import var_const as vc
+
+from . import inventory
+
+from ..models import bank as bank_model
+from ..models import camper as camper_model
+from ..models import inventory as inv_model
+from ..models import shopping_list as shop_list_model
+from ..models import staff as staff_model
+
+class MainDisplay:
+    def __init__(self):
+        # --------------------- Title Bar and General
+        self.master = Tk()
+        self.master.title("Snack Shack Management System | Admin")
+        self.master.iconbitmap("resources/images/logo.ico")
+        
+        # --------------------- Screen and Window Dimensions
+        self.master.state("zoomed")
+        self.window_width = self.master.winfo_width()
+        self.window_height = self.master.winfo_height()
+        self.screen_width = self.master.winfo_screenwidth()
+        self.screen_height = self.master.winfo_screenheight()
+        
+        self.master.geometry(f"{int(self.screen_width*0.75)}x{int(self.screen_height*0.75)}")
+        
+        # --------------------- Font Variables
+        self.title_font = Font(
+            size = vc.settings.title_font["size"],
+            weight = vc.settings.title_font["weight"]
+            )
+        self.base_font = Font(
+            size = vc.settings.base_font["size"]
+            )
+        
+        # --------------------- Table Count Variables.
+        self.camper_count = 0
+        self.staff_count = 0
+        self.history_count = 0
+        self.bank_count = 0
+        self.inv_count = 0
+        self.shop_list_count = 0
+        
+        # --------------------- Menu Bar
+        self.menu_bar = Menu( self.master )
+        self.master.config( menu=self.menu_bar )
+        
+        # File Menu
+        self.file_menu = Menu( self.menu_bar, tearoff=False )
+        self.file_menu.add_command( label="Exit", command=self.master.destroy )
+        self.file_menu.add_command( label="Save")#, command=AddCommand )
+        self.file_menu.add_command( label="Update", command=self.update_tables )
+        self.file_menu.add_separator()
+        self.file_menu.add_command( label="New List(s)")#, command=AddCommand )
+        self.file_menu.add_command( label="Manage Inventory", command=self.__open_inventory )
+        self.file_menu.add_command( label="Manage Bank")#, command=AddCommand )
+        self.file_menu.add_separator()
+        self.file_menu.add_command( label="Export Data | Excel")#, command=AddCommand )
+        self.file_menu.add_command( label="Run EOW Check")#, command=AddCommand )
+        
+        # Options Menu
+        self.option_menu = Menu( self.menu_bar, tearoff=False )
+        self.option_menu.add_command( label="Settings")#, command=AddCommand )
+        self.option_menu.add_command( label="About")#, command=AddCommand )
+        
+        self.menu_bar.add_cascade( label="File", menu=self.file_menu )
+        self.menu_bar.add_cascade( label="Options", menu=self.option_menu )
+        
+        # --------------------- Initialize Base Layout.
+        self.window = ttk.Notebook( self.master )
+        self.window.pack( fill=BOTH, expand=1 )
+        
+        # Sections for personel tab.
+        self.tab_1 = Frame( self.window )
+        Grid.columnconfigure( self.tab_1, 0, weight=1 )
+        Grid.columnconfigure( self.tab_1, 1, weight=1 )
+        # Grid.rowconfigure( self.tab_1, 0, weight=1 )
+        Grid.rowconfigure( self.tab_1, 1, weight=1 )
+        Grid.rowconfigure( self.tab_1, 2, weight=1 )
+        
+        # Label(self.tab_1, text = "|", font=self.title_font).grid( row=0, column=0, columnspan=2, sticky="EW" )
+        self.left_pane = Frame( self.tab_1, 
+                            highlightbackground="grey", highlightthickness=1,
+                            relief="raised", bd=4)#, bg="black" )
+        self.left_pane.grid( row=1, column=0, rowspan=2, sticky="NSWE" )
+        self.top_pane = Frame( self.tab_1, 
+                            highlightbackground="grey", highlightthickness=1,
+                            relief="raised", bd=4)#, bg="red" )
+        self.top_pane.grid( row=1, column=1, sticky="NSWE" )
+        self.bottom_pane = Frame( self.tab_1, 
+                            highlightbackground="grey", highlightthickness=1,
+                            relief="raised", bd=4)#, bg="blue" )
+        self.bottom_pane.grid( row=2, column=1, sticky="NSWE" )
+        
+        # Sections for bank/inventory tab.
+        self.tab_2 = Frame( self.window )
+        Grid.columnconfigure( self.tab_2, 0, weight=1 )
+        Grid.columnconfigure( self.tab_2, 1, weight=3 )
+        Grid.columnconfigure( self.tab_2, 2, weight=2 )
+        Grid.rowconfigure( self.tab_2, 0, weight=1 )
+        
+        self.bank_pane = Frame( self.tab_2,
+                            highlightbackground="grey", highlightthickness=1,
+                            relief="raised", bd=4)
+        self.bank_pane.grid( row=0, column=0, sticky="NSWE" )
+        self.inventory_pane = Frame( self.tab_2,
+                            highlightbackground="grey", highlightthickness=1,
+                            relief="raised", bd=4)
+        self.inventory_pane.grid( row=0, column=1, sticky="NSWE" )
+        self.shopping_list_pane = Frame( self.tab_2,
+                            highlightbackground="grey", highlightthickness=1,
+                            relief="raised", bd=4)
+        self.shopping_list_pane.grid( row=0, column=2, sticky="NSWE" )
+        
+        # Apply Tabs.
+        self.window.add( self.tab_1, text="Personel Data")
+        self.window.add( self.tab_2, text="Bank/Inventory Data")
+        
+        # Generate Empty Tables
+        self.__history_table()
+        self.__staff_table()
+        self.__camper_table()
+        self.__bank_table()
+        self.__inventory_table()
+        self.__shopping_list_table()
+        
+        # Fill Tables with data.
+        self.update_tables()
+    
+    def __open_inventory( self ):
+        i = inventory.Inventory( self )
+    
+    def __history_table( self ):
+        headers = ('DateTime', 'Name', 'Purchase Type', '# Items', 'Total')
+        
+        # History Pane
+        Label(self.left_pane, text = "Purchase History", font=self.title_font).pack( side=TOP, fill=X )
+        self.history_slider = Scrollbar( self.left_pane, orient=VERTICAL )
+        self.history_slider.pack(side=RIGHT, fill=Y)
+        self.history_table = ttk.Treeview( self.left_pane, selectmode='browse', yscrollcommand=self.history_slider.set )
+        # self.history_table.bind('<Double-1>', lambda: self.on_click(self.history_table))
+        self.history_table.pack(fill=BOTH, expand=1)
+        self.history_slider.config(command=self.history_table.yview)
+
+        # History Table
+        self.history_table['columns'] = headers
+        self.history_table.column('#0', width=0, stretch=NO) # Test Stretch?
+        self.history_table.column('DateTime', anchor=W, width=m.floor(self.screen_width/2*0.25))
+        self.history_table.column('Name', anchor=CENTER, width=m.floor(self.screen_width/2*0.2))
+        self.history_table.column('Purchase Type', anchor=CENTER, width=m.floor(self.screen_width/2*0.3))
+        self.history_table.column('# Items', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
+        self.history_table.column('Total', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
+
+        self.history_table.heading('#0', text='', anchor=W)
+        self.history_table.heading('DateTime', text='Date/Time', anchor=W)
+        self.history_table.heading('Name', text='Customer Name', anchor=CENTER)
+        self.history_table.heading('Purchase Type', text='Purchase Type', anchor=CENTER)
+        self.history_table.heading('# Items', text='# of Items', anchor=CENTER)
+        self.history_table.heading('Total', text='Total', anchor=CENTER)
+    
+    def __staff_table( self ):
+        headers = ('Name', 'Ibalance', 'Cbalance', 'Spent', 'Donations', 'Returned', 'Last Free Item')
+        
+        # Staff Pane.
+        Label(self.top_pane, text = "Staff Data", font=self.title_font).pack(side=TOP, fill=X)
+        self.staff_slider = Scrollbar(self.top_pane, orient=VERTICAL)
+        self.staff_slider.pack(side=RIGHT, fill=Y)
+        self.staff_table = ttk.Treeview(self.top_pane, selectmode='browse', yscrollcommand=self.staff_slider.set)
+        # self.staff_table.bind('<Double-1>', lambda event: self.on_click(table = self.staff_table))
+        self.staff_table.pack(fill=BOTH, expand=1)
+        self.staff_slider.config(command=self.staff_table.yview)
+        # self.staff_button = Button(self.top_pane, text='Open Staff File', font=self.baseFont, command=self.loadStaff)
+        # self.staff_button.pack()
+
+        # Staff Table
+        self.staff_table['columns'] = headers
+        self.staff_table.column('#0', width=0, stretch=NO)
+        self.staff_table.column('Name', anchor=W, width=m.floor(self.screen_width/2*0.2))
+        self.staff_table.column('Ibalance', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
+        self.staff_table.column('Cbalance', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
+        self.staff_table.column('Spent', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
+        self.staff_table.column('Donations', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
+        self.staff_table.column('Returned', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
+        self.staff_table.column('Last Free Item', anchor=CENTER, width=m.floor(self.screen_width/2*0.25))
+
+        self.staff_table.heading('#0', text='', anchor=W)
+        self.staff_table.heading('Name', text='Staff Name', anchor=W)
+        self.staff_table.heading('Ibalance', text='Ibalance', anchor=CENTER)
+        self.staff_table.heading('Cbalance', text='Cbalance', anchor=CENTER)
+        self.staff_table.heading('Spent', text='Spent', anchor=CENTER)
+        self.staff_table.heading('Donations', text='Donations', anchor=CENTER)
+        self.staff_table.heading('Returned', text='Returned', anchor=CENTER)
+        self.staff_table.heading('Last Free Item', text='Last Free Item', anchor=CENTER)
+    
+    def __camper_table( self ):
+        headers = ('Name', 'Gender', 'Balance', 'Spent', 'Donations', 'EOW Parent', 'Last Purchase')
+        
+        Label(self.bottom_pane, text = "Camper Data", font=self.title_font).pack(side=TOP, fill=X)
+        self.camper_slider = Scrollbar(self.bottom_pane, orient=VERTICAL)
+        self.camper_slider.pack(side=RIGHT, fill=Y)
+        self.camper_table = ttk.Treeview(self.bottom_pane, selectmode='browse', yscrollcommand=self.camper_slider.set)
+        # self.camper_table.bind('<Double-1>', lambda event: self.on_click(table = self.camper_table))
+        self.camper_table.pack(fill=BOTH, expand=1)
+        self.camper_slider.config(command=self.camper_table.yview)
+        # self.camper_button = Button(self.bottom_pane, text='Open camper File', font=self.base_font, command=self.loadcamper)
+        # self.camper_button.pack()
+
+        # Camper Table
+        self.camper_table['columns'] = headers
+        self.camper_table.column('#0', width=0, stretch=NO)
+        self.camper_table.column('Name', anchor=W, width=m.floor(self.screen_width/2*0.2))
+        self.camper_table.column('Gender', anchor=W, width=m.floor(self.screen_width/2*0.1))
+        self.camper_table.column('Balance', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
+        self.camper_table.column('Spent', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
+        self.camper_table.column('Donations', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
+        self.camper_table.column('EOW Parent', anchor=CENTER, width=m.floor(self.screen_width/2*0.15))
+        self.camper_table.column('Last Purchase', anchor=CENTER, width=m.floor(self.screen_width/2*0.20))
+
+        self.camper_table.heading('#0', text='', anchor=W)
+        self.camper_table.heading('Name', text='Camper Name', anchor=W)
+        self.camper_table.heading('Gender', text='Gender', anchor=W)
+        self.camper_table.heading('Balance', text='Balance', anchor=CENTER)
+        self.camper_table.heading('Spent', text='Spent', anchor=CENTER)
+        self.camper_table.heading('Donations', text='Donations', anchor=CENTER)
+        self.camper_table.heading('EOW Parent', text='EOW Parent', anchor=CENTER)
+        self.camper_table.heading('Last Purchase', text='Last Purchase', anchor=CENTER)
+    
+    def __bank_table( self ):
+        headers = ('Category', 'Total')
+        
+        Label(self.bank_pane, text = "Bank Data", font=self.title_font).pack(side=TOP, fill=X)
+        self.bank_slider = Scrollbar(self.bank_pane, orient=VERTICAL)
+        self.bank_slider.pack(side=RIGHT, fill=Y)
+        self.bank_table = ttk.Treeview(self.bank_pane, selectmode='browse', yscrollcommand=self.bank_slider.set)
+        self.bank_table.pack(fill=BOTH, expand=1)
+        self.bank_slider.config(command=self.bank_table.yview)
+
+        # Bank Table
+        self.bank_table['columns'] = headers
+        self.bank_table.column('#0', width=0, stretch=NO)
+        self.bank_table.column('Category', anchor=W, width=80)
+        self.bank_table.column('Total', anchor=CENTER, width=50)
+
+        self.bank_table.heading('#0', text='', anchor=W)
+        self.bank_table.heading('Category', text='Category', anchor=W)
+        self.bank_table.heading('Total', text='Total', anchor=CENTER)
+    
+    def __inventory_table( self ):
+        headers = ('Name', 'Catagory', 'In Stock', 'Item Price', 'Low Threshold')
+        
+        Label(self.inventory_pane, text = "Inventory Data", font=self.title_font).pack(side=TOP, fill=X)
+        self.inventory_slider = Scrollbar(self.inventory_pane, orient=VERTICAL)
+        self.inventory_slider.pack(side=RIGHT, fill=Y)
+        self.inventory_table = ttk.Treeview(self.inventory_pane, selectmode='browse', yscrollcommand=self.inventory_slider.set)
+        self.inventory_table.pack(fill=BOTH, expand=1)
+        self.inventory_slider.config(command=self.inventory_table.yview)
+
+        # Inventory Table
+        self.inventory_table['columns'] = headers
+        self.inventory_table.column('#0', width=20, stretch=NO)
+        self.inventory_table.column('Name', anchor=W, width=300)
+        self.inventory_table.column('Catagory', anchor=CENTER, width=100)
+        self.inventory_table.column('In Stock', anchor=CENTER, width=80)
+        self.inventory_table.column('Item Price', anchor=CENTER, width=80)
+        self.inventory_table.column('Low Threshold', anchor=CENTER, width=90)
+
+        self.inventory_table.heading('#0', text='', anchor=W)
+        self.inventory_table.heading('Name', text='Name', anchor=W)
+        self.inventory_table.heading('Catagory', text='Catagory', anchor=CENTER)
+        self.inventory_table.heading('In Stock', text='In Stock', anchor=CENTER)
+        self.inventory_table.heading('Item Price', text='Item Price', anchor=CENTER)
+        self.inventory_table.heading('Low Threshold', text='Low Threshold', anchor=CENTER)
+    
+    def __shopping_list_table( self ):
+        headers = ('Name', 'In Stock', 'Low Threshold', 'Time on List')
+        
+        Label(self.shopping_list_pane, text = "Shopping List", font=self.title_font).pack(side=TOP, fill=X)
+        self.shopping_slider = Scrollbar(self.shopping_list_pane, orient=VERTICAL)
+        self.shopping_slider.pack(side=RIGHT, fill=Y)
+        self.shopping_table = ttk.Treeview(self.shopping_list_pane, selectmode='browse', yscrollcommand=self.shopping_slider.set)
+        self.shopping_table.pack(fill=BOTH, expand=1)
+        self.shopping_slider.config(command=self.shopping_table.yview)
+
+        # Shopping List Table
+        self.shopping_table['columns'] = headers
+        self.shopping_table.column('#0', width=0, stretch=NO)
+        self.shopping_table.column('Name', anchor=W, width=200)
+        self.shopping_table.column('In Stock', anchor=CENTER, width=80)
+        self.shopping_table.column('Low Threshold', anchor=CENTER, width=90)
+        self.shopping_table.column('Time on List', anchor=CENTER, width=150)
+
+        self.shopping_table.heading('#0', text='', anchor=W)
+        self.shopping_table.heading('Name', text='Name', anchor=W)
+        self.shopping_table.heading('In Stock', text='In Stock', anchor=CENTER)
+        self.shopping_table.heading('Low Threshold', text='Low Threshold', anchor=CENTER)
+        self.shopping_table.heading('Time on List', text='Time on List', anchor=CENTER)
+
+    def update_tables( self ):
+        self.load_history_table()
+        self.load_staff_table()
+        self.load_camper_table()
+        self.load_bank_table()
+        self.load_inventory_table()
+        self.load_shopping_list_table()
+
+    def load_history_table( self ): #Needs Completion...
+        # # Clear Current Data
+        # self.history_count = 0
+        # for r in self.history_table.get_children():
+        #     self.history_table.delete(r)
+        # # Enter New Data
+        # data = 
+        # for d in data:
+        #     info = (d.name, d.init_bal, d.curr_bal, d.curr_spent, d.total_donate, d.eos_return, d.last_free_item)
+        #     self.staff_table.insert(parent='', index='end', iid=self.staff_count, values=info)
+        #     self.staff_count += 1
+        pass
+    
+    def load_staff_table( self ):
+        # Clear Current Data
+        self.staff_count = 0
+        for r in self.staff_table.get_children():
+            self.staff_table.delete(r)
+        # Enter New Data
+        data = staff_model.Staff.get_all()
+        for d in data:
+            info = (d.name, d.init_bal, d.curr_bal, d.curr_spent, d.total_donate, d.eos_return, d.last_free_item)
+            self.staff_table.insert(parent='', index='end', iid=self.staff_count, values=info)
+            self.staff_count += 1
+    
+    def load_camper_table( self ):
+        # Clear Current Data
+        self.camper_count = 0
+        for r in self.camper_table.get_children():
+            self.camper_table.delete(r)
+        # Enter New Data
+        data = camper_model.Camper.get_all()
+        for d in data:
+            info = (d.name, d.gender, d.curr_bal, d.curr_spent, d.total_donate, d.eow_remainder, d.last_purchase)
+            self.camper_table.insert(parent='', index='end', iid=self.camper_count, values=info)
+            self.camper_count += 1
+    
+    def load_bank_table( self ):
+        # Clear Current Data
+        self.bank_count = 0
+        for r in self.bank_table.get_children():
+            self.bank_table.delete(r)
+        # Enter New Data
+        data = bank_model.Bank.get_by_year( vc.active_year )
+        data = data.to_dict()
+        for d in data:
+            if d not in ("year", "created_at", "updated_at"):
+                l = d.split("_")
+                c = f"{ l[0].capitalize() } { l[1].capitalize() }"
+                
+                info = (c, data[d])
+                self.bank_table.insert(parent='', index='end', iid=self.bank_count, values=info)
+                self.bank_count += 1
+    
+    def load_inventory_table( self ):
+        # Clear Current Data
+        self.inv_count = 0
+        for r in self.inventory_table.get_children():
+            self.inventory_table.delete(r)
+        # Enter New Data
+        data = inv_model.Inventory.get_all()
+        for d in data:
+            info = (d.name, d.catagory, d.in_stock, d.price, d.threshold)
+            if len(d.sizes) > 0:
+                parent_id = self.inv_count
+                self.inventory_table.insert(parent='', index='end', iid=self.inv_count, values=info)
+                for size in d.sizes:
+                    child_info = ("        "+size.size, "", size.in_stock, "", size.threshold)
+                    self.inv_count += 1
+                    self.inventory_table.insert(parent=f"{parent_id}", index="end", iid=self.inv_count, values=child_info)
+                self.inv_count += 1
+            else:
+                self.inventory_table.insert(parent='', index='end', iid=self.inv_count, values=info)
+                self.inv_count += 1
+    
+    def load_shopping_list_table( self ):
+        # Clear Current Data
+        self.shop_list_count = 0
+        for r in self.shopping_table.get_children():
+            self.shopping_table.delete(r)
+        # Enter New Data
+        data = shop_list_model.Shopping_List.load()
+        for d in data:
+            info = (d.name, d.in_stock, d.threshold, d.time_on_list)
+            self.shopping_table.insert(parent='', index='end', iid=self.shop_list_count, values=info)
+            self.shop_list_count += 1
+    

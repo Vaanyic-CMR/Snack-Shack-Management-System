@@ -1,0 +1,11 @@
+[
+    {
+        "name": "Pepsi",
+        "in_stock": 8,
+        "threshold": 10,
+        "time_on_list": [
+            "12/19/2021",
+            "0 Days"
+        ]
+    }
+]
