@@ -1,8 +1,7 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import font
 from tkinter.font import Font
-
-import math as m
 
 from .. import var_const as vc
 from ..models import inventory as inv_m
@@ -19,12 +18,16 @@ class Inventory:
         
         # --------------------- Font Variables
         self.title_font = Font(
+            family = vc.settings.title_font["family"],
             size = vc.settings.title_font["size"],
             weight = vc.settings.title_font["weight"]
             )
         self.base_font = Font(
+            family = vc.settings.base_font["family"],
             size = vc.settings.base_font["size"]
             )
+        
+        self.master.option_add('*TCombobox*Listbox.font', self.base_font)
         
         # --------------------- Menu Bar
         self.menu_bar = Menu( self.master )
@@ -52,21 +55,21 @@ class Inventory:
         
         # ----- Sizes
         self.txt_Csmall = IntVar()
-        self.txt_Csmall.trace_add( 'write', self._on_change )
+        self.txt_Csmall.trace_add( 'write', self.__on_change )
         self.txt_Cmedium = IntVar()
-        self.txt_Cmedium.trace_add( 'write', self._on_change )
+        self.txt_Cmedium.trace_add( 'write', self.__on_change )
         self.txt_Clarge = IntVar()
-        self.txt_Clarge.trace_add( 'write', self._on_change )
+        self.txt_Clarge.trace_add( 'write', self.__on_change )
         self.txt_small = IntVar()
-        self.txt_small.trace_add( 'write', self._on_change )
+        self.txt_small.trace_add( 'write', self.__on_change )
         self.txt_medium = IntVar()
-        self.txt_medium.trace_add( 'write', self._on_change )
+        self.txt_medium.trace_add( 'write', self.__on_change )
         self.txt_large = IntVar()
-        self.txt_large.trace_add( 'write', self._on_change )
+        self.txt_large.trace_add( 'write', self.__on_change )
         self.txt_Xlarge = IntVar()
-        self.txt_Xlarge.trace_add( 'write', self._on_change )
+        self.txt_Xlarge.trace_add( 'write', self.__on_change )
         self.txt_XXlarge = IntVar()
-        self.txt_XXlarge.trace_add( 'write', self._on_change )
+        self.txt_XXlarge.trace_add( 'write', self.__on_change )
         
         self.thres_Csmall = IntVar()
         self.thres_Cmedium = IntVar()
@@ -85,15 +88,15 @@ class Inventory:
         self.east_frame.pack( side=RIGHT, fill=BOTH, expand=True )
         
         # ----- Fill Frame Content
-        self._build_west_frame()
-        self._build_east_frame()
-        self._set_geometery()
+        self.__build_west_frame()
+        self.__build_east_frame()
+        self.__set_geometery()
         
         # ----- Fill in Data
-        self._update_cmbo()
+        self.__update_cmbo()
     
     # --------------------- Screen and Window Dimensions
-    def _set_geometery( self ):
+    def __set_geometery( self ):
         self.screen_width = self.master.winfo_screenwidth()
         self.screen_height = self.master.winfo_screenheight()
         
@@ -106,131 +109,150 @@ class Inventory:
         self.master.geometry( f"""+{ self.window_position_x }+{ self.window_position_y }""" )
     
     # ----- West Frame
-    def _build_west_frame( self ):
-        Label( self.west_frame, text="Item Name" ).grid( row=0, column=0, padx=10 )
-        self.cmbo = ttk.Combobox( self.west_frame, textvariable=self.cmbo_item )
-        self.cmbo.bind( "<<ComboboxSelected>>", self._update_values )
+    def __build_west_frame( self ):
+        Label( self.west_frame, text="Item Name", font=self.base_font
+            ).grid( row=0, column=0, padx=10 )
+        self.cmbo = ttk.Combobox( self.west_frame, textvariable=self.cmbo_item, font=self.base_font )
+        self.cmbo.bind( "<<ComboboxSelected>>", self.__update_values )
         self.cmbo.bind( "<Return>", self.save_item )
         self.cmbo.bind( "<Shift-Return>", self.delete_item )
         self.cmbo.grid( row=1, column=0, padx=10, pady=5 )
-        # self._update_cmbo()
         
-        Label( self.west_frame, text="Item Price" ).grid( row=0, column=1, padx=10 )
-        self.entry_price = Entry( self.west_frame, borderwidth=5, textvariable=self.txt_price )
+        Label( self.west_frame, text="Item Price", font=self.base_font
+            ).grid( row=0, column=1, padx=10 )
+        self.entry_price = Entry( self.west_frame, borderwidth=5, textvariable=self.txt_price, font=self.base_font )
         self.entry_price.bind( "<Return>", self.save_item )
         self.entry_price.bind( "<Shift-Return>", self.delete_item )
         self.entry_price.grid( row=1, column=1, padx=10, pady=5 )
         
-        Label( self.west_frame, text="# in Stock (Sets Total)" ).grid( row=2, column=0, padx=10 )
-        self.entry_total_stock = Entry( self.west_frame, borderwidth=5, textvariable=self.txt_total_stock )
+        Label( self.west_frame, text="# in Stock (Sets Total)", font=self.base_font
+            ).grid( row=2, column=0, padx=10 )
+        self.entry_total_stock = Entry( self.west_frame, borderwidth=5, textvariable=self.txt_total_stock, font=self.base_font )
         self.entry_total_stock.bind( "<Return>", self.save_item )
         self.entry_total_stock.bind( "<Shift-Return>", self.delete_item )
         self.entry_total_stock.grid( row=3, column=0, padx=10, pady=5 )
         
-        Label( self.west_frame, text="Shopping Threshold" ).grid( row=2, column=1, padx=10 )
-        self.entry_threshold = Entry( self.west_frame, borderwidth=5, textvariable=self.txt_threshold )
+        Label( self.west_frame, text="Shopping Threshold", font=self.base_font
+            ).grid( row=2, column=1, padx=10 )
+        self.entry_threshold = Entry( self.west_frame, borderwidth=5, textvariable=self.txt_threshold, font=self.base_font )
         self.entry_threshold.bind( "<Return>", self.save_item )
         self.entry_threshold.bind( "<Shift-Return>", self.delete_item )
         self.entry_threshold.grid( row=3, column=1, padx=10, pady=5 )
         
-        Label( self.west_frame, text="Item Catagory" ).grid( row=4, column=0, columnspan=2, padx=10 )
-        self.option_catagory = OptionMenu( self.west_frame, self.catagory, *self.catagory_list, command=self._check_catagory )
+        Label( self.west_frame, text="Item Catagory", font=self.base_font
+            ).grid( row=4, column=0, columnspan=2, padx=10 )
+        self.option_catagory = OptionMenu( self.west_frame, self.catagory, *self.catagory_list, command=self.__check_catagory )
+        self.option_catagory.config( font=self.base_font )
+        self.cat_menu = self.master.nametowidget(self.option_catagory.menuname)
+        self.cat_menu.config( font=self.base_font )
         self.option_catagory.grid( row=5, column=0, columnspan=2, padx=10, pady=5 )
         
-        Button( self.west_frame, text="Save Item\n(Return)", command=self.save_item, padx=20 ).grid( row=6, column=0, padx=10, pady=30 )
-        Button( self.west_frame, text="Delete Item\n(Shift+Return)", command=self.delete_item, padx=20 ).grid( row=6, column=1, padx=10, pady=30 )
+        Button( self.west_frame, text="Save Item\n(Return)", font=self.base_font, command=self.save_item, padx=20
+            ).grid( row=6, column=0, padx=10, pady=30 )
+        Button( self.west_frame, text="Delete Item\n(Shift+Return)", font=self.base_font, command=self.delete_item, padx=20
+            ).grid( row=6, column=1, padx=10, pady=30 )
     
-    def _build_east_frame( self ):
-        Label( self.east_frame, text="# in Stock" ).grid( row=0, column=1, padx=10 )
-        Label( self.east_frame, text="Threshold" ).grid( row=0, column=2, padx=10 )
+    def __build_east_frame( self ):
+        Label( self.east_frame, text="# in Stock", font=self.base_font
+            ).grid( row=0, column=1, padx=10 )
+        Label( self.east_frame, text="Threshold", font=self.base_font
+            ).grid( row=0, column=2, padx=10 )
         
-        Label( self.east_frame, text="C-Small" ).grid( row=1, column=0, padx=10 )
-        self.entry_Csmall = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_Csmall )
+        Label( self.east_frame, text="C-Small", font=self.base_font
+            ).grid( row=1, column=0, padx=10 )
+        self.entry_Csmall = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_Csmall, font=self.base_font )
         self.entry_Csmall.bind( "<Return>", self.save_item )
         self.entry_Csmall.bind( "<Shift-Return>", self.delete_item )
         self.entry_Csmall.grid( row=1, column=1, padx=10, pady=5 )
-        self.entry_thres_Csmall = Entry( self.east_frame, borderwidth=5, textvariable=self.thres_Csmall )
+        self.entry_thres_Csmall = Entry( self.east_frame, borderwidth=5, textvariable=self.thres_Csmall, font=self.base_font )
         self.entry_thres_Csmall.bind( "<Return>", self.save_item )
         self.entry_thres_Csmall.bind( "<Shift-Return>", self.delete_item )
         self.entry_thres_Csmall.grid( row=1, column=2, padx=10, pady=5 )
         
-        Label( self.east_frame, text="C-Medium" ).grid( row=2, column=0, padx=10 )
-        self.entry_Cmedium = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_Cmedium )
+        Label( self.east_frame, text="C-Medium", font=self.base_font
+            ).grid( row=2, column=0, padx=10 )
+        self.entry_Cmedium = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_Cmedium, font=self.base_font )
         self.entry_Cmedium.bind( "<Return>", self.save_item )
         self.entry_Cmedium.bind( "<Shift-Return>", self.delete_item )
         self.entry_Cmedium.grid( row=2, column=1, padx=10, pady=5 )
-        self.entry_thres_Cmedium = Entry( self.east_frame, borderwidth=5, textvariable=self.thres_Cmedium )
+        self.entry_thres_Cmedium = Entry( self.east_frame, borderwidth=5, textvariable=self.thres_Cmedium, font=self.base_font )
         self.entry_thres_Cmedium.bind( "<Return>", self.save_item )
         self.entry_thres_Cmedium.bind( "<Shift-Return>", self.delete_item )
         self.entry_thres_Cmedium.grid( row=2, column=2, padx=10, pady=5 )
         
-        Label( self.east_frame, text="C-Large" ).grid( row=3, column=0, padx=10 )
-        self.entry_Clarge = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_Clarge )
+        Label( self.east_frame, text="C-Large"
+            , font=self.base_font).grid( row=3, column=0, padx=10 )
+        self.entry_Clarge = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_Clarge, font=self.base_font )
         self.entry_Clarge.bind( "<Return>", self.save_item )
         self.entry_Clarge.bind( "<Shift-Return>", self.delete_item )
         self.entry_Clarge.grid( row=3, column=1, padx=10, pady=5 )
-        self.entry_thres_Clarge = Entry( self.east_frame, borderwidth=5, textvariable=self.thres_Clarge )
+        self.entry_thres_Clarge = Entry( self.east_frame, borderwidth=5, textvariable=self.thres_Clarge, font=self.base_font )
         self.entry_thres_Clarge.bind( "<Return>", self.save_item )
         self.entry_thres_Clarge.bind( "<Shift-Return>", self.delete_item )
         self.entry_thres_Clarge.grid( row=3, column=2, padx=10, pady=5 )
         
-        Label( self.east_frame, text="Small" ).grid( row=4, column=0, padx=10 )
-        self.entry_small = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_small )
+        Label( self.east_frame, text="Small", font=self.base_font
+            ).grid( row=4, column=0, padx=10 )
+        self.entry_small = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_small, font=self.base_font )
         self.entry_small.bind( "<Return>", self.save_item )
         self.entry_small.bind( "<Shift-Return>", self.delete_item )
         self.entry_small.grid( row=4, column=1, padx=10, pady=5 )
-        self.entry_thres_small = Entry( self.east_frame, borderwidth=5, textvariable=self.thres_small )
+        self.entry_thres_small = Entry( self.east_frame, borderwidth=5, textvariable=self.thres_small, font=self.base_font )
         self.entry_thres_small.bind( "<Return>", self.save_item )
         self.entry_thres_small.bind( "<Shift-Return>", self.delete_item )
         self.entry_thres_small.grid( row=4, column=2, padx=10, pady=5 )
         
-        Label( self.east_frame, text="Medium" ).grid( row=5, column=0, padx=10 )
-        self.entry_medium = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_medium )
+        Label( self.east_frame, text="Medium", font=self.base_font
+            ).grid( row=5, column=0, padx=10 )
+        self.entry_medium = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_medium, font=self.base_font )
         self.entry_medium.bind( "<Return>", self.save_item )
         self.entry_medium.bind( "<Shift-Return>", self.delete_item )
         self.entry_medium.grid( row=5, column=1, padx=10, pady=5 )
-        self.entry_thres_medium = Entry( self.east_frame, borderwidth=5, textvariable=self.thres_medium )
+        self.entry_thres_medium = Entry( self.east_frame, borderwidth=5, textvariable=self.thres_medium, font=self.base_font)
         self.entry_thres_medium.bind( "<Return>", self.save_item )
         self.entry_thres_medium.bind( "<Shift-Return>", self.delete_item )
         self.entry_thres_medium.grid( row=5, column=2, padx=10, pady=5 )
         
-        Label( self.east_frame, text="Large" ).grid( row=6, column=0, padx=10 )
-        self.entry_large = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_large )
+        Label( self.east_frame, text="Large", font=self.base_font
+            ).grid( row=6, column=0, padx=10 )
+        self.entry_large = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_large, font=self.base_font )
         self.entry_large.bind( "<Return>", self.save_item )
         self.entry_large.bind( "<Shift-Return>", self.delete_item )
         self.entry_large.grid( row=6, column=1, padx=10, pady=5 )
-        self.entry_thres_large = Entry( self.east_frame, borderwidth=5, textvariable=self.thres_large )
+        self.entry_thres_large = Entry( self.east_frame, borderwidth=5, textvariable=self.thres_large, font=self.base_font )
         self.entry_thres_large.bind( "<Return>", self.save_item )
         self.entry_thres_large.bind( "<Shift-Return>", self.delete_item )
         self.entry_thres_large.grid( row=6, column=2, padx=10, pady=5 )
         
-        Label( self.east_frame, text="X-Large" ).grid( row=7, column=0, padx=10 )
-        self.entry_Xlarge = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_Xlarge )
+        Label( self.east_frame, text="X-Large", font=self.base_font
+            ).grid( row=7, column=0, padx=10 )
+        self.entry_Xlarge = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_Xlarge, font=self.base_font )
         self.entry_Xlarge.bind( "<Return>", self.save_item )
         self.entry_Xlarge.bind( "<Shift-Return>", self.delete_item )
         self.entry_Xlarge.grid( row=7, column=1, padx=10, pady=5 )
-        self.entry_thres_Xlarge = Entry( self.east_frame, borderwidth=5, textvariable=self.thres_Xlarge )
+        self.entry_thres_Xlarge = Entry( self.east_frame, borderwidth=5, textvariable=self.thres_Xlarge, font=self.base_font )
         self.entry_thres_Xlarge.bind( "<Return>", self.save_item )
         self.entry_thres_Xlarge.bind( "<Shift-Return>", self.delete_item )
         self.entry_thres_Xlarge.grid( row=7, column=2, padx=10, pady=5 )
         
-        Label( self.east_frame, text="XX-Large" ).grid( row=8, column=0, padx=10 )
-        self.entry_XXlarge = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_XXlarge )
+        Label( self.east_frame, text="XX-Large", font=self.base_font
+            ).grid( row=8, column=0, padx=10 )
+        self.entry_XXlarge = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_XXlarge, font=self.base_font )
         self.entry_XXlarge.bind( "<Return>", self.save_item )
         self.entry_XXlarge.bind( "<Shift-Return>", self.delete_item )
         self.entry_XXlarge.grid( row=8, column=1, padx=10, pady=5 )
-        self.entry_thres_XXlarge = Entry( self.east_frame, borderwidth=5, textvariable=self.thres_XXlarge )
+        self.entry_thres_XXlarge = Entry( self.east_frame, borderwidth=5, textvariable=self.thres_XXlarge, font=self.base_font )
         self.entry_thres_XXlarge.bind( "<Return>", self.save_item )
         self.entry_thres_XXlarge.bind( "<Shift-Return>", self.delete_item )
         self.entry_thres_XXlarge.grid( row=8, column=2, padx=10, pady=5 )
         
-        self._check_catagory()
+        self.__check_catagory()
     
-    def _update_cmbo( self ):
+    def __update_cmbo( self ):
         self.ids_names = inv_m.Inventory.get_all_names()
         self.cmbo.config( value=self.ids_names )
     
-    def _check_catagory( self, e=None ):
+    def __check_catagory( self, e=None ):
         if self.catagory.get() == "Clothing":
             self.txt_threshold.set( 0 )
             self.entry_total_stock.config( state="disabled" )
@@ -271,7 +293,7 @@ class Inventory:
             self.entry_thres_Xlarge.config( state="disabled" )
             self.entry_thres_XXlarge.config( state="disabled" )
     
-    def _update_values( self, e=None ):
+    def __update_values( self, e=None ):
         selected = inv_m.Inventory.get_by_name( self.cmbo_item.get() )
         
         self.txt_price.set( selected.price ), self.txt_total_stock.set( selected.in_stock )
@@ -295,9 +317,9 @@ class Inventory:
             self.thres_Csmall.set( 0 ), self.thres_Cmedium .set( 0 ), self.thres_Clarge.set( 0 )
             self.thres_small.set( 0 ), self.thres_medium.set( 0 ), self.thres_large.set( 0 )
             self.thres_Xlarge.set( 0 ), self.thres_XXlarge.set( 0 )
-        self._check_catagory()
+        self.__check_catagory()
     
-    def _reset_values( self, e=None ):
+    def __reset_values( self, e=None ):
         self.cmbo_item.set(""), self.txt_price.set( 0 ), self.txt_total_stock.set( 0 )
         self.txt_threshold.set( 0 ), self.catagory.set( self.catagory_list[0] )
         
@@ -309,9 +331,9 @@ class Inventory:
         self.thres_small.set( 0 ), self.thres_medium.set( 0 ), self.thres_large.set( 0 )
         self.thres_Xlarge.set( 0 ), self.thres_XXlarge.set( 0 )
         self._update_cmbo()
-        self._check_catagory()
+        self.__check_catagory()
     
-    def _on_change( self, *args ):
+    def __on_change( self, *args ):
         try:
             self.txt_total_stock.set(
                 self.txt_Csmall.get() + self.txt_Cmedium.get() + self.txt_Clarge.get() + self.txt_small.get() +

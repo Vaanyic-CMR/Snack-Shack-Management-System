@@ -76,7 +76,6 @@ class Inventory:
         now = datetime.now()
         data["created_at"] = now
         data["updated_at"] = now
-        print(data)
         
         if len(inv) == 0 or data["name"] > inv[-1].name:
             inv.append( cls(data) )

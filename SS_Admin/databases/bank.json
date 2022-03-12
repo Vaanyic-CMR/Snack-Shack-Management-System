@@ -1,0 +1,26 @@
+[
+    {
+        "year": "2021",
+        "bank_total": 0,
+        "cash_total": 0,
+        "check_total": 0,
+        "card_total": 0,
+        "scholar_total": 0,
+        "camper_total": 0,
+        "staff_total": 0,
+        "updated_at": "2022-03-10 18:56:52.956156",
+        "created_at": "2021-03-10 15:14:45.545646"
+    },
+    {
+        "year": "2022",
+        "bank_total": 0,
+        "cash_total": 0,
+        "check_total": 0,
+        "card_total": 0,
+        "scholar_total": 0,
+        "camper_total": 0,
+        "staff_total": 0,
+        "updated_at": "2022-03-10 18:56:21.058892",
+        "created_at": "2022-03-10 18:51:23.674821"
+    }
+]

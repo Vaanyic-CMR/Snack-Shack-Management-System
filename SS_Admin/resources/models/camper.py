@@ -8,6 +8,7 @@ class Camper:
     
     def __init__( self, data ) -> None:
         self.id = data["rowid"]
+        
         # Camper data.
         self.name = data["name"]
         self.gender = data["gender"]
@@ -18,7 +19,7 @@ class Camper:
         self.init_bal = data["init_bal"]
         self.curr_bal = data["curr_bal"]
         self.curr_spent = data["curr_spent"]
-        self.total_donate = data["total_donate"]
+        self.total_donated = data["total_donated"]
         self.eow_return = data["eow_return"]
         
         # Date of last purchase.
@@ -86,16 +87,9 @@ class Camper:
                 WHERE type='table' AND name='{cls.db_name}' """)
         if c.fetchone()[0] != 1:
             c.execute( f"""CREATE TABLE {cls.tbl_name} (
-                    name text,
-                    gender text,
-                    camp text,
-                    pay_method text,
+                    name text, gender text, camp text, pay_method text,
                     
-                    init_bal real,
-                    curr_bal real,
-                    curr_spent real,
-                    total_donate real,
-                    eow_return real,
+                    init_bal real, curr_bal real, curr_spent real, total_donated real, eow_return real,
                     
                     last_purchase text,
                     
@@ -181,7 +175,8 @@ class Camper:
         conn.row_factory = sql.Row
         c = conn.cursor()
         
-        c.execute( f"SELECT oid, * FROM {cls.tbl_name}")
+        c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
+                    ORDER BY name desc""")
         query = [ dict(row) for row in c.fetchall() ]
         
         results = list()
@@ -196,8 +191,9 @@ class Camper:
     def get_by_id( cls, id ):
         try:
             cls.__table_check()
-        except:
-            print(f"Table '{cls.tbl_name}' Exists")
+        except Exception as e:
+            print(e)
+            # print(f"Table '{cls.tbl_name}' Exists")
         
         conn = sql.connect( cls.db_name )
         conn.row_factory = sql.Row
@@ -205,7 +201,28 @@ class Camper:
         
         c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
                     WHERE oid={id}""")
-        result = cls( dict( c.fetchall()[0] ) )
+        result = cls( dict( c.fetchone() ) )
+        
+        conn.commit()
+        conn.close()
+        return result
+    
+    @classmethod
+    def get_all_by_camp( cls, camp ):
+        try:
+            cls.__table_check()
+        except Exception as e:
+            print(e)
+            # print(f"Table '{cls.tbl_name}' Exists")
+        
+        conn = sql.connect( cls.db_name )
+        conn.row_factory = sql.Row
+        c = conn.cursor()
+        
+        c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
+                    WHERE camp={camp}
+                    ORDER BY name desc""")
+        result = cls( dict( c.fetchall() ) )
         
         conn.commit()
         conn.close()

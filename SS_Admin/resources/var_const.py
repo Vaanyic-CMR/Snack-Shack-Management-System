@@ -12,7 +12,7 @@ try:
     settings = s.Settings.load()
 except Exception as e:
     print( e )
-    settings = {
+    settings = s.Settings({
         "host_name": socket.gethostname(),
         "ports": [ 3330, 3331 ],
         "station": "boys",
@@ -25,9 +25,9 @@ except Exception as e:
         },
         "base_font": {
             "family": "monospace",
-            "size": 13
+            "size": 10
         }
-    }
+    })
 
 # ---------- Variables
 running = True

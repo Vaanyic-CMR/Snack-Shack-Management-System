@@ -1,12 +1,12 @@
 from datetime import datetime
-import sqlite3 as sql
+import json
+
+from ..var_const import datetime_format
 
 class Bank:
-    db_name = "databases/bank.db";
-    tbl_name = "bank"
+    file_name = "databases/bank.json"
     
     def __init__( self, data ) -> None:
-        # self.id = data["rowid"]
         self.year = data["year"]
         self.bank_total = data["bank_total"]
         
@@ -18,8 +18,8 @@ class Bank:
         self.camper_total = data["camper_total"]
         self.staff_total = data["staff_total"]
         
-        self._created_at = data["created_at"]
-        self._updated_at = data["updated_at"]
+        self._created_at = datetime.strptime( data["created_at"], datetime_format )
+        self._updated_at = datetime.strptime( data["updated_at"], datetime_format )
     
     """
         Instance Methods.
@@ -61,154 +61,88 @@ class Bank:
     """
         Class Methods.
     """
-    @classmethod # Checks if the table exists within database. If not, creates one.
-    def __table_check( cls ):
-        conn = sql.connect( cls.db_name )
-        c = conn.cursor()
-        c.execute(f""" SELECT count(name) FROM sqlite_master
-                WHERE type='table' AND name='{cls.db_name}' """)
-        if c.fetchone()[0] != 1:
-            c.execute( f"""CREATE TABLE {cls.tbl_name} (
-                    year text,
-                    bank_total real,
-                    cash_total real,
-                    check_total real,
-                    card_total real,
-                    scholar_total real,
-                    camper_total real,
-                    staff_total real,
-                    
-                    created_at text,
-                    updated_at text ) """)
-        conn.commit()
-        conn.close()
-    
     @classmethod
-    def __year_check( cls, year ):
-        conn = sql.connect( cls.db_name )
-        conn.row_factory = sql.Row
-        c = conn.cursor()
-        c.execute( f"""SELECT * FROM {cls.tbl_name} WHERE year={year}""")
-        result = c.fetchall()
-        conn.commit()
-        conn.close()
+    def __create( cls, data ):
+        bnk = cls.get_all( True )
         
-        if len(result) > 0:
-            return True
-        else:
-            return False
+        now = datetime.now()
+        data["created_at"] = now.strftime(datetime_format)
+        data["updated_at"] = now.strftime(datetime_format)
+        
+        bnk.append( data )
+        
+        # ----- Write to File
+        j = json.dumps( bnk, indent = 4 )
+        with open(cls.file_name, 'w') as f:
+            f.write(j)
+            f.close()
     
     @classmethod
     def __update( cls, data ):
-        try:
-            cls.__table_check()
-        except:
-            print(f"Table '{cls.tbl_name}' Exists")
+        now = datetime.now().strftime(datetime_format)
+        data["updated_at"] = now
         
-        data["updated_at"] = datetime.now()
+        results = json.load( open(cls.file_name) )
+        for index, result in enumerate(results):
+            if result["year"] == data["year"]:
+                data["created_at"] = result["created_at"]
+                results[index] = data
         
-        conn = sql.connect( cls.db_name )
-        c = conn.cursor()
-        c.execute( f"""UPDATE {cls.tbl_name} SET
-                bank_total = :bank_total,
-                cash_total = :cash_total,
-                check_total = :check_total,
-                card_total = :card_total,
-                scholar_total = :scholar_total,
-                camper_total = :camper_total,
-                staff_total = :staff_total,
-                
-                updated_at = :updated_at
-                
-                WHERE year = :year""", data)
-        conn.commit()
-        conn.close()
+        j = json.dumps( results, indent = 4 )
+        with open(cls.file_name, 'w') as f:
+            f.write(j)
+            f.close()
     
     @classmethod
     def save( cls, data ):
-        try:
-            cls.__table_check()
-        except:
-            print(f"Table '{cls.tbl_name}' Exists")
+        year_exists = False
+        bnk = cls.get_all( True )
         
-        if cls.__year_check( data["year"] ):
+        for b in bnk:
+            if b["year"] == data["year"]:
+                year_exists = True
+        
+        if year_exists:
             cls.__update( data )
         else:
-            now = datetime.now()
-            data["created_at"] = now
-            data["updated_at"] = now
-            
-            conn = sql.connect( cls.db_name )
-            c = conn.cursor()
-            c.execute( f"""INSERT INTO {cls.tbl_name}
-                    VALUES (:year, :bank_total,
-                    :cash_total, :check_total, :card_total, :scholar_total,
-                    :camper_total, :staff_total,
-                    :created_at, :updated_at )""", data )
-            conn.commit()
-            conn.close()
+            cls.__create( data )
     
     @classmethod
     def delete( cls, year ):
-        conn = sql.connect( cls.db_name )
-        c = conn.cursor()
-        c.execute( f"DELETE FROM {cls.tbl_name} WHERE year='{year}'" )
-        conn.commit()
-        conn.close()
+        results = json.load( open(cls.file_name) )
+        for result in results:
+            if result["year"] == year:
+                results.remove(result)
+        
+        j = json.dumps( results, indent = 4 )
+        with open(cls.file_name, 'w') as f:
+            f.write(j)
+            f.close()
     
     @classmethod
-    def get_all( cls ):
-        conn = sql.connect( cls.db_name )
-        conn.row_factory = sql.Row
-        c = conn.cursor()
-        
-        c.execute( f"SELECT oid, * FROM {cls.tbl_name}")
-        query = [ dict(row) for row in c.fetchall() ]
-        
-        results = list()
-        for q in query:
-            results.append( cls(q) )
-        
-        conn.commit()
-        conn.close()
-        return results
+    def get_all( cls, JSON=False ):
+        results = json.load( open(cls.file_name) )
+        data = list()
+        for result in results:
+            if JSON:
+                data.append( result )
+            else:
+                data.append( cls(result) )
+        return data
+    
+    @classmethod
+    def get_all_years( cls ):
+        results = json.load( open(cls.file_name) )
+        data = list()
+        for result in results:
+            data.append( result["year"] )
+        return data
     
     @classmethod
     def get_by_year( cls, year ):
-        try:
-            cls.__table_check()
-        except:
-            print(f"Table '{cls.tbl_name}' Exists")
-        
-        if cls.__year_check( year ):
-            conn = sql.connect( cls.db_name )
-            conn.row_factory = sql.Row
-            c = conn.cursor()
-            
-            c.execute( f"""SELECT * FROM {cls.tbl_name} WHERE year={year}""")
-            result = c.fetchall()
-            
-            conn.commit()
-            conn.close()
-            return cls(dict( result[0] ))
-        else:
-            now = datetime.now()
-            
-            data = {
-                "year": year,
-                "bank_total": 0.0,
-                
-                "cash_total": 0.0,
-                "check_total": 0.0,
-                "card_total": 0.0,
-                "scholar_total": 0.0,
-                
-                "camper_total": 0.0,
-                "staff_total": 0.0,
-                
-                "created_at": now,
-                "updated_at": now
-            }
-            cls.save( data )
-            return cls( data )
+        results = json.load( open(cls.file_name) )
+        for result in results:
+            if result["year"] == year:
+                return cls( result )
+        return None
     

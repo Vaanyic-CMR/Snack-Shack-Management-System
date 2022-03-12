@@ -1,13 +1,13 @@
-from genericpath import exists
 from tkinter import *
 from tkinter import ttk
+from tkinter import font
 from tkinter.font import Font
 
 import math as m
 
 from .. import var_const as vc
 
-from . import inventory
+from . import inventory, bank
 
 from ..models import bank as bank_model
 from ..models import camper as camper_model
@@ -33,18 +33,22 @@ class MainDisplay:
         
         # --------------------- Font Variables
         self.title_font = Font(
+            family = vc.settings.title_font["family"],
             size = vc.settings.title_font["size"],
             weight = vc.settings.title_font["weight"]
             )
         self.base_font = Font(
+            family = vc.settings.base_font["family"],
             size = vc.settings.base_font["size"]
             )
+        
+        s = ttk.Style()
+        s.configure('TNotebook.Tab', font=self.base_font)
         
         # --------------------- Table Count Variables.
         self.camper_count = 0
         self.staff_count = 0
         self.history_count = 0
-        self.bank_count = 0
         self.inv_count = 0
         self.shop_list_count = 0
         
@@ -56,11 +60,12 @@ class MainDisplay:
         self.file_menu = Menu( self.menu_bar, tearoff=False )
         self.file_menu.add_command( label="Exit", command=self.master.destroy )
         self.file_menu.add_command( label="Save")#, command=AddCommand )
-        self.file_menu.add_command( label="Update", command=self.update_tables )
+        self.file_menu.add_command( label="Update Tables", command=self.update_tables )
         self.file_menu.add_separator()
-        self.file_menu.add_command( label="New List(s)")#, command=AddCommand )
+        self.file_menu.add_command( label="Manage Campers")#, command=AddCommand )
+        self.file_menu.add_command( label="Manage Staff")#, command=AddCommand )
         self.file_menu.add_command( label="Manage Inventory", command=self.__open_inventory )
-        self.file_menu.add_command( label="Manage Bank")#, command=AddCommand )
+        self.file_menu.add_command( label="Manage Bank", command=self.__open_bank )
         self.file_menu.add_separator()
         self.file_menu.add_command( label="Export Data | Excel")#, command=AddCommand )
         self.file_menu.add_command( label="Run EOW Check")#, command=AddCommand )
@@ -120,8 +125,8 @@ class MainDisplay:
         self.shopping_list_pane.grid( row=0, column=2, sticky="NSWE" )
         
         # Apply Tabs.
-        self.window.add( self.tab_1, text="Personel Data")
-        self.window.add( self.tab_2, text="Bank/Inventory Data")
+        self.window.add( self.tab_1, text="Personel Data" )
+        self.window.add( self.tab_2, text="Bank/Inventory Data" )
         
         # Generate Empty Tables
         self.__history_table()
@@ -136,6 +141,8 @@ class MainDisplay:
     
     def __open_inventory( self ):
         i = inventory.Inventory( self )
+    def __open_bank( self ):
+        b = bank.Bank( self )
     
     def __history_table( self ):
         headers = ('DateTime', 'Name', 'Purchase Type', '# Items', 'Total')
@@ -301,7 +308,7 @@ class MainDisplay:
         self.shopping_table.heading('In Stock', text='In Stock', anchor=CENTER)
         self.shopping_table.heading('Low Threshold', text='Low Threshold', anchor=CENTER)
         self.shopping_table.heading('Time on List', text='Time on List', anchor=CENTER)
-
+    
     def update_tables( self ):
         self.load_history_table()
         self.load_staff_table()
@@ -309,7 +316,7 @@ class MainDisplay:
         self.load_bank_table()
         self.load_inventory_table()
         self.load_shopping_list_table()
-
+    
     def load_history_table( self ): #Needs Completion...
         # # Clear Current Data
         # self.history_count = 0
@@ -349,20 +356,20 @@ class MainDisplay:
     
     def load_bank_table( self ):
         # Clear Current Data
-        self.bank_count = 0
         for r in self.bank_table.get_children():
             self.bank_table.delete(r)
+        
         # Enter New Data
         data = bank_model.Bank.get_by_year( vc.active_year )
-        data = data.to_dict()
-        for d in data:
-            if d not in ("year", "created_at", "updated_at"):
-                l = d.split("_")
-                c = f"{ l[0].capitalize() } { l[1].capitalize() }"
-                
-                info = (c, data[d])
-                self.bank_table.insert(parent='', index='end', iid=self.bank_count, values=info)
-                self.bank_count += 1
+        self.bank_table.insert(parent='', index='end', iid=0, values=("Bank Total", data.bank_total))
+        self.bank_table.insert(parent='', index='end', iid=1, values=("", ""))
+        self.bank_table.insert(parent='', index='end', iid=2, values=("Cash Total", data.cash_total))
+        self.bank_table.insert(parent='', index='end', iid=3, values=("Check Total", data.check_total))
+        self.bank_table.insert(parent='', index='end', iid=4, values=("Card Total", data.card_total))
+        self.bank_table.insert(parent='', index='end', iid=5, values=("Scholarship Total", data.scholar_total))
+        self.bank_table.insert(parent='', index='end', iid=6, values=("", ""))
+        self.bank_table.insert(parent='', index='end', iid=7, values=("Camper Total", data.camper_total))
+        self.bank_table.insert(parent='', index='end', iid=8, values=("Staff Total", data.staff_total))
     
     def load_inventory_table( self ):
         # Clear Current Data
