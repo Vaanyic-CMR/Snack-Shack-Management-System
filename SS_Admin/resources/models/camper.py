@@ -1,4 +1,4 @@
-from ..var_const import active_year
+from ..var_const import active_year, datetime_format
 from datetime import datetime
 import sqlite3 as sql
 
@@ -13,7 +13,7 @@ class Camper:
         self.name = data["name"]
         self.gender = data["gender"]
         self.camp = data["camp"]
-        self.pay_method = data["pay_method"] # Cash, Check, Card, Scholarship.
+        self.pay_method = data["pay_method"] # Cash, Check, Card, Scholarship, Multiple.
         
         # Values of the account
         self.init_bal = data["init_bal"]
@@ -49,7 +49,7 @@ class Camper:
             "init_bal": self.init_bal,
             "curr_bal": self.curr_bal,
             "curr_spent": self.curr_spent,
-            "total_donate": self.total_donate,
+            "total_donate": self.total_donated,
             "eow_return": self.eow_return,
             "last_purchase": self.last_purchase,
             "eow_remainder": self.eow_remainder,
@@ -105,8 +105,8 @@ class Camper:
     def create( cls, data ):
         try:
             cls.__table_check()
-        except:
-            print(f"Table '{cls.tbl_name}' Exists")
+        except Exception as e:
+            print(e)
         
         now = datetime.now()
         data["created_at"] = now
@@ -126,8 +126,8 @@ class Camper:
     def delete( cls, id ):
         try:
             cls.__table_check()
-        except:
-            print(f"Table '{cls.tbl_name}' Exists")
+        except Exception as e:
+            print(e)
         
         conn = sql.connect( cls.db_name )
         c = conn.cursor()
@@ -139,8 +139,8 @@ class Camper:
     def update( cls, data ):
         try:
             cls.__table_check()
-        except:
-            print(f"Table '{cls.tbl_name}' Exists")
+        except Exception as e:
+            print(e)
         
         data["updated_at"] = datetime.now()
         
@@ -165,29 +165,6 @@ class Camper:
         conn.close()
     
     @classmethod
-    def get_all( cls ):
-        try:
-            cls.__table_check()
-        except:
-            print(f"Table '{cls.tbl_name}' Exists")
-        
-        conn = sql.connect( cls.db_name )
-        conn.row_factory = sql.Row
-        c = conn.cursor()
-        
-        c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
-                    ORDER BY name desc""")
-        query = [ dict(row) for row in c.fetchall() ]
-        
-        results = list()
-        for q in query:
-            results.append( cls(q) )
-        
-        conn.commit()
-        conn.close()
-        return results
-    
-    @classmethod
     def get_by_id( cls, id ):
         try:
             cls.__table_check()
@@ -208,6 +185,66 @@ class Camper:
         return result
     
     @classmethod
+    def get_all( cls ):
+        try:
+            cls.__table_check()
+        except Exception as e:
+            print(e)
+        
+        conn = sql.connect( cls.db_name )
+        conn.row_factory = sql.Row
+        c = conn.cursor()
+        
+        c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
+                    ORDER BY name desc""")
+        query = [ dict(row) for row in c.fetchall() ]
+        
+        results = list()
+        for q in query:
+            results.append( cls(q) )
+        
+        conn.commit()
+        conn.close()
+        return results
+    
+    @classmethod
+    def get_all_names( cls ):
+        try:
+            cls.__table_check()
+        except Exception as e:
+            print(e)
+        
+        conn = sql.connect( cls.db_name )
+        c = conn.cursor()
+        
+        c.execute( f"""SELECT oid, name FROM {cls.tbl_name}
+                    ORDER BY name desc""")
+        results = c.fetchall()
+        
+        conn.commit()
+        conn.close()
+        return results
+    
+    @classmethod
+    def get_all_names_by_camp_and_gender( cls, camp, gender ):
+        try:
+            cls.__table_check()
+        except Exception as e:
+            print(e)
+        
+        conn = sql.connect( cls.db_name )
+        c = conn.cursor()
+        
+        c.execute( f"""SELECT oid, name FROM {cls.tbl_name}
+                    WHERE camp={camp} and gender={gender}
+                    ORDER BY name desc""")
+        results = c.fetchall()
+        
+        conn.commit()
+        conn.close()
+        return results
+    
+    @classmethod
     def get_all_by_camp( cls, camp ):
         try:
             cls.__table_check()
@@ -220,29 +257,56 @@ class Camper:
         c = conn.cursor()
         
         c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
-                    WHERE camp={camp}
+                    WHERE camp = '{camp}'
+                    ORDER BY name desc""")
+        query = [ dict(row) for row in c.fetchall() ]
+        
+        results = list()
+        for q in query:
+            results.append( cls(q) )
+        
+        conn.commit()
+        conn.close()
+        return results
+    
+    @classmethod
+    def get_all_names_by_camp( cls, camp ):
+        try:
+            cls.__table_check()
+        except Exception as e:
+            print(e)
+        
+        conn = sql.connect( cls.db_name )
+        c = conn.cursor()
+        
+        c.execute( f"""SELECT name, oid FROM {cls.tbl_name}
+                    WHERE camp = '{camp}'
+                    ORDER BY name desc""")
+        results = c.fetchall()
+        
+        conn.commit()
+        conn.close()
+        return results
+    
+    @classmethod
+    def get_all_by_camp_and_gender( cls, camp, gender ):
+        try:
+            cls.__table_check()
+        except Exception as e:
+            print(e)
+            # print(f"Table '{cls.tbl_name}' Exists")
+        
+        conn = sql.connect( cls.db_name )
+        conn.row_factory = sql.Row
+        c = conn.cursor()
+        
+        c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
+                    WHERE camp={camp} and gender={gender}
                     ORDER BY name desc""")
         result = cls( dict( c.fetchall() ) )
         
         conn.commit()
         conn.close()
         return result
-    
-    @classmethod
-    def get_all_names( cls ):
-        try:
-            cls.__table_check()
-        except:
-            print(f"Table '{cls.tbl_name}' Exists")
-        
-        conn = sql.connect( cls.db_name )
-        c = conn.cursor()
-        
-        c.execute( f"SELECT oid, name FROM {cls.tbl_name}")
-        results = c.fetchall()
-        
-        conn.commit()
-        conn.close()
-        return results
     
     

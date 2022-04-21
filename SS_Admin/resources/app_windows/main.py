@@ -7,7 +7,7 @@ import math as m
 
 from .. import var_const as vc
 
-from . import inventory, bank
+from . import inventory, bank, campers
 
 from ..models import bank as bank_model
 from ..models import camper as camper_model
@@ -16,7 +16,7 @@ from ..models import shopping_list as shop_list_model
 from ..models import staff as staff_model
 
 class MainDisplay:
-    def __init__(self):
+    def __init__( self ):
         # --------------------- Title Bar and General
         self.master = Tk()
         self.master.title("Snack Shack Management System | Admin")
@@ -43,7 +43,9 @@ class MainDisplay:
             )
         
         s = ttk.Style()
+        s.theme_use('vista') # Default is "vista"
         s.configure('TNotebook.Tab', font=self.base_font)
+        s.configure("TCombobox", borderwidth=5 )
         
         # --------------------- Table Count Variables.
         self.camper_count = 0
@@ -62,8 +64,8 @@ class MainDisplay:
         self.file_menu.add_command( label="Save")#, command=AddCommand )
         self.file_menu.add_command( label="Update Tables", command=self.update_tables )
         self.file_menu.add_separator()
-        self.file_menu.add_command( label="Manage Campers")#, command=AddCommand )
-        self.file_menu.add_command( label="Manage Staff")#, command=AddCommand )
+        self.file_menu.add_command( label="Manage Campers", command=self.__open_campers )
+        self.file_menu.add_command( label="Manage Staff")#, command=self.__open_staff )
         self.file_menu.add_command( label="Manage Inventory", command=self.__open_inventory )
         self.file_menu.add_command( label="Manage Bank", command=self.__open_bank )
         self.file_menu.add_separator()
@@ -111,17 +113,14 @@ class MainDisplay:
         Grid.columnconfigure( self.tab_2, 2, weight=2 )
         Grid.rowconfigure( self.tab_2, 0, weight=1 )
         
-        self.bank_pane = Frame( self.tab_2,
-                            highlightbackground="grey", highlightthickness=1,
-                            relief="raised", bd=4)
+        self.bank_pane = Frame( self.tab_2, highlightbackground="grey",
+                                highlightthickness=1, relief="raised", bd=4)
         self.bank_pane.grid( row=0, column=0, sticky="NSWE" )
-        self.inventory_pane = Frame( self.tab_2,
-                            highlightbackground="grey", highlightthickness=1,
-                            relief="raised", bd=4)
+        self.inventory_pane = Frame( self.tab_2, highlightbackground="grey",
+                                highlightthickness=1, relief="raised", bd=4)
         self.inventory_pane.grid( row=0, column=1, sticky="NSWE" )
-        self.shopping_list_pane = Frame( self.tab_2,
-                            highlightbackground="grey", highlightthickness=1,
-                            relief="raised", bd=4)
+        self.shopping_list_pane = Frame( self.tab_2, highlightbackground="grey",
+                                highlightthickness=1, relief="raised", bd=4)
         self.shopping_list_pane.grid( row=0, column=2, sticky="NSWE" )
         
         # Apply Tabs.
@@ -139,6 +138,8 @@ class MainDisplay:
         # Fill Tables with data.
         self.update_tables()
     
+    def __open_campers( self ):
+        c = campers.Campers( self )
     def __open_inventory( self ):
         i = inventory.Inventory( self )
     def __open_bank( self ):
@@ -171,7 +172,6 @@ class MainDisplay:
         self.history_table.heading('Purchase Type', text='Purchase Type', anchor=CENTER)
         self.history_table.heading('# Items', text='# of Items', anchor=CENTER)
         self.history_table.heading('Total', text='Total', anchor=CENTER)
-    
     def __staff_table( self ):
         headers = ('Name', 'Ibalance', 'Cbalance', 'Spent', 'Donations', 'Returned', 'Last Free Item')
         
@@ -205,7 +205,6 @@ class MainDisplay:
         self.staff_table.heading('Donations', text='Donations', anchor=CENTER)
         self.staff_table.heading('Returned', text='Returned', anchor=CENTER)
         self.staff_table.heading('Last Free Item', text='Last Free Item', anchor=CENTER)
-    
     def __camper_table( self ):
         headers = ('Name', 'Gender', 'Balance', 'Spent', 'Donations', 'EOW Parent', 'Last Purchase')
         
@@ -238,7 +237,6 @@ class MainDisplay:
         self.camper_table.heading('Donations', text='Donations', anchor=CENTER)
         self.camper_table.heading('EOW Parent', text='EOW Parent', anchor=CENTER)
         self.camper_table.heading('Last Purchase', text='Last Purchase', anchor=CENTER)
-    
     def __bank_table( self ):
         headers = ('Category', 'Total')
         
@@ -258,7 +256,6 @@ class MainDisplay:
         self.bank_table.heading('#0', text='', anchor=W)
         self.bank_table.heading('Category', text='Category', anchor=W)
         self.bank_table.heading('Total', text='Total', anchor=CENTER)
-    
     def __inventory_table( self ):
         headers = ('Name', 'Catagory', 'In Stock', 'Item Price', 'Low Threshold')
         
@@ -284,7 +281,6 @@ class MainDisplay:
         self.inventory_table.heading('In Stock', text='In Stock', anchor=CENTER)
         self.inventory_table.heading('Item Price', text='Item Price', anchor=CENTER)
         self.inventory_table.heading('Low Threshold', text='Low Threshold', anchor=CENTER)
-    
     def __shopping_list_table( self ):
         headers = ('Name', 'In Stock', 'Low Threshold', 'Time on List')
         
@@ -315,7 +311,7 @@ class MainDisplay:
         self.load_camper_table()
         self.load_bank_table()
         self.load_inventory_table()
-        self.load_shopping_list_table()
+        # self.load_shopping_list_table()
     
     def load_history_table( self ): #Needs Completion...
         # # Clear Current Data
@@ -329,7 +325,6 @@ class MainDisplay:
         #     self.staff_table.insert(parent='', index='end', iid=self.staff_count, values=info)
         #     self.staff_count += 1
         pass
-    
     def load_staff_table( self ):
         # Clear Current Data
         self.staff_count = 0
@@ -341,7 +336,6 @@ class MainDisplay:
             info = (d.name, d.init_bal, d.curr_bal, d.curr_spent, d.total_donate, d.eos_return, d.last_free_item)
             self.staff_table.insert(parent='', index='end', iid=self.staff_count, values=info)
             self.staff_count += 1
-    
     def load_camper_table( self ):
         # Clear Current Data
         self.camper_count = 0
@@ -350,10 +344,9 @@ class MainDisplay:
         # Enter New Data
         data = camper_model.Camper.get_all()
         for d in data:
-            info = (d.name, d.gender, d.curr_bal, d.curr_spent, d.total_donate, d.eow_remainder, d.last_purchase)
+            info = (d.name, d.gender, d.curr_bal, d.curr_spent, d.total_donated, d.eow_remainder, d.last_purchase)
             self.camper_table.insert(parent='', index='end', iid=self.camper_count, values=info)
             self.camper_count += 1
-    
     def load_bank_table( self ):
         # Clear Current Data
         for r in self.bank_table.get_children():
@@ -370,7 +363,6 @@ class MainDisplay:
         self.bank_table.insert(parent='', index='end', iid=6, values=("", ""))
         self.bank_table.insert(parent='', index='end', iid=7, values=("Camper Total", data.camper_total))
         self.bank_table.insert(parent='', index='end', iid=8, values=("Staff Total", data.staff_total))
-    
     def load_inventory_table( self ):
         # Clear Current Data
         self.inv_count = 0
@@ -391,14 +383,13 @@ class MainDisplay:
             else:
                 self.inventory_table.insert(parent='', index='end', iid=self.inv_count, values=info)
                 self.inv_count += 1
-    
     def load_shopping_list_table( self ):
         # Clear Current Data
         self.shop_list_count = 0
         for r in self.shopping_table.get_children():
             self.shopping_table.delete(r)
         # Enter New Data
-        data = shop_list_model.Shopping_List.load()
+        data = shop_list_model.Shopping_List.get_all()
         for d in data:
             info = (d.name, d.in_stock, d.threshold, d.time_on_list)
             self.shopping_table.insert(parent='', index='end', iid=self.shop_list_count, values=info)

@@ -6,7 +6,7 @@ from ..var_const import datetime_format
 class Bank:
     file_name = "databases/bank.json"
     
-    def __init__( self, data ) -> None:
+    def __init__( self, data ):
         self.year = data["year"]
         self.bank_total = data["bank_total"]
         
@@ -101,6 +101,7 @@ class Bank:
         for b in bnk:
             if b["year"] == data["year"]:
                 year_exists = True
+                break
         
         if year_exists:
             cls.__update( data )
@@ -123,10 +124,8 @@ class Bank:
     def get_all( cls, JSON=False ):
         results = json.load( open(cls.file_name) )
         data = list()
-        for result in results:
-            if JSON:
-                data.append( result )
-            else:
+        if not JSON:
+            for result in results:
                 data.append( cls(result) )
         return data
     
@@ -145,4 +144,5 @@ class Bank:
             if result["year"] == year:
                 return cls( result )
         return None
+    
     

@@ -158,7 +158,7 @@ class Inventory:
     @classmethod # Probably not nessesary.
     def add_size( cls, data ):
         pass
-    
+
 class Size:
     def __init__( self, data ) -> None:
         self.size = data["size"]

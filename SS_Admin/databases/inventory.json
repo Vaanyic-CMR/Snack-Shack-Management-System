@@ -12,7 +12,7 @@
     {
         "name": "Leather Cross Bracelet",
         "catagory": "Accessories",
-        "in_stock": 25,
+        "in_stock": 5,
         "price": 5.0,
         "threshold": 5,
         "sizes": [],
@@ -28,6 +28,16 @@
         "sizes": [],
         "created_at": "2021-12-19 21:17:30.546540",
         "updated_at": "2021-12-19 21:17:30.546540"
+    },
+    {
+        "name": "Snickers",
+        "catagory": "Food & Drink",
+        "in_stock": 25,
+        "price": 0.75,
+        "threshold": 10,
+        "sizes": [],
+        "created_at": "2022-03-22 16:25:22.294691",
+        "updated_at": "2022-03-22 16:25:22.294691"
     },
     {
         "name": "T-Shirt (Go For The Gold)",

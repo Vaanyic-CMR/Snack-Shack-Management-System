@@ -1,14 +1,23 @@
+from ast import operator
 from datetime import datetime
 import json
+from turtle import update
+
+from . import inventory as inv_m
 
 class Shopping_List:
     file_name = "databases/shopping_list.json";
+    date_format = "%m/%d/%Y"
     
     def __init__( self, data ) -> None:
         self.name = data["name"]
         self.in_stock = data["in_stock"]
         self.threshold = data["threshold"]
-        self.time_on_list = data["time_on_list"]
+        
+        then = datetime.strptime( data["time_on_list"][0], self.__class__.date_format )
+        now = datetime.now()
+        delta = now - then
+        self.time_on_list = [ data["time_on_list"][0], f"{delta.days} Days" ]
     
     """
         Instance Methods.
@@ -34,6 +43,13 @@ class Shopping_List:
         Class Methods.
     """
     @classmethod
+    def get_all( cls ):
+        # cls.update_list()
+        results =  cls.load()
+        cls.save(results)
+        return results
+    
+    @classmethod
     def load( cls ):
         results = json.load( open(cls.file_name) )
         data = list()
@@ -53,12 +69,46 @@ class Shopping_List:
             f.close()
     
     @classmethod
-    def delete( cls, data, item ):
-        for d in data:
-            if d.name == item:
-                del d
+    def update( cls, item ):
+        data = cls.load()
+        for index, d in data:
+            if d.name == item.name:
+                data[index].in_stock = item.in_stock
+                data[index].threshold = item.threshold
+        cls.save(data)
+    
+    @classmethod
+    def delete( cls, item ):
+        data = cls.load()
+        
+        for index, d in data:
+            if d.name == item.name:
+                del data[index]
         cls.save( data )
     
     @classmethod
-    def update( cls ):
-        pass
+    def add_item( cls, inv_data ):
+        sl = cls.load()
+        new_item = cls({
+            "name": inv_data.name,
+            "in_stock": inv_data.in_stock,
+            "threshold": inv_data.threshold,
+            "time_on_list": [
+                datetime.now().strftime(cls.date_format),
+                "0 Days"
+            ]
+        })
+        new_sl = sl.append(new_item)
+        cls.save( new_sl )
+    
+    @classmethod
+    def __in( cls, item ):
+        results = cls.load()
+        for result in results:
+            if item.name == result.name:
+                return True
+        return False
+    
+    
+    
+    

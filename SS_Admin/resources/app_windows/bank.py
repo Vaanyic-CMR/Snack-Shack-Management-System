@@ -1,5 +1,4 @@
 from tkinter import *
-from tkinter import ttk
 from tkinter.font import Font
 
 from .. import var_const as vc
@@ -42,8 +41,7 @@ class Bank:
         
         # --------------------- Variables
         self.years = bank.Bank.get_all_years()
-        self.year = StringVar()
-        self.year.set( self.years[-1] )
+        self.year = StringVar( value=self.years[-1] )
         self.bank_total = IntVar()
         
         self.cash_total = IntVar()
