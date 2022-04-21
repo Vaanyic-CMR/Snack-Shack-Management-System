@@ -49,7 +49,7 @@ class Camper:
             "init_bal": self.init_bal,
             "curr_bal": self.curr_bal,
             "curr_spent": self.curr_spent,
-            "total_donate": self.total_donated,
+            "total_donated": self.total_donated,
             "eow_return": self.eow_return,
             "last_purchase": self.last_purchase,
             "eow_remainder": self.eow_remainder,
@@ -68,7 +68,7 @@ class Camper:
         print( "Initial Balance:", self.init_bal )
         print( "Current Balance:", self.curr_bal )
         print( "Current Spent:", self.curr_spent )
-        print( "Donations:", self.total_donate )
+        print( "Donations:", self.total_donated )
         print( "EOW Returns:", self.eow_return )
         print( "Last Purchase:", self.last_purchase )
         print( "EOW Remainder:", self.eow_remainder )
@@ -106,7 +106,8 @@ class Camper:
         try:
             cls.__table_check()
         except Exception as e:
-            print(e)
+            # print(e)
+            pass
         
         now = datetime.now()
         data["created_at"] = now
@@ -116,7 +117,7 @@ class Camper:
         c = conn.cursor()
         c.execute( f"""INSERT INTO {cls.tbl_name}
                 VALUES (:name, :gender, :camp, :pay_method,
-                :init_bal, :curr_bal, :curr_spent, :total_donate, :eow_return,
+                :init_bal, :curr_bal, :curr_spent, :total_donated, :eow_return,
                 :last_purchase, :eow_remainder, :created_at, :updated_at )""",
                 data )
         conn.commit()
@@ -127,7 +128,8 @@ class Camper:
         try:
             cls.__table_check()
         except Exception as e:
-            print(e)
+            # print(e)
+            pass
         
         conn = sql.connect( cls.db_name )
         c = conn.cursor()
@@ -140,7 +142,8 @@ class Camper:
         try:
             cls.__table_check()
         except Exception as e:
-            print(e)
+            # print(e)
+            pass
         
         data["updated_at"] = datetime.now()
         
@@ -154,7 +157,7 @@ class Camper:
                 init_bal = :init_bal,
                 curr_bal = :curr_bal,
                 curr_spent = :curr_spent,
-                total_donate = :total_donate,
+                total_donated = :total_donated,
                 eow_return = :eow_return,
                 last_purchase = :last_purchase,
                 eow_remainder = :eow_remainder,
@@ -169,8 +172,8 @@ class Camper:
         try:
             cls.__table_check()
         except Exception as e:
-            print(e)
-            # print(f"Table '{cls.tbl_name}' Exists")
+            # print(e)
+            pass
         
         conn = sql.connect( cls.db_name )
         conn.row_factory = sql.Row
@@ -185,11 +188,52 @@ class Camper:
         return result
     
     @classmethod
+    def get_by_name_and_camp( cls, name, camp ):
+        try:
+            cls.__table_check()
+        except Exception as e:
+            # print(e)
+            pass
+        
+        conn = sql.connect( cls.db_name )
+        conn.row_factory = sql.Row
+        c = conn.cursor()
+        
+        c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
+                    WHERE name='{name}' AND camp='{camp}'""")
+        result = cls( dict( c.fetchone() ) )
+        
+        conn.commit()
+        conn.close()
+        return result
+    
+    @classmethod
+    def get_id_by_name_and_camp( cls, name, camp ):
+        try:
+            cls.__table_check()
+        except Exception as e:
+            # print(e)
+            pass
+        
+        conn = sql.connect( cls.db_name )
+        conn.row_factory = sql.Row
+        c = conn.cursor()
+        
+        c.execute( f"""SELECT oid FROM {cls.tbl_name}
+                    WHERE name={name} camp={camp}""")
+        result = c.fetchone()
+        
+        conn.commit()
+        conn.close()
+        return result
+    
+    @classmethod
     def get_all( cls ):
         try:
             cls.__table_check()
         except Exception as e:
-            print(e)
+            # print(e)
+            pass
         
         conn = sql.connect( cls.db_name )
         conn.row_factory = sql.Row
@@ -212,12 +256,13 @@ class Camper:
         try:
             cls.__table_check()
         except Exception as e:
-            print(e)
+            # print(e)
+            pass
         
         conn = sql.connect( cls.db_name )
         c = conn.cursor()
         
-        c.execute( f"""SELECT oid, name FROM {cls.tbl_name}
+        c.execute( f"""SELECT name FROM {cls.tbl_name}
                     ORDER BY name desc""")
         results = c.fetchall()
         
@@ -230,15 +275,39 @@ class Camper:
         try:
             cls.__table_check()
         except Exception as e:
-            print(e)
+            # print(e)
+            pass
         
         conn = sql.connect( cls.db_name )
         c = conn.cursor()
         
-        c.execute( f"""SELECT oid, name FROM {cls.tbl_name}
+        c.execute( f"""SELECT name FROM {cls.tbl_name}
                     WHERE camp={camp} and gender={gender}
                     ORDER BY name desc""")
         results = c.fetchall()
+        
+        conn.commit()
+        conn.close()
+        return results
+    
+    @classmethod
+    def get_all_names_by_camp( cls, camp ):
+        try:
+            cls.__table_check()
+        except Exception as e:
+            # print(e)
+            pass
+        
+        conn = sql.connect( cls.db_name )
+        c = conn.cursor()
+        
+        c.execute( f"""SELECT name FROM {cls.tbl_name}
+                    WHERE camp = '{camp}'
+                    ORDER BY name desc""")
+        results = []
+        
+        for fetch in c.fetchall():
+            results.append(fetch[0])
         
         conn.commit()
         conn.close()
@@ -249,8 +318,8 @@ class Camper:
         try:
             cls.__table_check()
         except Exception as e:
-            print(e)
-            # print(f"Table '{cls.tbl_name}' Exists")
+            # print(e)
+            pass
         
         conn = sql.connect( cls.db_name )
         conn.row_factory = sql.Row
@@ -270,31 +339,12 @@ class Camper:
         return results
     
     @classmethod
-    def get_all_names_by_camp( cls, camp ):
-        try:
-            cls.__table_check()
-        except Exception as e:
-            print(e)
-        
-        conn = sql.connect( cls.db_name )
-        c = conn.cursor()
-        
-        c.execute( f"""SELECT name, oid FROM {cls.tbl_name}
-                    WHERE camp = '{camp}'
-                    ORDER BY name desc""")
-        results = c.fetchall()
-        
-        conn.commit()
-        conn.close()
-        return results
-    
-    @classmethod
     def get_all_by_camp_and_gender( cls, camp, gender ):
         try:
             cls.__table_check()
         except Exception as e:
-            print(e)
-            # print(f"Table '{cls.tbl_name}' Exists")
+            # print(e)
+            pass
         
         conn = sql.connect( cls.db_name )
         conn.row_factory = sql.Row

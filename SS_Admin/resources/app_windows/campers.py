@@ -1,8 +1,5 @@
-from cmath import exp
-from statistics import variance
 from tkinter import *
 from tkinter import ttk
-from tkinter import font
 from tkinter.font import Font
 
 from .. import var_const as vc
@@ -190,8 +187,12 @@ class Campers:
             ).grid( row=0, column=1, padx=30 )
     
     def __update_name_cmbo( self, e=None ):
-        self.ids_names = camper.Camper.get_all_names_by_camp( self.camp.get().lower() )
-        self.name_cmbo.config( value=self.ids_names )
+        if self.create_update.get() == "update":
+            self.ids_names = camper.Camper.get_all_names_by_camp( self.camp.get().lower() )
+            self.name_cmbo.config( value=self.ids_names )
+        else:
+            self.name.set("")
+            self.__reset_name_cmbo()
     def __reset_name_cmbo( self, e=None ):
         self.name_cmbo.config( value=[] )
     
@@ -206,7 +207,20 @@ class Campers:
         self.last_purchase.set( "00-00-00 00:00:00" )
         self.eow_remainder.set("Select Action")
     def __update_content( self, e=None ):
-        pass
+        if self.create_update.get() == "update":
+            self.active_camper = camper.Camper.get_by_name_and_camp(
+                self.name.get(),
+                self.camp.get().lower()
+            )
+            self.gender.set( self.active_camper.gender )
+            self.pay_method.set( self.active_camper.pay_method.title() )
+            self.init_bal.set( self.active_camper.init_bal )
+            self.curr_bal.set( self.active_camper.curr_bal )
+            self.curr_spent.set( self.active_camper.curr_spent )
+            self.total_donated.set( self.active_camper.total_donated )
+            self.eow_return.set( self.active_camper.eow_return )
+            self.last_purchase.set( self.active_camper.last_purchase )
+            self.eow_remainder.set( self.active_camper.eow_remainder.title() )
     
     # Runs when Create/Update Radiobuttons change.
     def __update_widgets( self, *aargs ):
@@ -238,7 +252,6 @@ class Campers:
         camper.Camper.create( self.active_camper.to_dict() )
         self.__reset_content()
     def __update_camper( self ):
-        # self.active_camper.id = self.name.get()
         camper.Camper.update( self.active_camper.to_dict() )
         self.__reset_content()
     def delete_camper( self, e=None ):
@@ -254,7 +267,7 @@ class Campers:
         self.active_camper.total_donated = self.total_donated.get()
         self.active_camper.eow_return = self.eow_return.get()
         self.active_camper.last_purchase = self.last_purchase.get()
-        self.active_camper.eow_remainder = self.eow_remainder.get()
+        self.active_camper.eow_remainder = self.eow_remainder.get().lower()
         
         if self.create_update.get() == "create":
             self.__create_camper()
