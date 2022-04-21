@@ -48,6 +48,9 @@ class MainDisplay:
         s.configure("TCombobox", borderwidth=5 )
         
         # --------------------- Table Count Variables.
+        self.camp = StringVar( value="Select Camp" )
+        
+        # --------------------- Table Count Variables.
         self.camper_count = 0
         self.staff_count = 0
         self.history_count = 0
@@ -91,8 +94,7 @@ class MainDisplay:
         # Grid.rowconfigure( self.tab_1, 0, weight=1 )
         Grid.rowconfigure( self.tab_1, 1, weight=1 )
         Grid.rowconfigure( self.tab_1, 2, weight=1 )
-        
-        # Label(self.tab_1, text = "|", font=self.title_font).grid( row=0, column=0, columnspan=2, sticky="EW" )
+
         self.left_pane = Frame( self.tab_1, 
                             highlightbackground="grey", highlightthickness=1,
                             relief="raised", bd=4)#, bg="black" )
@@ -207,16 +209,22 @@ class MainDisplay:
         self.staff_table.heading('Last Free Item', text='Last Free Item', anchor=CENTER)
     def __camper_table( self ):
         headers = ('Name', 'Gender', 'Balance', 'Spent', 'Donations', 'EOW Parent', 'Last Purchase')
+        camp_list = [ "Trekker", "Pathfinder", "Journey", "Trail Blazer", "Navigator" ]
         
+        # Header Frame
+        # header_frame = Frame( self.bottom_pane, bg="red" ).pack(side=TOP, fill=X)
         Label(self.bottom_pane, text = "Camper Data", font=self.title_font).pack(side=TOP, fill=X)
+        # camp_menu = OptionMenu( header_frame, self.camp, *camp_list, command=self.load_camper_table )
+        # camp_menu.config( font=self.base_font )
+        # self.master.nametowidget(camp_menu.menuname).config( font=self.base_font )
+        # camp_menu.grid( row=0, column=1 )
+        
         self.camper_slider = Scrollbar(self.bottom_pane, orient=VERTICAL)
         self.camper_slider.pack(side=RIGHT, fill=Y)
         self.camper_table = ttk.Treeview(self.bottom_pane, selectmode='browse', yscrollcommand=self.camper_slider.set)
         # self.camper_table.bind('<Double-1>', lambda event: self.on_click(table = self.camper_table))
         self.camper_table.pack(fill=BOTH, expand=1)
         self.camper_slider.config(command=self.camper_table.yview)
-        # self.camper_button = Button(self.bottom_pane, text='Open camper File', font=self.base_font, command=self.loadcamper)
-        # self.camper_button.pack()
 
         # Camper Table
         self.camper_table['columns'] = headers
@@ -306,12 +314,12 @@ class MainDisplay:
         self.shopping_table.heading('Time on List', text='Time on List', anchor=CENTER)
     
     def update_tables( self ):
-        self.load_history_table()
         self.load_staff_table()
         self.load_camper_table()
         self.load_bank_table()
         self.load_inventory_table()
         # self.load_shopping_list_table()
+        self.load_history_table()
     
     def load_history_table( self ): #Needs Completion...
         # # Clear Current Data
@@ -336,7 +344,7 @@ class MainDisplay:
             info = (d.name, d.init_bal, d.curr_bal, d.curr_spent, d.total_donate, d.eos_return, d.last_free_item)
             self.staff_table.insert(parent='', index='end', iid=self.staff_count, values=info)
             self.staff_count += 1
-    def load_camper_table( self ):
+    def load_camper_table( self, e=None ):
         # Clear Current Data
         self.camper_count = 0
         for r in self.camper_table.get_children():
