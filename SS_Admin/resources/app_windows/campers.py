@@ -11,7 +11,7 @@ class Campers:
 
         # --------------------- Title Bar and General
         self.master = Toplevel()
-        self.master.title("SSMS | Bank")
+        self.master.title("SSMS | Campers")
         self.master.iconbitmap("resources/images/logo.ico")
         self.master.grab_set()
 
@@ -255,7 +255,7 @@ class Campers:
         camper.Camper.update( self.active_camper.to_dict() )
         self.__reset_content()
     def delete_camper( self, e=None ):
-        camper.Camper.delete( self.name.get()[1] )
+        camper.Camper.delete( self.name.get() )
     def save_camper( self, e=None ):
         self.active_camper.name = self.name.get()
         self.active_camper.gender = self.gender.get()
@@ -277,4 +277,5 @@ class Campers:
             print("Error: Variable self.create_update has invalid value:", self.create_update.get() )
         
         self.__update_name_cmbo()
+        self.main_window.update_tables()
     

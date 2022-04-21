@@ -1,9 +1,9 @@
-from ..var_const import active_year, datetime_format
+from .. import var_const as vc # import vc.vc.active_year, vc.datetime_format
 from datetime import datetime
 import sqlite3 as sql
 
 class Camper:
-    db_name = f"databases/campers/{active_year}_campers.db";
+    db_name = f"databases/campers/{vc.active_year}_campers.db";
     tbl_name = "campers"
     
     def __init__( self, data ) -> None:
@@ -79,6 +79,9 @@ class Camper:
     """
         Class Methods.
     """
+    @classmethod
+    def update_active_database( cls ):
+        cls.db_name = f"databases/campers/{vc.active_year}_campers.db";
     @classmethod # Checks if the table exists within database. If not, creates one.
     def __table_check( cls ):
         conn = sql.connect( cls.db_name )

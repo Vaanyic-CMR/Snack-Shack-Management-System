@@ -1,9 +1,9 @@
-from ..var_const import active_year
+from .. import var_const as vc # import active_year
 from datetime import datetime
 import sqlite3 as sql
 
 class Staff:
-    db_name = f"databases/staff/{active_year}_staff.db";
+    db_name = f"databases/staff/{vc.active_year}_staff.db";
     tbl_name = "staff"
     
     def __init__( self, data ) -> None:
@@ -17,7 +17,7 @@ class Staff:
         self.init_bal = data["init_bal"]
         self.curr_bal = data["curr_bal"]
         self.curr_spent = data["curr_spent"]
-        self.total_donate = data["total_donate"]
+        self.total_donated = data["total_donated"]
         self.eos_return = data["eos_return"]
         self.last_purchase = data["last_purchase"]
         
@@ -42,7 +42,8 @@ class Staff:
             
             "init_bal": self.init_bal,
             "curr_bal": self.curr_bal,
-            "total_donate": self.total_donate,
+            "curr_spent": self.curr_spent,
+            "total_donated": self.total_donated,
             "eos_return": self.eos_return,
             "last_purchase": self.last_purchase,
             
@@ -61,7 +62,7 @@ class Staff:
         
         print( "Init Balance:", self.init_bal )
         print( "Current Balance:", self.curr_bal )
-        print( "Total Donations:", self.total_donate )
+        print( "Total Donations:", self.total_donated )
         print( "End of Season Returns:", self.eos_return )
         print( "Last Purchase:", self.last_purchase )
         
@@ -72,6 +73,9 @@ class Staff:
     """
         Class Methods.
     """
+    @classmethod
+    def update_active_database( cls ):
+        cls.db_name = f"databases/staff/{vc.active_year}_staff.db";
     @classmethod # Checks if the table exists within database. If not, creates one.
     def __table_check( cls ):
         conn = sql.connect( cls.db_name )
@@ -88,7 +92,7 @@ class Staff:
                     init_bal real,
                     curr_bal real,
                     curr_spent real,
-                    total_donate real,
+                    total_donated real,
                     eos_return real,
                     last_purchase text,
                     
@@ -103,7 +107,8 @@ class Staff:
         try:
             cls.__table_check()
         except:
-            print(f"Table '{cls.tbl_name}' Exists")
+            pass
+            # print(e)
         
         now = datetime.now()
         data["created_at"] = now
@@ -113,7 +118,7 @@ class Staff:
         c = conn.cursor()
         c.execute( f"""INSERT INTO {cls.tbl_name}
                 VALUES (:name, :pay_method, :num_of_free_items, :last_free_item,
-                :init_bal, :curr_bal, :curr_spent, :total_donate, :eos_return, :last_purchase,
+                :init_bal, :curr_bal, :curr_spent, :total_donated, :eos_return, :last_purchase,
                 :created_at, :updated_at )""", data )
         conn.commit()
         conn.close()
@@ -123,7 +128,8 @@ class Staff:
         try:
             cls.__table_check()
         except:
-            print(f"Table '{cls.tbl_name}' Exists")
+            pass
+            # print(e)
         
         conn = sql.connect( cls.db_name )
         c = conn.cursor()
@@ -136,7 +142,8 @@ class Staff:
         try:
             cls.__table_check()
         except:
-            print(f"Table '{cls.tbl_name}' Exists")
+            pass
+            # print(e)
         
         data["updated_at"] = datetime.now()
         
@@ -151,7 +158,7 @@ class Staff:
                 init_bal = :init_bal,
                 curr_bal = :curr_bal,
                 curr_spent = :curr_spent,
-                total_donate = :total_donate,
+                total_donated = :total_donated,
                 eos_return = :eos_return,
                 last_purchase = :last_purchase,
                 
@@ -166,7 +173,8 @@ class Staff:
         try:
             cls.__table_check()
         except:
-            print(f"Table '{cls.tbl_name}' Exists")
+            pass
+            # print(e)
         
         conn = sql.connect( cls.db_name )
         conn.row_factory = sql.Row
@@ -188,7 +196,8 @@ class Staff:
         try:
             cls.__table_check()
         except:
-            print(f"Table '{cls.tbl_name}' Exists")
+            pass
+            # print(e)
         
         conn = sql.connect( cls.db_name )
         conn.row_factory = sql.Row
@@ -202,17 +211,42 @@ class Staff:
         return result
     
     @classmethod
+    def get_by_name( cls, name ):
+        try:
+            cls.__table_check()
+        except:
+            pass
+            # print(e)
+        
+        conn = sql.connect( cls.db_name )
+        conn.row_factory = sql.Row
+        c = conn.cursor()
+        
+        c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
+                    WHERE name='{name}'""")
+        result = cls( dict( c.fetchall()[0] ) )
+        
+        conn.commit()
+        conn.close()
+        return result
+    
+    @classmethod
     def get_all_names( cls ):
         try:
             cls.__table_check()
         except:
-            print(f"Table '{cls.tbl_name}' Exists")
+            pass
+            # print(e)
         
         conn = sql.connect( cls.db_name )
         c = conn.cursor()
         
-        c.execute( f"SELECT oid, name FROM {cls.tbl_name}")
-        results = c.fetchall()
+        c.execute( f"""SELECT name FROM {cls.tbl_name}
+                    ORDER BY name desc""")
+        results = []
+        
+        for fetch in c.fetchall():
+            results.append(fetch[0])
         
         conn.commit()
         conn.close()

@@ -6,7 +6,7 @@ import math as m
 
 from .. import var_const as vc
 
-from . import inventory, bank, campers
+from . import inventory, bank, campers, staff, change_year
 
 from ..models import bank as bank_model
 from ..models import camper as camper_model
@@ -65,9 +65,10 @@ class MainDisplay:
         self.file_menu.add_command( label="Exit", command=self.master.destroy )
         self.file_menu.add_command( label="Save")#, command=AddCommand )
         self.file_menu.add_command( label="Update Tables", command=self.update_tables )
+        self.file_menu.add_command( label="Change Active Year", command=self.change_active_year )
         self.file_menu.add_separator()
         self.file_menu.add_command( label="Manage Campers", command=self.__open_campers )
-        self.file_menu.add_command( label="Manage Staff")#, command=self.__open_staff )
+        self.file_menu.add_command( label="Manage Staff", command=self.__open_staff )
         self.file_menu.add_command( label="Manage Inventory", command=self.__open_inventory )
         self.file_menu.add_command( label="Manage Bank", command=self.__open_bank )
         self.file_menu.add_separator()
@@ -141,6 +142,8 @@ class MainDisplay:
     
     def __open_campers( self ):
         c = campers.Campers( self )
+    def __open_staff( self ):
+        s = staff.Staff( self )
     def __open_inventory( self ):
         i = inventory.Inventory( self )
     def __open_bank( self ):
@@ -174,7 +177,7 @@ class MainDisplay:
         self.history_table.heading('# Items', text='# of Items', anchor=CENTER)
         self.history_table.heading('Total', text='Total', anchor=CENTER)
     def __staff_table( self ):
-        headers = ('Name', 'Ibalance', 'Cbalance', 'Spent', 'Donations', 'Returned', 'Last Free Item')
+        headers = ('Name', 'Last Free Item', '# of Free Items', 'Balance', 'Spent', 'Donations', 'Returned')
         
         # Staff Pane.
         Label(self.top_pane, text = "Staff Data", font=self.title_font).pack(side=TOP, fill=X)
@@ -184,28 +187,28 @@ class MainDisplay:
         # self.staff_table.bind('<Double-1>', lambda event: self.on_click(table = self.staff_table))
         self.staff_table.pack(fill=BOTH, expand=1)
         self.staff_slider.config(command=self.staff_table.yview)
-        # self.staff_button = Button(self.top_pane, text='Open Staff File', font=self.baseFont, command=self.loadStaff)
-        # self.staff_button.pack()
 
         # Staff Table
         self.staff_table['columns'] = headers
         self.staff_table.column('#0', width=0, stretch=NO)
         self.staff_table.column('Name', anchor=W, width=m.floor(self.screen_width/2*0.2))
-        self.staff_table.column('Ibalance', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
-        self.staff_table.column('Cbalance', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
+        self.staff_table.column('Last Free Item', anchor=CENTER, width=m.floor(self.screen_width/2*0.25))
+        self.staff_table.column('# of Free Items', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
+        self.staff_table.column('Balance', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
         self.staff_table.column('Spent', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
         self.staff_table.column('Donations', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
         self.staff_table.column('Returned', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
-        self.staff_table.column('Last Free Item', anchor=CENTER, width=m.floor(self.screen_width/2*0.25))
+        # self.staff_table.column('#7', anchor=CENTER, width=m.floor(self.screen_width/2*0.25))
 
         self.staff_table.heading('#0', text='', anchor=W)
-        self.staff_table.heading('Name', text='Staff Name', anchor=W)
-        self.staff_table.heading('Ibalance', text='Ibalance', anchor=CENTER)
-        self.staff_table.heading('Cbalance', text='Cbalance', anchor=CENTER)
+        self.staff_table.heading('#1', text='Staff Name', anchor=W)
+        self.staff_table.heading('Last Free Item', text='Last Free Item', anchor=CENTER)
+        self.staff_table.heading('# of Free Items', text='# of Free Items', anchor=CENTER)
+        self.staff_table.heading('Balance', text='Balance', anchor=CENTER)
         self.staff_table.heading('Spent', text='Spent', anchor=CENTER)
         self.staff_table.heading('Donations', text='Donations', anchor=CENTER)
         self.staff_table.heading('Returned', text='Returned', anchor=CENTER)
-        self.staff_table.heading('Last Free Item', text='Last Free Item', anchor=CENTER)
+        # self.staff_table.heading('#8', text='# of Free Items', anchor=CENTER)
     def __camper_table( self ):
         headers = ('Name', 'Gender', 'Balance', 'Spent', 'Donations', 'EOW Parent', 'Last Purchase')
         camp_list = [ "Trekker", "Pathfinder", "Journey", "Trail Blazer", "Navigator" ]
@@ -326,6 +329,8 @@ class MainDisplay:
         self.load_inventory_table()
         # self.load_shopping_list_table()
         self.load_history_table()
+    def change_active_year( self ):
+        b = change_year.ChangeYear( self )
     
     def load_history_table( self ): #Needs Completion...
         # # Clear Current Data
@@ -344,10 +349,13 @@ class MainDisplay:
         self.staff_count = 0
         for r in self.staff_table.get_children():
             self.staff_table.delete(r)
+        
         # Enter New Data
+        staff_model.Staff.update_active_database()
+        
         data = staff_model.Staff.get_all()
         for d in data:
-            info = (d.name, d.init_bal, d.curr_bal, d.curr_spent, d.total_donate, d.eos_return, d.last_free_item)
+            info = (d.name, d.last_free_item, d.num_of_free_items, d.curr_bal, d.curr_spent, d.total_donated, d.eos_return)
             self.staff_table.insert(parent='', index='end', iid=self.staff_count, values=info)
             self.staff_count += 1
     def load_camper_table( self, e=None, sort=None ):
@@ -355,7 +363,9 @@ class MainDisplay:
         self.camper_count = 0
         for r in self.camper_table.get_children():
             self.camper_table.delete(r)
+        
         # Enter New Data
+        camper_model.Camper.update_active_database()
         if sort is not None:
             data = camper_model.Camper.get_all_by_camp_sorted_by(
                 self.camp.get().lower(), sort )
@@ -369,6 +379,9 @@ class MainDisplay:
         # Clear Current Data
         for r in self.bank_table.get_children():
             self.bank_table.delete(r)
+        
+        # update data in bank fields
+        bank_model.Bank.update_fields()
         
         # Enter New Data
         data = bank_model.Bank.get_by_year( vc.active_year )

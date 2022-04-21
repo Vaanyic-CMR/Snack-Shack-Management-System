@@ -1,7 +1,8 @@
 from datetime import datetime
 import json
 
-from ..var_const import datetime_format
+from .. import var_const as vc # import vc.active_year, vc.datetime_format
+from . import camper, staff
 
 class Bank:
     file_name = "databases/bank.json"
@@ -18,8 +19,8 @@ class Bank:
         self.camper_total = data["camper_total"]
         self.staff_total = data["staff_total"]
         
-        self._created_at = datetime.strptime( data["created_at"], datetime_format )
-        self._updated_at = datetime.strptime( data["updated_at"], datetime_format )
+        self._created_at = datetime.strptime( data["created_at"], vc.datetime_format )
+        self._updated_at = datetime.strptime( data["updated_at"], vc.datetime_format )
     
     """
         Instance Methods.
@@ -63,11 +64,11 @@ class Bank:
     """
     @classmethod
     def __create( cls, data ):
-        bnk = cls.get_all( True )
+        bnk = cls.get_all( JSON=True )
         
         now = datetime.now()
-        data["created_at"] = now.strftime(datetime_format)
-        data["updated_at"] = now.strftime(datetime_format)
+        data["created_at"] = now.strftime(vc.datetime_format)
+        data["updated_at"] = now.strftime(vc.datetime_format)
         
         bnk.append( data )
         
@@ -79,7 +80,7 @@ class Bank:
     
     @classmethod
     def __update( cls, data ):
-        now = datetime.now().strftime(datetime_format)
+        now = datetime.now().strftime(vc.datetime_format)
         data["updated_at"] = now
         
         results = json.load( open(cls.file_name) )
@@ -96,7 +97,7 @@ class Bank:
     @classmethod
     def save( cls, data ):
         year_exists = False
-        bnk = cls.get_all( True )
+        bnk = cls.get_all( JSON=True )
         
         for b in bnk:
             if b["year"] == data["year"]:
@@ -121,13 +122,61 @@ class Bank:
             f.close()
     
     @classmethod
+    def update_fields( cls ):
+        campers = camper.Camper.get_all()
+        staff_members = staff.Staff.get_all()
+        bank = {
+            "year": vc.active_year,
+            "bank_total": 0,
+            
+            "cash_total": 0,
+            "check_total": 0,
+            "card_total": 0,
+            "scholar_total": 0,
+            
+            "camper_total": 0,
+            "staff_total": 0
+        }
+        
+        for c in campers:
+            bank["bank_total"] += c.init_bal
+            bank["bank_total"] -= c.eow_return
+            bank["camper_total"] += c.init_bal
+            bank["camper_total"] -= c.eow_return
+            if c.pay_method == "cash":
+                bank["cash_total"] += c.init_bal
+            elif c.pay_method == "check":
+                bank["check_total"] += c.init_bal
+            elif c.pay_method == "card":
+                bank["card_total"] += c.init_bal
+            elif c.pay_method == "scholarship":
+                bank["scholar_total"] += c.init_bal
+        
+        for s in staff_members:
+            bank["bank_total"] += s.init_bal
+            bank["bank_total"] -= s.eos_return
+            bank["staff_total"] += s.init_bal
+            bank["staff_total"] -= s.eos_return
+            if s.pay_method == "cash":
+                bank["cash_total"] += s.init_bal
+            elif s.pay_method == "check":
+                bank["check_total"] += s.init_bal
+            elif s.pay_method == "card":
+                bank["card_total"] += s.init_bal
+            elif s.pay_method == "scholarship":
+                bank["scholar_total"] += s.init_bal
+        
+        cls.save( bank )
+    
+    @classmethod
     def get_all( cls, JSON=False ):
         results = json.load( open(cls.file_name) )
-        data = list()
         if not JSON:
+            data = list()
             for result in results:
                 data.append( cls(result) )
-        return data
+            return data
+        return results
     
     @classmethod
     def get_all_years( cls ):
