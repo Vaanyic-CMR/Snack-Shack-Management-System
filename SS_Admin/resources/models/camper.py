@@ -327,7 +327,32 @@ class Camper:
         
         c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
                     WHERE camp = '{camp}'
-                    ORDER BY name desc""")
+                    ORDER BY gender desc, name asc""")
+        query = [ dict(row) for row in c.fetchall() ]
+        
+        results = list()
+        for q in query:
+            results.append( cls(q) )
+        
+        conn.commit()
+        conn.close()
+        return results
+    
+    @classmethod
+    def get_all_by_camp_sorted_by( cls, camp, sort ):
+        try:
+            cls.__table_check()
+        except Exception as e:
+            # print(e)
+            pass
+        
+        conn = sql.connect( cls.db_name )
+        conn.row_factory = sql.Row
+        c = conn.cursor()
+        
+        c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
+                    WHERE camp = '{camp}'
+                    ORDER BY {sort} asc""")
         query = [ dict(row) for row in c.fetchall() ]
         
         results = list()

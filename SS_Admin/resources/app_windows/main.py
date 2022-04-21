@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter import ttk
-from tkinter import font
 from tkinter.font import Font
 
 import math as m
@@ -211,13 +210,12 @@ class MainDisplay:
         headers = ('Name', 'Gender', 'Balance', 'Spent', 'Donations', 'EOW Parent', 'Last Purchase')
         camp_list = [ "Trekker", "Pathfinder", "Journey", "Trail Blazer", "Navigator" ]
         
-        # Header Frame
-        # header_frame = Frame( self.bottom_pane, bg="red" ).pack(side=TOP, fill=X)
-        Label(self.bottom_pane, text = "Camper Data", font=self.title_font).pack(side=TOP, fill=X)
-        # camp_menu = OptionMenu( header_frame, self.camp, *camp_list, command=self.load_camper_table )
-        # camp_menu.config( font=self.base_font )
-        # self.master.nametowidget(camp_menu.menuname).config( font=self.base_font )
-        # camp_menu.grid( row=0, column=1 )
+        
+        # Label(self.bottom_pane, text = "Camper Data", font=self.title_font).pack(side=LEFT)
+        camp_menu = OptionMenu( self.bottom_pane, self.camp, *camp_list, command=self.load_camper_table )
+        camp_menu.config( font=self.title_font )
+        self.master.nametowidget(camp_menu.menuname).config( font=self.base_font )
+        camp_menu.pack(side=TOP)
         
         self.camper_slider = Scrollbar(self.bottom_pane, orient=VERTICAL)
         self.camper_slider.pack(side=RIGHT, fill=Y)
@@ -228,7 +226,7 @@ class MainDisplay:
 
         # Camper Table
         self.camper_table['columns'] = headers
-        self.camper_table.column('#0', width=0, stretch=NO)
+        self.camper_table.column('#0', width=20, stretch=NO)
         self.camper_table.column('Name', anchor=W, width=m.floor(self.screen_width/2*0.2))
         self.camper_table.column('Gender', anchor=W, width=m.floor(self.screen_width/2*0.1))
         self.camper_table.column('Balance', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
@@ -237,14 +235,22 @@ class MainDisplay:
         self.camper_table.column('EOW Parent', anchor=CENTER, width=m.floor(self.screen_width/2*0.15))
         self.camper_table.column('Last Purchase', anchor=CENTER, width=m.floor(self.screen_width/2*0.20))
 
-        self.camper_table.heading('#0', text='', anchor=W)
-        self.camper_table.heading('Name', text='Camper Name', anchor=W)
-        self.camper_table.heading('Gender', text='Gender', anchor=W)
-        self.camper_table.heading('Balance', text='Balance', anchor=CENTER)
-        self.camper_table.heading('Spent', text='Spent', anchor=CENTER)
-        self.camper_table.heading('Donations', text='Donations', anchor=CENTER)
-        self.camper_table.heading('EOW Parent', text='EOW Parent', anchor=CENTER)
-        self.camper_table.heading('Last Purchase', text='Last Purchase', anchor=CENTER)
+        self.camper_table.heading('#0', text='', anchor=W,
+                                    command=self.load_camper_table)
+        self.camper_table.heading('Name', text='Camper Name', anchor=W,
+                                    command=lambda: self.load_camper_table(sort="name"))
+        self.camper_table.heading('Gender', text='Gender', anchor=W,
+                                    command=lambda: self.load_camper_table(sort="gender"))
+        self.camper_table.heading('Balance', text='Balance', anchor=CENTER,
+                                    command=lambda: self.load_camper_table(sort="curr_bal"))
+        self.camper_table.heading('Spent', text='Spent', anchor=CENTER,
+                                    command=lambda: self.load_camper_table(sort="curr_spent"))
+        self.camper_table.heading('Donations', text='Donations', anchor=CENTER,
+                                    command=lambda: self.load_camper_table(sort="total_donated"))
+        self.camper_table.heading('EOW Parent', text='EOW Parent', anchor=CENTER,
+                                    command=lambda: self.load_camper_table(sort="eow_remainder"))
+        self.camper_table.heading('Last Purchase', text='Last Purchase', anchor=CENTER,
+                                    command=lambda: self.load_camper_table(sort="last_purchase"))
     def __bank_table( self ):
         headers = ('Category', 'Total')
         
@@ -344,15 +350,19 @@ class MainDisplay:
             info = (d.name, d.init_bal, d.curr_bal, d.curr_spent, d.total_donate, d.eos_return, d.last_free_item)
             self.staff_table.insert(parent='', index='end', iid=self.staff_count, values=info)
             self.staff_count += 1
-    def load_camper_table( self, e=None ):
+    def load_camper_table( self, e=None, sort=None ):
         # Clear Current Data
         self.camper_count = 0
         for r in self.camper_table.get_children():
             self.camper_table.delete(r)
         # Enter New Data
-        data = camper_model.Camper.get_all()
+        if sort is not None:
+            data = camper_model.Camper.get_all_by_camp_sorted_by(
+                self.camp.get().lower(), sort )
+        else:
+            data = camper_model.Camper.get_all_by_camp( self.camp.get().lower() )
         for d in data:
-            info = (d.name, d.gender, d.curr_bal, d.curr_spent, d.total_donated, d.eow_remainder, d.last_purchase)
+            info = (d.name, d.gender.title(), d.curr_bal, d.curr_spent, d.total_donated, d.eow_remainder.title(), d.last_purchase)
             self.camper_table.insert(parent='', index='end', iid=self.camper_count, values=info)
             self.camper_count += 1
     def load_bank_table( self ):
