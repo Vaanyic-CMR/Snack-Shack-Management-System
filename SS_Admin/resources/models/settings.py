@@ -6,7 +6,7 @@ class Settings:
     
     def __init__( self, data ) -> None:
         self.host_name = data["host_name"]
-        self.ports = data["ports"]
+        self.port = data["port"]
         self.station = data["station"]
         self.food_limit = data["food_limit"]
         self.dark_mode = data["dark_mode"]
@@ -17,7 +17,7 @@ class Settings:
     def to_dict( data ):
         data = {
             "host_name": data.host_name,
-            "ports": data.ports,
+            "port": data.port,
             "station": data.station,
             "food_limit": data.food_limit,
             "dark_mode": data.dark_mode,

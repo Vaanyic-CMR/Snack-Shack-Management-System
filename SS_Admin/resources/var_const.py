@@ -14,7 +14,7 @@ except Exception as e:
     print( e )
     settings = s.Settings({
         "host_name": socket.gethostname(),
-        "ports": [ 3330, 3331 ],
+        "port": 9000,
         "station": "boys",
         "food_limit": 2.0,
         "dark_mode": False,
@@ -31,10 +31,13 @@ except Exception as e:
 
 # ---------- Variables
 running = True
+
 active_year = now.strftime("%Y")
 def change_active_year( year ):
     global active_year
     active_year = year
+    pass
+
 datetime_format = "%Y-%m-%d %H:%M:%S.%f"
 
 # ---------- constants
