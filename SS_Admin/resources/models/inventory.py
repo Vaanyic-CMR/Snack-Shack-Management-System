@@ -99,7 +99,6 @@ class Inventory:
         with open(cls.file_name, 'w') as f:
             f.write(j)
             f.close()
-    
     @classmethod
     def delete( cls, name ):
         results = json.load( open(cls.file_name) )
@@ -111,7 +110,6 @@ class Inventory:
         with open(cls.file_name, 'w') as f:
             f.write(j)
             f.close()
-    
     @classmethod
     def update( cls, data ):
         now = datetime.now().strftime(datetime_format)
@@ -136,7 +134,6 @@ class Inventory:
             result["updated_at"] = datetime.strptime( result["updated_at"], datetime_format )
             data.append( cls(result) )
         return data
-    
     @classmethod
     def get_by_name( cls, name ):
         results = json.load( open(cls.file_name) )
@@ -146,7 +143,6 @@ class Inventory:
                 result["updated_at"] = datetime.strptime( result["updated_at"], datetime_format )
                 return cls( result )
         return None
-    
     @classmethod
     def get_all_names( cls ):
         results = json.load( open(cls.file_name) )

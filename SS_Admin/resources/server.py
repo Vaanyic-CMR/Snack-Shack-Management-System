@@ -37,11 +37,10 @@ def handle_client(conn, address):
             cmd = pickle.loads( cmd )
             
             if cmd == DISCONNECT_MSG:
+                print(f"[{address}] | {cmd}")
                 connected = False
             else:
-                handle_command( cmd )
-            
-            print(f"[{address}] | {cmd}")
+                handle_command( conn, cmd )
 
 def send_to_client( conn, res ):
     # Pickling the command object being sent
@@ -58,7 +57,7 @@ def send_to_client( conn, res ):
     # Sending response
     conn.send(response)
 
-def handle_command( data ):
+def handle_command( conn, data ):
     command = data[0].split('/')
     res = None
     
@@ -70,7 +69,7 @@ def handle_command( data ):
         res = inventory_controller.handle_inventory_command( data )
     
     if res is not None:
-        send_to_client( res )
+        send_to_client( conn, res )
 
 # ----------| Starts running the server | ----------
 def start():

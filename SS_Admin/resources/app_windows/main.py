@@ -198,7 +198,6 @@ class MainDisplay:
         self.staff_table.column('Spent', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
         self.staff_table.column('Donations', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
         self.staff_table.column('Returned', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
-        # self.staff_table.column('#7', anchor=CENTER, width=m.floor(self.screen_width/2*0.25))
 
         self.staff_table.heading('#0', text='', anchor=W)
         self.staff_table.heading('#1', text='Staff Name', anchor=W)
@@ -208,11 +207,9 @@ class MainDisplay:
         self.staff_table.heading('Spent', text='Spent', anchor=CENTER)
         self.staff_table.heading('Donations', text='Donations', anchor=CENTER)
         self.staff_table.heading('Returned', text='Returned', anchor=CENTER)
-        # self.staff_table.heading('#8', text='# of Free Items', anchor=CENTER)
     def __camper_table( self ):
         headers = ('Name', 'Gender', 'Balance', 'Spent', 'Donations', 'EOW Parent', 'Last Purchase')
         camp_list = [ "Trekker", "Pathfinder", "Journey", "Trail Blazer", "Navigator" ]
-        
         
         # Label(self.bottom_pane, text = "Camper Data", font=self.title_font).pack(side=LEFT)
         camp_menu = OptionMenu( self.bottom_pane, self.camp, *camp_list, command=self.load_camper_table )
@@ -366,6 +363,7 @@ class MainDisplay:
         
         # Enter New Data
         camper_model.Camper.update_active_database()
+        vc.active_camp = self.camp.get().lower()
         if sort is not None:
             data = camper_model.Camper.get_all_by_camp_sorted_by(
                 self.camp.get().lower(), sort )

@@ -1,0 +1,16 @@
+{
+    "host_name": "Caleb-Gaming-Desktop",
+    "port": 9000,
+    "station": "boys",
+    "food_limit": 2.0,
+    "dark_mode": false,
+    "title_font": {
+        "family": "monospace",
+        "size": 21,
+        "weight": "bold"
+    },
+    "base_font": {
+        "family": "monospace",
+        "size": 16
+    }
+}

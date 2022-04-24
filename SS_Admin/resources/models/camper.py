@@ -280,18 +280,24 @@ class Camper:
         except Exception as e:
             # print(e)
             pass
+        print(camp, gender)
         
         conn = sql.connect( cls.db_name )
         c = conn.cursor()
         
-        c.execute( f"""SELECT name FROM {cls.tbl_name}
-                    WHERE camp={camp} and gender={gender}
-                    ORDER BY name desc""")
+        c.execute( f"""SELECT oid, name FROM {cls.tbl_name}
+                    WHERE camp = '{camp}' AND gender = '{gender}'
+                    ORDER BY name asc""")
         results = c.fetchall()
+        
+        print(results)
+        data = list()
+        for result in results:
+            data.append(result[1])
         
         conn.commit()
         conn.close()
-        return results
+        return data
     
     @classmethod
     def get_all_names_by_camp( cls, camp ):
@@ -329,7 +335,7 @@ class Camper:
         c = conn.cursor()
         
         c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
-                    WHERE camp = '{camp}'
+                    WHERE camp='{camp}'
                     ORDER BY gender desc, name asc""")
         query = [ dict(row) for row in c.fetchall() ]
         
@@ -379,8 +385,8 @@ class Camper:
         c = conn.cursor()
         
         c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
-                    WHERE camp={camp} and gender={gender}
-                    ORDER BY name desc""")
+                    WHERE camp='{camp}' AND gender='{gender}'
+                    ORDER BY name asc""")
         result = cls( dict( c.fetchall() ) )
         
         conn.commit()
