@@ -53,12 +53,15 @@ class CamperTransactions:
         # ----- Declaring tk Variables
         self.gender = StringVar(value="Select Gender")
         self.camper_name = StringVar()
+        self.last_purchase = StringVar( value="Month, day Year | 00:00:00 pm" )
         
         self.account_total = StringVar(value="${:,.2f}".format(0))
         self.sum_total = StringVar(value="${:,.2f}".format(0))
         self.donation = StringVar(value="${:,.2f}".format(0))
         self.returns = StringVar(value="${:,.2f}".format(0))
         self.remaining_balance = StringVar(value="${:,.2f}".format(0))
+        
+        self.cash = StringVar(value="${:,.2f}".format(0))
         
         self.food_limit = StringVar(value="${:,.2f}".format(0) + "/${:,.2f}".format(vc.settings.food_limit))
         
@@ -110,7 +113,6 @@ class CamperTransactions:
         self.t_menu.add_cascade(label='File', menu = self.file_menu)
         self.file_menu.add_command(label='Exit', command = self.master.destroy)
         self.file_menu.add_separator()
-        self.file_menu.add_command(label='Reload Inventory', command = self.__reload_inventory)
         self.file_menu.add_command(label='Reload Camper Names', command = self.__update_cmbobox)
 
         # Options Menu
@@ -131,7 +133,7 @@ class CamperTransactions:
         gender_menu.pack(side=LEFT, padx=5, pady=5)
         
         self.cmbo_name = ttk.Combobox( self.header_frame, font=self.base_font,
-            textvariable=self.camper_name
+            width=15, textvariable=self.camper_name
         )
         # self.cmbo_name.set_completion_list(self.names)
         self.cmbo_name.bind('<<ComboboxSelected>>', self.populate_fields)
@@ -146,6 +148,13 @@ class CamperTransactions:
         self.btnStaff = Button(self.header_frame, text="Staff", width=10,
                             borderwidth=5, font=self.base_font)#, command = self.openStaff)
         self.btnStaff.pack(side=RIGHT, padx=5, pady=5)
+        
+        # Last purchase labels.
+        last_purchase_frame = Frame( self.header_frame )
+        last_purchase_frame.pack(side=RIGHT, padx=5)
+        Label(last_purchase_frame, text="Last Purchase", font=self.base_font).pack()
+        self.lbl_last_purchase = Label(last_purchase_frame, textvariable=self.last_purchase, font=self.base_font)
+        self.lbl_last_purchase.pack(padx=20)
     def __build_body( self ):
         body_canvas = Canvas( self.body_frame )
         body_canvas.pack( side=LEFT, fill=BOTH, expand=True )
@@ -198,28 +207,33 @@ class CamperTransactions:
             )
         self.lbl_rem_balance.grid(row=1, column=4, padx=5)
 
+        Label(self.footer_frame, text="Food Limit", font=self.base_font, anchor=S
+            ).grid(row=0, column=5)
+        self.lbl_food_limit = Label(self.footer_frame, textvariable=self.food_limit, font=self.base_font, anchor=N
+            )
+        self.lbl_food_limit.grid(row=1, column=5, padx=5)
+        
         # Footer Right side
-        Button(self.footer_frame, text="Add Row", font=self.base_font,
-            borderwidth=5, padx=10, command=self.__add_row, state="disabled"
-        ).grid(row=0, column=6, rowspan=2, padx=5, pady=5)
+        Button(self.footer_frame, text="Cash", font=self.base_font,
+            width=8, borderwidth=5, command=self.__cash
+            ).grid(row=0, column=7, rowspan=2, padx=5, pady=1)
         
         Button(self.footer_frame, text="Donation", font=self.base_font,
-            width=10, borderwidth=5, padx=10, command=self.__donation
-        ).grid(row=0, column=7, padx=5, pady=5)
+            width=10, borderwidth=5, command=self.__donation
+        ).grid(row=0, column=8, padx=5, pady=1)
         Button(self.footer_frame, text="Return", font=self.base_font,
-            width=10, borderwidth=5, padx=10, command=self.__returns
-        ).grid(row=1, column=7, padx=5, pady=5)
+            width=10, borderwidth=5, command=self.__returns
+        ).grid(row=1, column=8, padx=5, pady=1)
         
         Button(self.footer_frame, text="Complete Transaction", font=self.base_font,
-            width=25, borderwidth=5, command = self.complete_transaction
-        ).grid(row=0, column=8, padx=5, pady=5)
-        self.lbl_food_limit = Label(self.footer_frame, font=self.base_font,
-            textvariable=self.food_limit
-        )
-        self.lbl_food_limit.grid(row=1, column=8, padx=5, pady=5)
+            width=20, borderwidth=5, command = self.complete_transaction
+        ).grid(row=0, column=9, padx=5, pady=1)
+        Button(self.footer_frame, text="Add Row", font=self.base_font, state="disabled",
+            width=20, borderwidth=5, command=self.__add_row
+        ).grid(row=1, column=9, padx=5, pady=1)
         
         # configure colume to seperate left and right
-        Grid.columnconfigure(self.footer_frame, 5, weight=1)
+        Grid.columnconfigure(self.footer_frame, 6, weight=1)
 
     # ---------------------- Retrieving and displaying data
     # ----- Inventory Data
@@ -227,8 +241,7 @@ class CamperTransactions:
         cmd = ("api/inventory/names", None)
         client.send( cmd )
         self.inventory_names = client.response_from_server()
-    def __reload_inventory( self ):
-        pass
+
     # ----- Camper Data
     def __update_cmbobox( self, e=None ):
         cmd = ("api/campers/names", self.gender.get().lower())
@@ -239,10 +252,17 @@ class CamperTransactions:
         cmd = ("api/campers/camper", self.camper_name.get())
         client.send( cmd )
         self.active_camper = client.response_from_server()
+        self.donation.set("${:,.2f}".format(0))
+        self.returns.set("${:,.2f}".format(0))
+        self.last_purchase.set( self.active_camper.last_purchase )
         self.account_total.set(
             "${:,.2f}".format(self.active_camper.curr_bal)
         )
+        self.check_last_purchase()
     def update_values( self, e=None ):
+        if self.camper_name.get() == "":
+            messagebox.showerror("Error", "No camper selected.\nPlease select a camp and/or a camper.")
+            return None
         total = 0
         food_limit = 0
         for row in self.rows:
@@ -273,7 +293,8 @@ class CamperTransactions:
                 float(self.account_total.get()[1:]) - 
                 float(self.sum_total.get()[1:]) -
                 float(self.donation.get()[1:]) -
-                float(self.returns.get()[1:])
+                float(self.returns.get()[1:]) +
+                float(self.cash.get()[1:])
             )
         )
         self.food_limit.set(
@@ -295,15 +316,39 @@ class CamperTransactions:
                     """
                 )
     def reset_content( self ):
-        pass
+        self.camper_name.set("")
+        self.last_purchase.set("Month, day Year | 00:00:00 pm")
+        
+        self.account_total.set("${:,.2f}".format(0))
+        self.sum_total.set("${:,.2f}".format(0))
+        self.donation.set("${:,.2f}".format(0))
+        self.returns.set("${:,.2f}".format(0))
+        self.remaining_balance.set("${:,.2f}".format(0))
+        
+        self.cash.set("${:,.2f}".format(0))
+        
+        self.food_limit.set("${:,.2f}".format(0) + "/${:,.2f}".format(vc.settings.food_limit))
+        
+        self.active_camper = None
+    def __cash( self ):
+        ip.InputPrompt( title="Cash", return_data=self.cash, update=self.update_values )
     def __donation( self ):
-        ip.InputPrompt( title="Donation", return_data=self.donation )
-        self.update_values()
+        ip.InputPrompt( title="Donation", return_data=self.donation, update=self.update_values )
     def __returns( self ):
-        ip.InputPrompt( title="Returns", return_data=self.returns )
-        self.update_values()
+        ip.InputPrompt( title="Returns", return_data=self.returns, update=self.update_values )
 
-    # ---------------------- Cost Checks & Complete Transaction.
+    # ---------------------- Validation Checks & Complete Transaction.
+    def check_last_purchase( self ):
+        if self.last_purchase.get() != "00-00-00 00:00:00" or self.last_purchase.get() != "Month, day Year | 00:00:00 pm":
+            now = datetime.now()
+            lp = datetime.strptime( self.last_purchase.get(), self.__class__.purchase_time_format )
+            delta = now - lp
+            hours = divmod(delta.total_seconds(), 3600)
+            if hours[0] < 2:
+                self.lbl_last_purchase.config( fg="orange" )
+                messagebox.showwarning("Warning", "Camper has made a purchase within the last 2 hours.")
+            else:
+                self.lbl_last_purchase.config( fg="black" )
     def check_food_limit( self ):
         food_total = self.food_limit.get().split("/")[0]
         if float(food_total[1:]) > vc.settings.food_limit:
@@ -440,6 +485,7 @@ class CamperTransactions:
             if res == client.SUCCESS_MSG:
                 cmd = ("api/campers/update", self.active_camper)
                 client.send( cmd )
+                self.reset_content()
             else:
                 messagebox.showerror("Error", res)
     

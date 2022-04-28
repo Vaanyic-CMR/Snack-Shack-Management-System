@@ -4,7 +4,7 @@ from tkinter.font import Font
 from ... import var_const as vc
 
 class InputPrompt:
-    def __init__(self, title, return_data) -> None:
+    def __init__(self, title, return_data, update) -> None:
         self.master = Toplevel()
         self.master.title(f"SSMS | {title}")
         self.master.iconbitmap("resources/images/logo.ico")
@@ -22,11 +22,14 @@ class InputPrompt:
         )
         
         self.return_data = return_data
+        self.update = update
         self.entry_data = IntVar(value=float(return_data.get()[1:]))
         
         Label( self.master, text=f"Enter {title}:", font=self.title_font, bg="light grey" ).pack( side=LEFT, padx=10, pady=10 )
         Entry( self.master, textvariable=self.entry_data, font=self.base_font, borderwidth=5 ).pack( side=LEFT, padx=10, pady=10 )
-        Button( self.master, text="Submit", command=self.handle_submit ).pack( side=LEFT, padx=10, pady=10 )
+        Button( self.master, text="Submit", font=self.base_font,
+            borderwidth=5, padx=5, command=self.handle_submit
+        ).pack( side=LEFT, padx=10, pady=10 )
         self.__set_geometery()
     
     # --------------------- Screen and Window Dimensions
@@ -46,4 +49,5 @@ class InputPrompt:
         self.return_data.set(
             "${:,.2f}".format(self.entry_data.get())
         )
+        self.update()
         self.master.destroy()

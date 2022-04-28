@@ -40,7 +40,7 @@ class TransactionRow:
         Grid.columnconfigure(self.row_frame, 8, weight=1)
         Grid.rowconfigure(self.row_frame, 1, weight=2)
         Grid.rowconfigure(self.row_frame, 2, weight=1)
-        
+    
     def __build_default_items( self ):
         # ----- Set up spinboxes
         Spinbox( self.row_frame, command=self.on_update, state='readonly',

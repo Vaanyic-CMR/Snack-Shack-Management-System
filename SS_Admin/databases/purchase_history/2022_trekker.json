@@ -16,5 +16,33 @@
         "sum_total": "$10.50",
         "created_at": "2022-04-27 19:55:14.227947",
         "updated_at": "2022-04-27 19:55:14.227947"
+    },
+    {
+        "date_time": "Thu, Apr 28, 2022 | 09:10:02 AM",
+        "customer_name": "Adrian Monk",
+        "purchase_type": "Camper Account",
+        "items": [
+            [
+                "T-Shirt (SJBC Hoodie) | Medium",
+                1
+            ]
+        ],
+        "sum_total": "$30.00",
+        "created_at": "2022-04-28 09:10:02.202919",
+        "updated_at": "2022-04-28 09:10:02.202919"
+    },
+    {
+        "date_time": "Thu, Apr 28, 2022 | 09:25:00 AM",
+        "customer_name": "Adrian Monk",
+        "purchase_type": "Camper Account",
+        "items": [
+            [
+                "Pepsi",
+                1
+            ]
+        ],
+        "sum_total": "$0.50",
+        "created_at": "2022-04-28 09:25:00.826695",
+        "updated_at": "2022-04-28 09:25:00.826695"
     }
 ]
