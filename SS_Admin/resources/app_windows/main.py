@@ -8,11 +8,14 @@ from .. import var_const as vc
 
 from . import inventory, bank, campers, staff, change_year
 
-from ..models import bank as bank_model
-from ..models import camper as camper_model
-from ..models import inventory as inv_model
-from ..models import shopping_list as shop_list_model
-from ..models import staff as staff_model
+from ..models import (
+    history as history_model,
+    staff as staff_model,
+    camper as camper_model,
+    bank as bank_model,
+    inventory as inv_model,
+    shopping_list as shop_list_model
+)
 
 class MainDisplay:
     def __init__( self ):
@@ -46,7 +49,8 @@ class MainDisplay:
         s.configure('TNotebook.Tab', font=self.base_font)
         s.configure("TCombobox", borderwidth=5 )
         
-        # --------------------- Table Count Variables.
+        # --------------------- General Variables
+        self.auto_update_val = IntVar( value=0 )
         self.camp = StringVar( value="Select Camp" )
         
         # --------------------- Table Count Variables.
@@ -57,14 +61,19 @@ class MainDisplay:
         self.shop_list_count = 0
         
         # --------------------- Menu Bar
-        self.menu_bar = Menu( self.master )
+        self.menu_bar = Menu( self.master, font=self.base_font )
         self.master.config( menu=self.menu_bar )
         
         # File Menu
-        self.file_menu = Menu( self.menu_bar, tearoff=False )
-        self.file_menu.add_command( label="Exit", command=self.master.destroy )
-        self.file_menu.add_command( label="Save")#, command=AddCommand )
-        self.file_menu.add_command( label="Update Tables", command=self.update_tables )
+        self.file_menu = Menu( self.menu_bar, tearoff=False, font=self.base_font )
+        self.file_menu.add_command( label="Exit", command=self.master.quit )
+        self.file_menu.add_separator()
+        self.file_menu.add_checkbutton(
+            label="Auto Update Tables",
+            offvalue=0, onvalue=1,
+            variable=self.auto_update_val,
+            command=self.toggle_auto_update
+        )
         self.file_menu.add_command( label="Change Active Year", command=self.change_active_year )
         self.file_menu.add_separator()
         self.file_menu.add_command( label="Manage Campers", command=self.__open_campers )
@@ -76,7 +85,7 @@ class MainDisplay:
         self.file_menu.add_command( label="Run EOW Check")#, command=AddCommand )
         
         # Options Menu
-        self.option_menu = Menu( self.menu_bar, tearoff=False )
+        self.option_menu = Menu( self.menu_bar, tearoff=False, font=self.base_font )
         self.option_menu.add_command( label="Settings")#, command=AddCommand )
         self.option_menu.add_command( label="About")#, command=AddCommand )
         
@@ -137,7 +146,7 @@ class MainDisplay:
         self.__inventory_table()
         self.__shopping_list_table()
         
-        # Fill Tables with data.
+        # Fill Tables with data every 10 seconds.
         self.update_tables()
     
     def __open_campers( self ):
@@ -157,14 +166,13 @@ class MainDisplay:
         self.history_slider = Scrollbar( self.left_pane, orient=VERTICAL )
         self.history_slider.pack(side=RIGHT, fill=Y)
         self.history_table = ttk.Treeview( self.left_pane, selectmode='browse', yscrollcommand=self.history_slider.set )
-        # self.history_table.bind('<Double-1>', lambda: self.on_click(self.history_table))
         self.history_table.pack(fill=BOTH, expand=1)
         self.history_slider.config(command=self.history_table.yview)
 
         # History Table
         self.history_table['columns'] = headers
-        self.history_table.column('#0', width=0, stretch=NO) # Test Stretch?
-        self.history_table.column('DateTime', anchor=W, width=m.floor(self.screen_width/2*0.25))
+        self.history_table.column('#0', width=20, stretch=NO) # Test Stretch?
+        self.history_table.column('DateTime', anchor=W, width=m.floor(self.screen_width/2*0.20))
         self.history_table.column('Name', anchor=CENTER, width=m.floor(self.screen_width/2*0.2))
         self.history_table.column('Purchase Type', anchor=CENTER, width=m.floor(self.screen_width/2*0.3))
         self.history_table.column('# Items', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
@@ -212,7 +220,7 @@ class MainDisplay:
         camp_list = [ "Trekker", "Pathfinder", "Journey", "Trail Blazer", "Navigator" ]
         
         # Label(self.bottom_pane, text = "Camper Data", font=self.title_font).pack(side=LEFT)
-        camp_menu = OptionMenu( self.bottom_pane, self.camp, *camp_list, command=self.load_camper_table )
+        camp_menu = OptionMenu( self.bottom_pane, self.camp, *camp_list, command=self.update_tables )
         camp_menu.config( font=self.title_font )
         self.master.nametowidget(camp_menu.menuname).config( font=self.base_font )
         camp_menu.pack(side=TOP)
@@ -319,7 +327,16 @@ class MainDisplay:
         self.shopping_table.heading('Low Threshold', text='Low Threshold', anchor=CENTER)
         self.shopping_table.heading('Time on List', text='Time on List', anchor=CENTER)
     
-    def update_tables( self ):
+    def auto_update( self ):
+        self.update_tables()
+        if self.auto_update_val.get() == 1:
+            print("Updating Tables...")
+            self.master.after(10000, self.auto_update)
+    def toggle_auto_update( self ):
+        self.auto_update()
+    
+    def update_tables( self, e=None ):
+        vc.change_active_camp( self.camp.get().lower() )
         self.load_staff_table()
         self.load_camper_table()
         self.load_bank_table()
@@ -330,17 +347,32 @@ class MainDisplay:
         b = change_year.ChangeYear( self )
     
     def load_history_table( self ): #Needs Completion...
-        # # Clear Current Data
-        # self.history_count = 0
-        # for r in self.history_table.get_children():
-        #     self.history_table.delete(r)
-        # # Enter New Data
-        # data = 
-        # for d in data:
-        #     info = (d.name, d.init_bal, d.curr_bal, d.curr_spent, d.total_donate, d.eos_return, d.last_free_item)
-        #     self.staff_table.insert(parent='', index='end', iid=self.staff_count, values=info)
-        #     self.staff_count += 1
-        pass
+        # Clear Current Data
+        self.history_count = 0
+        for r in self.history_table.get_children():
+            self.history_table.delete(r)
+        
+        # Enter New Data
+        history_model.History.update_active_database()
+        
+        data = list()
+        try:
+            data = history_model.History.get_all()
+        except FileNotFoundError:
+            if vc.active_camp != "select camp":
+                history_model.History.create_file()
+                data = history_model.History.get_all()
+        
+        for d in data:
+            info = (d.date_time, d.customer_name, d.purchase_type, len(d.items), d.sum_total)
+            
+            parent_id = self.history_count
+            self.history_table.insert(parent='', index='end', iid=self.history_count, values=info)
+            for item in d.items:
+                child_info = ("", "", item[0], item[1])
+                self.history_count += 1
+                self.history_table.insert(parent=f"{parent_id}", index="end", iid=self.history_count, values=child_info)
+            self.history_count += 1
     def load_staff_table( self ):
         # Clear Current Data
         self.staff_count = 0
@@ -363,7 +395,6 @@ class MainDisplay:
         
         # Enter New Data
         camper_model.Camper.update_active_database()
-        vc.active_camp = self.camp.get().lower()
         if sort is not None:
             data = camper_model.Camper.get_all_by_camp_sorted_by(
                 self.camp.get().lower(), sort )
@@ -417,6 +448,7 @@ class MainDisplay:
         self.shop_list_count = 0
         for r in self.shopping_table.get_children():
             self.shopping_table.delete(r)
+        
         # Enter New Data
         data = shop_list_model.Shopping_List.get_all()
         for d in data:

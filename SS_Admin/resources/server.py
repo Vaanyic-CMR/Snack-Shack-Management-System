@@ -6,7 +6,8 @@ import resources as r
 from .controllers import (
     camper_controller,
     staff_controller,
-    inventory_controller
+    inventory_controller,
+    history_controller
 )
 
 HEADER = 64
@@ -17,6 +18,7 @@ ADDRESS = (SERVER, PORT)
 
 FORMAT = "utf-8"
 DISCONNECT_MSG = "!DISCONNECT"
+SUCCESS_MSG = "!SUCCESS!"
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDRESS)
@@ -25,7 +27,7 @@ server.bind(ADDRESS)
 # ("route1/route2/...", object1, object2, ...)
 
 # ----------| Send and Receive data to threaded clients | ----------
-def handle_client(conn, address):
+def handle_client(conn, address ):
     print(f"[NEW CONNECTION] {address} connected.")
     
     connected = True
@@ -67,6 +69,8 @@ def handle_command( conn, data ):
         res = staff_controller.handle_staff_command( data )
     if command[1] == "inventory":
         res = inventory_controller.handle_inventory_command( data )
+    if command[1] == "history":
+        res = history_controller.handle_history_command( data )
     
     if res is not None:
         send_to_client( conn, res )
@@ -78,9 +82,11 @@ def start():
     print(f"[LISTENING] | Server is listening on IP: {SERVER}, PORT: {PORT}")
     while r.running:
         conn, address = server.accept()
+        
         thread = threading.Thread(target=handle_client, args=(conn, address))
         thread.daemon = True
         thread.start()
+        
         print(f"[ACTIVE CONNECTIONS] | {threading.active_count() - 2}")
     print(f"[DEACTIVATING] | Server is closing...")
     server.close()

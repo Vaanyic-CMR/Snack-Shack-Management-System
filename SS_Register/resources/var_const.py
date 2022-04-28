@@ -32,6 +32,7 @@ except Exception as e:
 # ---------- Variables
 running = True
 
+active_camp = "trekker"
 active_year = now.strftime("%Y")
 def change_active_year( year ):
     global active_year

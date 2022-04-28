@@ -6,6 +6,6 @@ def handle_inventory_command( data ):
     
     if data[0] == "api/inventory/names":
         return inv.Inventory.get_all_names()
-
-
-
+    if data[0] == "api/inventory/item":
+        return inv.Inventory.get_by_name( data[1] )
+    

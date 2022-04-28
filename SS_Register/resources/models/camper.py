@@ -280,6 +280,7 @@ class Camper:
         except Exception as e:
             # print(e)
             pass
+        print(camp, gender)
         
         conn = sql.connect( cls.db_name )
         c = conn.cursor()
@@ -289,6 +290,7 @@ class Camper:
                     ORDER BY name asc""")
         results = c.fetchall()
         
+        print(results)
         data = list()
         for result in results:
             data.append(result[1])

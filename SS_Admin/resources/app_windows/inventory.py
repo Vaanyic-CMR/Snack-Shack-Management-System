@@ -151,7 +151,6 @@ class Inventory:
             ).grid( row=6, column=0, padx=10, pady=30 )
         Button( self.west_frame, text="Delete Item\n(Shift+Return)", font=self.base_font, command=self.delete_item, padx=20
             ).grid( row=6, column=1, padx=10, pady=30 )
-    
     def __build_east_frame( self ):
         Label( self.east_frame, text="# in Stock", font=self.base_font
             ).grid( row=0, column=1, padx=10 )
@@ -180,8 +179,8 @@ class Inventory:
         self.entry_thres_Cmedium.bind( "<Shift-Return>", self.delete_item )
         self.entry_thres_Cmedium.grid( row=2, column=2, padx=10, pady=5 )
         
-        Label( self.east_frame, text="C-Large"
-            , font=self.base_font).grid( row=3, column=0, padx=10 )
+        Label( self.east_frame, text="C-Large", font=self.base_font
+            ).grid( row=3, column=0, padx=10 )
         self.entry_Clarge = Entry( self.east_frame, borderwidth=5, textvariable=self.txt_Clarge, font=self.base_font )
         self.entry_Clarge.bind( "<Return>", self.save_item )
         self.entry_Clarge.bind( "<Shift-Return>", self.delete_item )
@@ -251,7 +250,6 @@ class Inventory:
     def __update_cmbo( self ):
         self.ids_names = inv_m.Inventory.get_all_names()
         self.cmbo.config( value=self.ids_names )
-    
     def __check_catagory( self, e=None ):
         if self.catagory.get() == "Clothing":
             self.txt_threshold.set( 0 )
@@ -318,7 +316,6 @@ class Inventory:
             self.thres_small.set( 0 ), self.thres_medium.set( 0 ), self.thres_large.set( 0 )
             self.thres_Xlarge.set( 0 ), self.thres_XXlarge.set( 0 )
         self.__check_catagory()
-    
     def __reset_values( self, e=None ):
         self.cmbo_item.set(""), self.txt_price.set( 0 ), self.txt_total_stock.set( 0 )
         self.txt_threshold.set( 0 ), self.catagory.set( self.catagory_list[0] )

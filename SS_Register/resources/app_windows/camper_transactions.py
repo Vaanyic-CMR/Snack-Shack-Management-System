@@ -1,15 +1,29 @@
+from datetime import datetime
+import time
+
 from tkinter import *
+from tkinter import messagebox
 from tkinter import ttk
 from tkinter.font import Font
 
-from .sub_components import transaction_row as tr
+from .sub_components import (
+    transaction_row as tr,
+    input_prompt as ip
+)
 
+from ..models import (
+    camper,
+    inventory as inv,
+    history
+)
 from .. import (
     var_const as vc,
     client
 )
 
 class CamperTransactions:
+    purchase_time_format = "%a, %b %d, %Y | %I:%M:%S %p"
+    
     def __init__(self) -> None:
         # --------------------- Title Bar and General
         self.master = Tk()
@@ -29,6 +43,7 @@ class CamperTransactions:
             size = vc.settings.base_font["size"]
         )
         self.master.option_add('*TCombobox*Listbox.font', self.base_font)
+        self.master.option_add('*Dialog.msg.font', self.base_font)
         
         s = ttk.Style()
         s.theme_use('xpnative') # Default is "vista"
@@ -39,7 +54,7 @@ class CamperTransactions:
         self.gender = StringVar(value="Select Gender")
         self.camper_name = StringVar()
         
-        self.account_total = StringVar(value="${:,.2f}".format(0)) # use "${:,.2f}".format(val) to format
+        self.account_total = StringVar(value="${:,.2f}".format(0))
         self.sum_total = StringVar(value="${:,.2f}".format(0))
         self.donation = StringVar(value="${:,.2f}".format(0))
         self.returns = StringVar(value="${:,.2f}".format(0))
@@ -59,6 +74,8 @@ class CamperTransactions:
         self.rows = list()
         self.camper_names = list()
         self.inventory_names = list()
+        
+        self.active_camper = None
         
         # ----- Constructing main builds
         self.__menu_bar()
@@ -117,7 +134,7 @@ class CamperTransactions:
             textvariable=self.camper_name
         )
         # self.cmbo_name.set_completion_list(self.names)
-        # self.cmbo_name.bind('<<ComboboxSelected>>', self.update)
+        self.cmbo_name.bind('<<ComboboxSelected>>', self.populate_fields)
         self.cmbo_name.pack(side=LEFT, padx=5, pady=5)
         self.cmbo_name.focus()
         
@@ -155,49 +172,51 @@ class CamperTransactions:
         for idx, row in enumerate(self.rows):
             self.rows[idx].populate_listboxes(self.inventory_names)
     def __build_footer( self ):
-        Label(self.footer_frame, text="Total In Account", font=self.base_font
+        Label(self.footer_frame, text="Total In Account", font=self.base_font, anchor=S
             ).grid(row=0, column=0, padx=5)
-        Label(self.footer_frame, textvariable=self.account_total, font=self.base_font
+        Label(self.footer_frame, textvariable=self.account_total, font=self.base_font, anchor=N
             ).grid(row=1, column=0, padx=5)
 
-        Label(self.footer_frame, text="Total Item Price", font=self.base_font
+        Label(self.footer_frame, text="Total Item Price", font=self.base_font, anchor=S
             ).grid(row=0, column=1, padx=10, pady=10)
-        Label(self.footer_frame, textvariable=self.sum_total, font=self.base_font
+        Label(self.footer_frame, textvariable=self.sum_total, font=self.base_font, anchor=N
             ).grid(row=1, column=1, padx=5)
 
-        Label(self.footer_frame, text="Donation", font=self.base_font
+        Label(self.footer_frame, text="Donation", font=self.base_font, anchor=S
             ).grid(row=0, column=2, padx=5)
-        Label(self.footer_frame, textvariable=self.donation, font=self.base_font
+        Label(self.footer_frame, textvariable=self.donation, font=self.base_font, anchor=N
             ).grid(row=1, column=2, padx=5)
 
-        Label(self.footer_frame, text="Returns", font=self.base_font
+        Label(self.footer_frame, text="Returns", font=self.base_font, anchor=S
             ).grid(row=0, column=3, padx=5)
-        Label(self.footer_frame, textvariable=self.returns, font=self.base_font
+        Label(self.footer_frame, textvariable=self.returns, font=self.base_font, anchor=N
             ).grid(row=1, column=3, padx=5)
 
-        Label(self.footer_frame, text="Remaining Balance", font=self.base_font
+        Label(self.footer_frame, text="Remaining Balance", font=self.base_font, anchor=S
             ).grid(row=0, column=4, padx=5)
-        Label(self.footer_frame, textvariable=self.remaining_balance, font=self.base_font
-            ).grid(row=1, column=4, padx=5)
+        self.lbl_rem_balance = Label(self.footer_frame, textvariable=self.remaining_balance, font=self.base_font, anchor=N
+            )
+        self.lbl_rem_balance.grid(row=1, column=4, padx=5)
 
         # Footer Right side
         Button(self.footer_frame, text="Add Row", font=self.base_font,
-            borderwidth=5, padx=10, command=self.__add_row
+            borderwidth=5, padx=10, command=self.__add_row, state="disabled"
         ).grid(row=0, column=6, rowspan=2, padx=5, pady=5)
         
-        Button(self.footer_frame, text="Return", font=self.base_font,
-            width=10, borderwidth=5, padx=10,# command=self.__donation
-        ).grid(row=0, column=7, padx=5, pady=5)
         Button(self.footer_frame, text="Donation", font=self.base_font,
-            width=10, borderwidth=5, padx=10,# command=self.__donation
+            width=10, borderwidth=5, padx=10, command=self.__donation
+        ).grid(row=0, column=7, padx=5, pady=5)
+        Button(self.footer_frame, text="Return", font=self.base_font,
+            width=10, borderwidth=5, padx=10, command=self.__returns
         ).grid(row=1, column=7, padx=5, pady=5)
         
         Button(self.footer_frame, text="Complete Transaction", font=self.base_font,
-            width=25, borderwidth=5#, command = self.complete_transaction
+            width=25, borderwidth=5, command = self.complete_transaction
         ).grid(row=0, column=8, padx=5, pady=5)
-        Label(self.footer_frame, fg = 'black', font=self.base_font,
-            text = f"Food Limit: $0.00/${vc.settings.food_limit}"
-        ).grid(row=1, column=8, padx=5, pady=5)
+        self.lbl_food_limit = Label(self.footer_frame, font=self.base_font,
+            textvariable=self.food_limit
+        )
+        self.lbl_food_limit.grid(row=1, column=8, padx=5, pady=5)
         
         # configure colume to seperate left and right
         Grid.columnconfigure(self.footer_frame, 5, weight=1)
@@ -208,7 +227,6 @@ class CamperTransactions:
         cmd = ("api/inventory/names", None)
         client.send( cmd )
         self.inventory_names = client.response_from_server()
-        pass
     def __reload_inventory( self ):
         pass
     # ----- Camper Data
@@ -217,30 +235,244 @@ class CamperTransactions:
         client.send( cmd )
         self.camper_names = client.response_from_server()
         self.cmbo_name.config( value=self.camper_names )
+    def populate_fields( self, e=None ):
+        cmd = ("api/campers/camper", self.camper_name.get())
+        client.send( cmd )
+        self.active_camper = client.response_from_server()
+        self.account_total.set(
+            "${:,.2f}".format(self.active_camper.curr_bal)
+        )
     def update_values( self, e=None ):
-        # val = self.rows[0].data.col1["spinbox_val"].get()
-        # print(f"Col 1: {val}")
+        total = 0
+        food_limit = 0
+        for row in self.rows:
+            if row.data.col1["item"] is not None:
+                if row.data.col1["item"].catagory == "Food & Drink":
+                    food_limit += row.data.col1["item"].price * row.data.col1["spinbox_val"].get()
+                total += row.data.col1["item"].price * row.data.col1["spinbox_val"].get()
+            if row.data.col2["item"] is not None:
+                if row.data.col2["item"].catagory == "Food & Drink":
+                    food_limit += row.data.col2["item"].price * row.data.col2["spinbox_val"].get()
+                total += row.data.col2["item"].price * row.data.col2["spinbox_val"].get()
+            if row.data.col3["item"] is not None:
+                if row.data.col3["item"].catagory == "Food & Drink":
+                    food_limit += row.data.col3["item"].price * row.data.col3["spinbox_val"].get()
+                total += row.data.col3["item"].price * row.data.col3["spinbox_val"].get()
+            if row.data.col4["item"] is not None:
+                if row.data.col4["item"].catagory == "Food & Drink":
+                    food_limit += row.data.col4["item"].price * row.data.col4["spinbox_val"].get()
+                total += row.data.col4["item"].price * row.data.col4["spinbox_val"].get()
+            if row.data.col5["item"] is not None:
+                if row.data.col5["item"].catagory == "Food & Drink":
+                    food_limit += row.data.col5["item"].price * row.data.col5["spinbox_val"].get()
+                total += row.data.col5["item"].price * row.data.col5["spinbox_val"].get()
+        
+        self.sum_total.set("${:,.2f}".format(total))
+        self.remaining_balance.set(
+            "${:,.2f}".format(
+                float(self.account_total.get()[1:]) - 
+                float(self.sum_total.get()[1:]) -
+                float(self.donation.get()[1:]) -
+                float(self.returns.get()[1:])
+            )
+        )
+        self.food_limit.set(
+            "${:,.2f}".format(food_limit) + 
+            "/${:,.2f}".format(vc.settings.food_limit)
+        )
+        limit_exceeded = self.check_food_limit()
+        balance_exceeded = self.check_balance()
+        if limit_exceeded:
+            messagebox.showerror("Warning:", "Food Limit has been exceeded.")
+        elif balance_exceeded[0]:
+            if balance_exceeded[1]:
+                messagebox.showerror("Error:", "Balance has fallen below 0.")
+            else:
+                messagebox.showwarning("Warning:",
+                    """
+                    Balance has reach 0.\n
+                    Please confirm if this is desired.
+                    """
+                )
+    def reset_content( self ):
         pass
+    def __donation( self ):
+        ip.InputPrompt( title="Donation", return_data=self.donation )
+        self.update_values()
+    def __returns( self ):
+        ip.InputPrompt( title="Returns", return_data=self.returns )
+        self.update_values()
+
+    # ---------------------- Cost Checks & Complete Transaction.
+    def check_food_limit( self ):
+        food_total = self.food_limit.get().split("/")[0]
+        if float(food_total[1:]) > vc.settings.food_limit:
+            self.lbl_food_limit.config( fg="red" )
+            return True
+        else:
+            self.lbl_food_limit.config( fg="black" )
+            return False
+    def check_balance( self ):
+        if float(self.remaining_balance.get()[1:]) == 0:
+            self.lbl_rem_balance.config( fg="orange" )
+            return (True, False)
+        elif float(self.remaining_balance.get()[1:]) < 0:
+            self.lbl_rem_balance.config( fg="red" )
+            return (True, True)
+        else:
+            self.lbl_rem_balance.config( fg="black" )
+            return (False, None)
+    def complete_transaction( self, e=None ):
+        limit_exceeded = self.check_food_limit()
+        balance_exceeded = self.check_balance()
+        if limit_exceeded:
+            messagebox.showerror("Error:", "Food Limit has been exceeded.")
+        elif balance_exceeded[0]:
+            if balance_exceeded[1]:
+                messagebox.showerror("Error:", "Balance has fallen below 0.")
+            else:
+                messagebox.showwarning("Warning:",
+                    """
+                    Balance has reach 0.\n
+                    Please confirm if this is desired.
+                    """
+                )
+        else: # ---------- Complete Transaction.
+            items = list()
+            for row in self.rows:
+                if row.data.col1["spinbox_val"].get() > 0 and row.data.col1["item"] is not None:
+                    if row.data.col1["item"].catagory == "Clothing":
+                        items.append(
+                            (
+                                f"{row.data.col1['listbox_val'].get()} | {row.data.col1['size_box_val'].get()}",
+                                row.data.col1["spinbox_val"].get()
+                            )
+                        )
+                    else:
+                        items.append(
+                            (
+                                row.data.col1["listbox_val"].get(),
+                                row.data.col1["spinbox_val"].get()
+                            )
+                        )
+                if row.data.col2["spinbox_val"].get() > 0 and row.data.col2["item"] is not None:
+                    if row.data.col2["item"].catagory == "Clothing":
+                        items.append(
+                            (
+                                f"{row.data.col2['listbox_val'].get()} | {row.data.col2['size_box_val'].get()}",
+                                row.data.col2["spinbox_val"].get()
+                            )
+                        )
+                    else:
+                        items.append(
+                            (
+                                row.data.col2["listbox_val"].get(),
+                                row.data.col2["spinbox_val"].get()
+                            )
+                        )
+                if row.data.col3["spinbox_val"].get() > 0 and row.data.col3["item"] is not None:
+                    if row.data.col3["item"].catagory == "Clothing":
+                        items.append(
+                            (
+                                f"{row.data.col3['listbox_val'].get()} | {row.data.col3['size_box_val'].get()}",
+                                row.data.col3["spinbox_val"].get()
+                            )
+                        )
+                    else:
+                        items.append(
+                            (
+                                row.data.col3["listbox_val"].get(),
+                                row.data.col3["spinbox_val"].get()
+                            )
+                        )
+                if row.data.col4["spinbox_val"].get() > 0 and row.data.col4["item"] is not None:
+                    if row.data.col4["item"].catagory == "Clothing":
+                        items.append(
+                            (
+                                f"{row.data.col4['listbox_val'].get()} | {row.data.col4['size_box_val'].get()}",
+                                row.data.col4["spinbox_val"].get()
+                            )
+                        )
+                    else:
+                        items.append(
+                            (
+                                row.data.col4["listbox_val"].get(),
+                                row.data.col4["spinbox_val"].get()
+                            )
+                        )
+                if row.data.col5["spinbox_val"].get() > 0 and row.data.col5["item"] is not None:
+                    if row.data.col5["item"].catagory == "Clothing":
+                        items.append(
+                            (
+                                f"{row.data.col5['listbox_val'].get()} | {row.data.col5['size_box_val'].get()}",
+                                row.data.col5["spinbox_val"].get()
+                            )
+                        )
+                    else:
+                        items.append(
+                            (
+                                row.data.col5["listbox_val"].get(),
+                                row.data.col5["spinbox_val"].get()
+                            )
+                        )
+            
+            now = datetime.now()
+            purchase_info = {
+                "date_time": now.strftime(self.__class__.purchase_time_format),
+                "customer_name": self.camper_name.get(),
+                "purchase_type": "Camper Account",
+                "items": items,
+                "sum_total": self.sum_total.get()
+            }
+            
+            # ----- Updating Camper Account
+            self.active_camper.curr_bal = float(self.remaining_balance.get()[1:])
+            self.active_camper.curr_spent += float(self.sum_total.get()[1:])
+            self.active_camper.total_donated += float(self.donation.get()[1:])
+            self.active_camper.eow_return += float(self.donation.get()[1:])
+            self.active_camper.last_purchase = now.strftime(self.__class__.purchase_time_format)
+            
+            # time.sleep(1)
+            cmd = ("api/history/new_purchase", purchase_info)
+            client.send( cmd )
+            res = client.response_from_server()
+            
+            if res == client.SUCCESS_MSG:
+                cmd = ("api/campers/update", self.active_camper)
+                client.send( cmd )
+            else:
+                messagebox.showerror("Error", res)
+    
 
 class Row:
     def __init__(self) -> None:
         self.col1 = {
             "spinbox_val": IntVar(),
-            "listbox_val": StringVar()
+            "listbox_val": StringVar(),
+            "size_box_val": StringVar(),
+            "item": None
         }
         self.col2 = {
             "spinbox_val": IntVar(),
-            "listbox_val": StringVar()
+            "listbox_val": StringVar(),
+            "size_box_val": StringVar(),
+            "item": None
         }
         self.col3 = {
             "spinbox_val": IntVar(),
-            "listbox_val": StringVar()
+            "listbox_val": StringVar(),
+            "size_box_val": StringVar(),
+            "item": None
         }
         self.col4 = {
             "spinbox_val": IntVar(),
-            "listbox_val": StringVar()
+            "listbox_val": StringVar(),
+            "size_box_val": StringVar(),
+            "item": None
         }
         self.col5 = {
             "spinbox_val": IntVar(),
-            "listbox_val": StringVar()
+            "listbox_val": StringVar(),
+            "size_box_val": StringVar(),
+            "item": None
         }
