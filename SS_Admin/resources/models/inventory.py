@@ -150,6 +150,14 @@ class Inventory:
         for result in results:
             data.append( result["name"] )
         return data
+    @classmethod
+    def get_all_food_drink_names( cls ):
+        results = json.load( open(cls.file_name) )
+        data = list()
+        for result in results:
+            if result["catagory"] == "Food & Drink":
+                data.append( result["name"] )
+        return data
     
     @classmethod # Probably not nessesary.
     def add_size( cls, data ):

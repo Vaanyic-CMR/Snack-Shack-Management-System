@@ -33,8 +33,7 @@ class Settings:
     
     @classmethod
     def save( cls, data ):
-        settings = cls.to_dict( data )
-        j = json.dumps( settings, indent = 4 )
+        j = json.dumps( data, indent = 4 )
         with open(cls.file_name, 'w') as f:
             f.write(j)
             f.close()

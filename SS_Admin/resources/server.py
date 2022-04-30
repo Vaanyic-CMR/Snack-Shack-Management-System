@@ -7,7 +7,8 @@ from .controllers import (
     camper_controller,
     staff_controller,
     inventory_controller,
-    history_controller
+    history_controller,
+    bank_controller
 )
 
 HEADER = 64
@@ -71,6 +72,8 @@ def handle_command( conn, data ):
         res = inventory_controller.handle_inventory_command( data )
     if command[1] == "history":
         res = history_controller.handle_history_command( data )
+    if command[1] == "bank":
+        res = bank_controller.handle_bank_command( data )
     
     if res is not None:
         send_to_client( conn, res )

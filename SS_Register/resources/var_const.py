@@ -28,6 +28,9 @@ except Exception as e:
             "size": 10
         }
     })
+def reload_settings():
+    global settings
+    settings = s.Settings.load()
 
 # ---------- Variables
 running = True

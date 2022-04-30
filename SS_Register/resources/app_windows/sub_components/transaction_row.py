@@ -174,6 +174,24 @@ class TransactionRow:
             self.listbox_3.insert(END, item)
             self.listbox_4.insert(END, item)
             self.listbox_5.insert(END, item)
+    def reset_widgets( self ):
+        self.data.col1["spinbox_val"].set(0)
+        self.data.col2["spinbox_val"].set(0)
+        self.data.col3["spinbox_val"].set(0)
+        self.data.col4["spinbox_val"].set(0)
+        self.data.col5["spinbox_val"].set(0)
+        
+        self.listbox_1.selection_clear(0, END)
+        self.listbox_2.selection_clear(0, END)
+        self.listbox_3.selection_clear(0, END)
+        self.listbox_4.selection_clear(0, END)
+        self.listbox_5.selection_clear(0, END)
+        
+        self.cloth_listbox_1.selection_clear(0, END)
+        self.cloth_listbox_2.selection_clear(0, END)
+        self.cloth_listbox_3.selection_clear(0, END)
+        self.cloth_listbox_4.selection_clear(0, END)
+        self.cloth_listbox_5.selection_clear(0, END)
     
     def listbox_1_select( self, e=None ):
         self.data.col1["listbox_val"].set( self.listbox_1.get(ANCHOR) )

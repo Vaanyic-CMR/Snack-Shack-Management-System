@@ -62,11 +62,11 @@ class Campers:
         self.camp = StringVar( value="Select Camp" )
         self.pay_method = StringVar( value="Select Payment Method" )
         
-        self.init_bal = IntVar()
-        self.curr_bal = IntVar()
-        self.curr_spent = IntVar()
-        self.total_donated = IntVar()
-        self.eow_return = IntVar()
+        self.init_bal = StringVar(value=0)
+        self.curr_bal = StringVar(value=0)
+        self.curr_spent = StringVar(value=0)
+        self.total_donated = StringVar(value=0)
+        self.eow_return = StringVar(value=0)
         
         self.last_purchase = StringVar( value="00-00-00 00:00:00" )
         
@@ -181,9 +181,9 @@ class Campers:
         self.master.nametowidget(eow_remaining.menuname).config( font=self.base_font )
         eow_remaining.grid( row=7, column=1 )
     def __build_south_frame( self ):
-        Button( self.south_frame, text="Save Item\n(Return)", font=self.base_font, command=self.save_camper, padx=20
+        Button( self.south_frame, text="Save\n(Return)", font=self.base_font, command=self.save_camper, padx=20
             ).grid( row=0, column=0, padx=30 )
-        Button( self.south_frame, text="Delete Item\n(Shift+Return)", font=self.base_font, command=self.delete_camper, padx=20
+        Button( self.south_frame, text="Delete\n(Shift+Return)", font=self.base_font, command=self.delete_camper, padx=20
             ).grid( row=0, column=1, padx=30 )
     
     def __update_name_cmbo( self, e=None ):
@@ -248,7 +248,7 @@ class Campers:
         self.__reset_content()
     
     def __create_camper( self ):
-        self.active_camper.curr_bal = self.init_bal.get()
+        self.active_camper.curr_bal = float(self.init_bal.get())
         camper.Camper.create( self.active_camper.to_dict() )
         self.__reset_content()
     def __update_camper( self ):
@@ -261,11 +261,11 @@ class Campers:
         self.active_camper.gender = self.gender.get()
         self.active_camper.camp = self.camp.get().lower()
         self.active_camper.pay_method = self.pay_method.get().lower()
-        self.active_camper.init_bal = self.init_bal.get()
-        self.active_camper.curr_bal = self.curr_bal.get()
-        self.active_camper.curr_spent = self.curr_spent.get()
-        self.active_camper.total_donated = self.total_donated.get()
-        self.active_camper.eow_return = self.eow_return.get()
+        self.active_camper.init_bal = float(self.init_bal.get())
+        self.active_camper.curr_bal = float(self.curr_bal.get())
+        self.active_camper.curr_spent = float(self.curr_spent.get())
+        self.active_camper.total_donated = float(self.total_donated.get())
+        self.active_camper.eow_return = float(self.eow_return.get())
         self.active_camper.last_purchase = self.last_purchase.get()
         self.active_camper.eow_remainder = self.eow_remainder.get().lower()
         

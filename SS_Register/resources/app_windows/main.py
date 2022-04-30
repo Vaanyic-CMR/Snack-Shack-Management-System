@@ -5,7 +5,8 @@ from tkinter.font import Font
 from . import (
     camper_transactions as camperT,
     staff_transactions as staffT,
-    cash_transactions as cashT
+    cash_transactions as cashT,
+    settings as sett_window
 )
 from .. import var_const as vc
 
@@ -72,32 +73,26 @@ class Main:
         self.option_menu.add_command(label='About')#, command=self.openAbout)
     
     def __build_nav_buttons( self ):
-        btnCamper = Button(self.master, text="Camper Transactions", font=self.title_font,
+        btnCamper = Button(self.master, text="Camper Transactions", font=self.base_font,
                         command=self.open_camper_transactions)
         btnCamper.pack( padx=10, pady=5 )
-        btnStaff = Button(self.master, text="Staff Transactions", font=self.title_font,
+        btnStaff = Button(self.master, text="Staff Transactions", font=self.base_font,
                         command=self.open_staff_transactions)
         btnStaff.pack( padx=10, pady=5 )
-        btnCT = Button(self.master, text="Cash Transaction", font=self.title_font,
+        btnCT = Button(self.master, text="Cash Transaction", font=self.base_font,
                     command=self.open_cash_transactions)
         btnCT.pack( padx=10, pady=5 )
-        btnS = Button(self.master, text="Settings", font=self.title_font)#, command=lambda : settings_window())
+        btnS = Button(self.master, text="Settings", font=self.base_font,
+            command=lambda : sett_window.Settings(self))
         btnS.pack( padx=10, pady=5 )
     
     # ------------------ Open Window Methods
     def open_camper_transactions( self ):
         self.master.destroy()
-        camper_window = camperT.CamperTransactions()
-        camper_window.master.mainloop()
-        pass
+        camperT.CamperTransactions()
     def open_staff_transactions( self ):
-        # self.master.destroy()
-        # staff_window = staffT.StaffTransactions()
-        # staff_window.master.mainloop()
-        pass
+        self.master.destroy()
+        staffT.StaffTransactions()
     def open_cash_transactions( self ):
-        # self.master.destroy()
-        # cash_window = cashT.CashTransactions()
-        # cash_window.master.mainloop()
-        pass
-        
+        self.master.destroy()
+        cashT.CashTransactions()

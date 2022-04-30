@@ -23,10 +23,12 @@ class InputPrompt:
         
         self.return_data = return_data
         self.update = update
-        self.entry_data = IntVar(value=float(return_data.get()[1:]))
+        self.entry_data = StringVar(value=float(return_data.get()[1:]))
         
         Label( self.master, text=f"Enter {title}:", font=self.title_font, bg="light grey" ).pack( side=LEFT, padx=10, pady=10 )
-        Entry( self.master, textvariable=self.entry_data, font=self.base_font, borderwidth=5 ).pack( side=LEFT, padx=10, pady=10 )
+        entry = Entry( self.master, textvariable=self.entry_data, font=self.base_font, borderwidth=5 )
+        entry.pack( side=LEFT, padx=10, pady=10 )
+        entry.bind("<Return>", self.handle_submit)
         Button( self.master, text="Submit", font=self.base_font,
             borderwidth=5, padx=5, command=self.handle_submit
         ).pack( side=LEFT, padx=10, pady=10 )
@@ -45,9 +47,9 @@ class InputPrompt:
         
         self.master.geometry( f"+{ self.window_position_x }+{ self.window_position_y }" )
     
-    def handle_submit( self ):
+    def handle_submit( self, e=None ):
         self.return_data.set(
-            "${:,.2f}".format(self.entry_data.get())
+            "${:,.2f}".format(float(self.entry_data.get()[1:]))
         )
         self.update()
         self.master.destroy()

@@ -77,7 +77,6 @@ class Bank:
         with open(cls.file_name, 'w') as f:
             f.write(j)
             f.close()
-    
     @classmethod
     def __update( cls, data ):
         now = datetime.now().strftime(vc.datetime_format)
@@ -93,7 +92,6 @@ class Bank:
         with open(cls.file_name, 'w') as f:
             f.write(j)
             f.close()
-    
     @classmethod
     def save( cls, data ):
         year_exists = False
@@ -108,7 +106,6 @@ class Bank:
             cls.__update( data )
         else:
             cls.__create( data )
-    
     @classmethod
     def delete( cls, year ):
         results = json.load( open(cls.file_name) )
@@ -120,7 +117,6 @@ class Bank:
         with open(cls.file_name, 'w') as f:
             f.write(j)
             f.close()
-    
     @classmethod
     def update_fields( cls ):
         campers = camper.Camper.get_all()
@@ -177,7 +173,6 @@ class Bank:
                 data.append( cls(result) )
             return data
         return results
-    
     @classmethod
     def get_all_years( cls ):
         results = json.load( open(cls.file_name) )
@@ -185,7 +180,6 @@ class Bank:
         for result in results:
             data.append( result["year"] )
         return data
-    
     @classmethod
     def get_by_year( cls, year ):
         results = json.load( open(cls.file_name) )

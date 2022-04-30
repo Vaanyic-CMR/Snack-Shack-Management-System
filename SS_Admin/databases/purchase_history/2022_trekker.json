@@ -44,5 +44,68 @@
         "sum_total": "$0.50",
         "created_at": "2022-04-28 09:25:00.826695",
         "updated_at": "2022-04-28 09:25:00.826695"
+    },
+    {
+        "date_time": "Fri, Apr 29, 2022 | 03:54:46 PM",
+        "customer_name": "Staff 1",
+        "purchase_type": "Free Item|Account|Cash",
+        "items": [
+            [
+                "Snickers",
+                1
+            ],
+            [
+                "Pepsi",
+                1
+            ],
+            [
+                "Leather Cross Bracelet",
+                1
+            ]
+        ],
+        "sum_total": "$5.50",
+        "created_at": "2022-04-29 15:54:46.198990",
+        "updated_at": "2022-04-29 15:54:46.198990"
+    },
+    {
+        "date_time": "Fri, Apr 29, 2022 | 04:18:47 PM",
+        "customer_name": "Staff 3",
+        "purchase_type": "Free Item | Account",
+        "items": [
+            [
+                "Snickers",
+                1
+            ],
+            [
+                "Coca Cola",
+                1
+            ]
+        ],
+        "sum_total": "$0.50",
+        "created_at": "2022-04-29 16:18:47.235309",
+        "updated_at": "2022-04-29 16:18:47.235309"
+    },
+    {
+        "date_time": "Fri, Apr 29, 2022 | 04:51:57 PM",
+        "customer_name": "Adrian Monk",
+        "purchase_type": "Account",
+        "items": [
+            [
+                "Snickers",
+                1
+            ]
+        ],
+        "sum_total": "$0.75",
+        "created_at": "2022-04-29 16:51:57.365396",
+        "updated_at": "2022-04-29 16:51:57.365396"
+    },
+    {
+        "date_time": "Fri, Apr 29, 2022 | 05:23:27 PM",
+        "customer_name": "Staff 2",
+        "purchase_type": "Account | Cash",
+        "items": [],
+        "sum_total": "$0.00",
+        "created_at": "2022-04-29 17:23:27.816862",
+        "updated_at": "2022-04-29 17:23:27.816862"
     }
 ]

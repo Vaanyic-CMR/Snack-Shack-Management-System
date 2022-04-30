@@ -60,11 +60,11 @@ class Staff:
         self.num_of_free_items = IntVar()
         self.last_free_item = StringVar( value="00-00-00 00:00:00" )
         
-        self.init_bal = IntVar()
-        self.curr_bal = IntVar()
-        self.curr_spent = IntVar()
-        self.total_donated = IntVar()
-        self.eos_return = IntVar()
+        self.init_bal = StringVar()
+        self.curr_bal = StringVar()
+        self.curr_spent = StringVar()
+        self.total_donated = StringVar()
+        self.eos_return = StringVar()
         
         self.last_purchase = StringVar( value="00-00-00 00:00:00" )
         
@@ -249,11 +249,12 @@ class Staff:
         self.active_staff.num_of_free_items = self.num_of_free_items.get()
         self.active_staff.last_free_item = self.last_free_item.get()
         
-        self.active_staff.init_bal = self.init_bal.get()
-        self.active_staff.curr_bal = self.curr_bal.get()
-        self.active_staff.curr_spent = self.curr_spent.get()
-        self.active_staff.total_donated = self.total_donated.get()
-        self.active_staff.eos_return = self.eos_return.get()
+        self.active_staff.init_bal = float(self.init_bal.get())
+        self.active_staff.curr_bal = float(self.curr_bal.get())
+        self.active_staff.curr_spent = float(self.curr_spent.get())
+        self.active_staff.total_donated = float(self.total_donated.get())
+        self.active_staff.eos_return = float(self.eos_return.get())
+        
         self.active_staff.last_purchase = self.last_purchase.get()
         
         if self.create_update.get() == "create":
@@ -271,7 +272,7 @@ class Staff:
         staff.Staff.update( self.active_staff.to_dict() )
         self.__reset_content()
     def __create( self ):
-        self.active_staff.curr_bal = self.init_bal.get()
+        self.active_staff.curr_bal = float(self.init_bal.get())
         staff.Staff.create( self.active_staff.to_dict() )
         self.__reset_content()
     

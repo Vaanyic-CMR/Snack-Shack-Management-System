@@ -6,7 +6,13 @@ import math as m
 
 from .. import var_const as vc
 
-from . import inventory, bank, campers, staff, change_year
+from . import (
+    settings,
+    inventory,
+    bank,
+    campers,
+    staff,
+    change_year)
 
 from ..models import (
     history as history_model,
@@ -47,6 +53,8 @@ class MainDisplay:
         s = ttk.Style()
         s.theme_use('vista') # Default is "vista"
         s.configure('TNotebook.Tab', font=self.base_font)
+        # s.configure('Treeview', font=self.base_font) # ----- Add Treeview Specifc fonts to settings.
+        # s.configure('Treeview.Heading', font=self.base_font)
         s.configure("TCombobox", borderwidth=5 )
         
         # --------------------- General Variables
@@ -60,39 +68,9 @@ class MainDisplay:
         self.inv_count = 0
         self.shop_list_count = 0
         
-        # --------------------- Menu Bar
-        self.menu_bar = Menu( self.master, font=self.base_font )
-        self.master.config( menu=self.menu_bar )
-        
-        # File Menu
-        self.file_menu = Menu( self.menu_bar, tearoff=False, font=self.base_font )
-        self.file_menu.add_command( label="Exit", command=self.master.quit )
-        self.file_menu.add_separator()
-        self.file_menu.add_checkbutton(
-            label="Auto Update Tables",
-            offvalue=0, onvalue=1,
-            variable=self.auto_update_val,
-            command=self.toggle_auto_update
-        )
-        self.file_menu.add_command( label="Change Active Year", command=self.change_active_year )
-        self.file_menu.add_separator()
-        self.file_menu.add_command( label="Manage Campers", command=self.__open_campers )
-        self.file_menu.add_command( label="Manage Staff", command=self.__open_staff )
-        self.file_menu.add_command( label="Manage Inventory", command=self.__open_inventory )
-        self.file_menu.add_command( label="Manage Bank", command=self.__open_bank )
-        self.file_menu.add_separator()
-        self.file_menu.add_command( label="Export Data | Excel")#, command=AddCommand )
-        self.file_menu.add_command( label="Run EOW Check")#, command=AddCommand )
-        
-        # Options Menu
-        self.option_menu = Menu( self.menu_bar, tearoff=False, font=self.base_font )
-        self.option_menu.add_command( label="Settings")#, command=AddCommand )
-        self.option_menu.add_command( label="About")#, command=AddCommand )
-        
-        self.menu_bar.add_cascade( label="File", menu=self.file_menu )
-        self.menu_bar.add_cascade( label="Options", menu=self.option_menu )
-        
         # --------------------- Initialize Base Layout.
+        self.__menu_bar()
+        
         self.window = ttk.Notebook( self.master )
         self.window.pack( fill=BOTH, expand=1 )
         
@@ -149,6 +127,8 @@ class MainDisplay:
         # Fill Tables with data every 10 seconds.
         self.update_tables()
     
+    def __open_settings( self ):
+        sett = settings.Settings( self )
     def __open_campers( self ):
         c = campers.Campers( self )
     def __open_staff( self ):
@@ -157,6 +137,38 @@ class MainDisplay:
         i = inventory.Inventory( self )
     def __open_bank( self ):
         b = bank.Bank( self )
+    
+    def __menu_bar( self ):
+        self.menu_bar = Menu( self.master, font=self.base_font )
+        self.master.config( menu=self.menu_bar )
+        
+        # File Menu
+        self.file_menu = Menu( self.menu_bar, tearoff=False, font=self.base_font )
+        self.file_menu.add_command( label="Exit", command=self.master.quit )
+        self.file_menu.add_separator()
+        self.file_menu.add_checkbutton(
+            label="Auto Update Tables",
+            offvalue=0, onvalue=1,
+            variable=self.auto_update_val,
+            command=self.toggle_auto_update
+        )
+        self.file_menu.add_command( label="Change Active Year", command=self.change_active_year )
+        self.file_menu.add_separator()
+        self.file_menu.add_command( label="Manage Campers", command=self.__open_campers )
+        self.file_menu.add_command( label="Manage Staff", command=self.__open_staff )
+        self.file_menu.add_command( label="Manage Inventory", command=self.__open_inventory )
+        self.file_menu.add_command( label="Manage Bank", command=self.__open_bank )
+        self.file_menu.add_separator()
+        self.file_menu.add_command( label="Export Data | Excel")#, command=AddCommand )
+        self.file_menu.add_command( label="Run EOW Check")#, command=AddCommand )
+        
+        # Options Menu
+        self.option_menu = Menu( self.menu_bar, tearoff=False, font=self.base_font )
+        self.option_menu.add_command( label="Settings", command=self.__open_settings )
+        self.option_menu.add_command( label="About")#, command=AddCommand )
+        
+        self.menu_bar.add_cascade( label="File", menu=self.file_menu )
+        self.menu_bar.add_cascade( label="Options", menu=self.option_menu )
     
     def __history_table( self ):
         headers = ('DateTime', 'Name', 'Purchase Type', '# Items', 'Total')
@@ -172,10 +184,10 @@ class MainDisplay:
         # History Table
         self.history_table['columns'] = headers
         self.history_table.column('#0', width=20, stretch=NO) # Test Stretch?
-        self.history_table.column('DateTime', anchor=W, width=m.floor(self.screen_width/2*0.20))
+        self.history_table.column('DateTime', anchor=W, width=m.floor(self.screen_width/2*0.25))
         self.history_table.column('Name', anchor=CENTER, width=m.floor(self.screen_width/2*0.2))
-        self.history_table.column('Purchase Type', anchor=CENTER, width=m.floor(self.screen_width/2*0.3))
-        self.history_table.column('# Items', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
+        self.history_table.column('Purchase Type', anchor=CENTER, width=m.floor(self.screen_width/2*0.2))
+        self.history_table.column('# Items', anchor=CENTER, width=m.floor(self.screen_width/2*0.15))
         self.history_table.column('Total', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
 
         self.history_table.heading('#0', text='', anchor=W)
@@ -199,9 +211,9 @@ class MainDisplay:
         # Staff Table
         self.staff_table['columns'] = headers
         self.staff_table.column('#0', width=0, stretch=NO)
-        self.staff_table.column('Name', anchor=W, width=m.floor(self.screen_width/2*0.2))
+        self.staff_table.column('Name', anchor=W, width=m.floor(self.screen_width/2*0.15))
         self.staff_table.column('Last Free Item', anchor=CENTER, width=m.floor(self.screen_width/2*0.25))
-        self.staff_table.column('# of Free Items', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
+        self.staff_table.column('# of Free Items', anchor=CENTER, width=m.floor(self.screen_width/2*0.15))
         self.staff_table.column('Balance', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
         self.staff_table.column('Spent', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
         self.staff_table.column('Donations', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
@@ -272,8 +284,8 @@ class MainDisplay:
         # Bank Table
         self.bank_table['columns'] = headers
         self.bank_table.column('#0', width=0, stretch=NO)
-        self.bank_table.column('Category', anchor=W, width=80)
-        self.bank_table.column('Total', anchor=CENTER, width=50)
+        self.bank_table.column('Category', anchor=W, width=85)
+        self.bank_table.column('Total', anchor=CENTER, width=45)
 
         self.bank_table.heading('#0', text='', anchor=W)
         self.bank_table.heading('Category', text='Category', anchor=W)
@@ -330,7 +342,6 @@ class MainDisplay:
     def auto_update( self ):
         self.update_tables()
         if self.auto_update_val.get() == 1:
-            print("Updating Tables...")
             self.master.after(10000, self.auto_update)
     def toggle_auto_update( self ):
         self.auto_update()
@@ -346,7 +357,7 @@ class MainDisplay:
     def change_active_year( self ):
         b = change_year.ChangeYear( self )
     
-    def load_history_table( self ): #Needs Completion...
+    def load_history_table( self ):
         # Clear Current Data
         self.history_count = 0
         for r in self.history_table.get_children():

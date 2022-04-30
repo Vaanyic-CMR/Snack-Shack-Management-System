@@ -6,11 +6,15 @@ from tkinter import messagebox
 from tkinter import ttk
 from tkinter.font import Font
 
+from . import (
+    settings as sett_window,
+    staff_transactions,
+    cash_transactions
+)
 from .sub_components import (
     transaction_row as tr,
     input_prompt as ip
 )
-
 from ..models import (
     camper,
     inventory as inv,
@@ -27,7 +31,7 @@ class CamperTransactions:
     def __init__(self) -> None:
         # --------------------- Title Bar and General
         self.master = Tk()
-        self.master.title("Snack Shack Management System | Register")
+        self.master.title("Snack Shack Management System | Camper Register")
         self.master.iconbitmap("resources/images/logo.ico")
         self.master.config( bg="light grey" )
         self.master.state("zoomed")
@@ -91,6 +95,15 @@ class CamperTransactions:
         
         self.__set_geometery()
     
+    # --------------------- Open Other Windows
+    def __open_cash( self ):
+        self.master.destroy()
+        cash_window = cash_transactions.CashTransactions()
+        cash_window.master.mainloop()
+    def __open_staff( self ):
+        self.master.destroy()
+        staff_window = staff_transactions.StaffTransactions()
+        staff_window.master.mainloop()
     # --------------------- Screen and Window Dimensions
     def __set_geometery( self ):
         self.screen_width = self.master.winfo_screenwidth()
@@ -118,8 +131,10 @@ class CamperTransactions:
         # Options Menu
         self.option_menu = Menu(self.t_menu, tearoff=False)
         self.t_menu.add_cascade(label='Options', menu=self.option_menu)
-        self.option_menu.add_command(label='Settings')#, command=self.openSettings)
+        self.option_menu.add_command(label='Settings', command=lambda : sett_window.Settings(self))
         self.option_menu.add_command(label='About')#, command=self.openAbout)
+    def _on_mousewheel(self, event):
+        self.body_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
     
     # ---------------------- Contruct Components
     def __build_header( self ):
@@ -142,11 +157,11 @@ class CamperTransactions:
         
         # Cash Button
         self.btnCash = Button(self.header_frame, text="Cash", width=10,
-                            borderwidth=5, font=self.base_font)#, command = self.openCash)
+                            borderwidth=5, font=self.base_font, command=self.__open_cash)
         self.btnCash.pack(side=RIGHT, padx=5, pady=5)
         # Staff Button
         self.btnStaff = Button(self.header_frame, text="Staff", width=10,
-                            borderwidth=5, font=self.base_font)#, command = self.openStaff)
+                            borderwidth=5, font=self.base_font, command=self.__open_staff)
         self.btnStaff.pack(side=RIGHT, padx=5, pady=5)
         
         # Last purchase labels.
@@ -156,19 +171,20 @@ class CamperTransactions:
         self.lbl_last_purchase = Label(last_purchase_frame, textvariable=self.last_purchase, font=self.base_font)
         self.lbl_last_purchase.pack(padx=20)
     def __build_body( self ):
-        body_canvas = Canvas( self.body_frame )
-        body_canvas.pack( side=LEFT, fill=BOTH, expand=True )
-        body_scrollbar = ttk.Scrollbar( self.body_frame , orient=VERTICAL, command=body_canvas.yview )
+        self.body_canvas = Canvas( self.body_frame )
+        self.body_canvas.pack( side=LEFT, fill=BOTH, expand=True )
+        body_scrollbar = ttk.Scrollbar( self.body_frame , orient=VERTICAL, command=self.body_canvas.yview )
         body_scrollbar.pack( side=RIGHT, fill=Y )
         
         # Configure Canvas
-        body_canvas.configure( yscrollcommand=body_scrollbar.set )
-        body_canvas.bind( '<Configure>',
-            lambda e: body_canvas.configure(scrollregion=body_canvas.bbox("all")) )
+        self.body_canvas.configure( yscrollcommand=body_scrollbar.set )
+        self.body_canvas.bind( '<Configure>',
+            lambda e: self.body_canvas.configure(scrollregion=self.body_canvas.bbox("all")) )
+        self.body_canvas.bind_all("<MouseWheel>", self._on_mousewheel)
         
         # New canvas frame
-        self.canvas_frame = Frame( body_canvas )
-        body_canvas.create_window((0,0), window=self.canvas_frame, anchor=NW )
+        self.canvas_frame = Frame( self.body_canvas )
+        self.body_canvas.create_window((0,0), window=self.canvas_frame, anchor=NW )
     def __add_row( self ):
         self.rows.append(
             tr.TransactionRow(
@@ -214,7 +230,7 @@ class CamperTransactions:
         self.lbl_food_limit.grid(row=1, column=5, padx=5)
         
         # Footer Right side
-        Button(self.footer_frame, text="Cash", font=self.base_font,
+        Button(self.footer_frame, text="Cash\n(With Account)", font=self.base_font,
             width=8, borderwidth=5, command=self.__cash
             ).grid(row=0, column=7, rowspan=2, padx=5, pady=1)
         
@@ -252,12 +268,11 @@ class CamperTransactions:
         cmd = ("api/campers/camper", self.camper_name.get())
         client.send( cmd )
         self.active_camper = client.response_from_server()
+        self.last_purchase.set( self.active_camper.last_purchase )
+        self.account_total.set("${:,.2f}".format(self.active_camper.curr_bal))
         self.donation.set("${:,.2f}".format(0))
         self.returns.set("${:,.2f}".format(0))
-        self.last_purchase.set( self.active_camper.last_purchase )
-        self.account_total.set(
-            "${:,.2f}".format(self.active_camper.curr_bal)
-        )
+        self.remaining_balance.set(self.account_total.get())
         self.check_last_purchase()
     def update_values( self, e=None ):
         if self.camper_name.get() == "":
@@ -330,6 +345,9 @@ class CamperTransactions:
         self.food_limit.set("${:,.2f}".format(0) + "/${:,.2f}".format(vc.settings.food_limit))
         
         self.active_camper = None
+        
+        for row in self.rows:
+            row.reset_widgets()
     def __cash( self ):
         ip.InputPrompt( title="Cash", return_data=self.cash, update=self.update_values )
     def __donation( self ):
@@ -339,7 +357,7 @@ class CamperTransactions:
 
     # ---------------------- Validation Checks & Complete Transaction.
     def check_last_purchase( self ):
-        if self.last_purchase.get() != "00-00-00 00:00:00" or self.last_purchase.get() != "Month, day Year | 00:00:00 pm":
+        if self.last_purchase.get() != "00-00-00 00:00:00" and self.last_purchase.get() != "Month, day Year | 00:00:00 pm":
             now = datetime.now()
             lp = datetime.strptime( self.last_purchase.get(), self.__class__.purchase_time_format )
             delta = now - lp
@@ -358,7 +376,7 @@ class CamperTransactions:
             self.lbl_food_limit.config( fg="black" )
             return False
     def check_balance( self ):
-        if float(self.remaining_balance.get()[1:]) == 0:
+        if float(self.remaining_balance.get()[1:]) == 0 and float(self.cash.get()[1:]) <= 0:
             self.lbl_rem_balance.config( fg="orange" )
             return (True, False)
         elif float(self.remaining_balance.get()[1:]) < 0:
@@ -461,14 +479,35 @@ class CamperTransactions:
                             )
                         )
             
+            if len(items) <= 0:
+                messagebox.showerror("Error", """No list of items.\n
+                                                Make sure selected items have a quantity.""")
+                return None
+            
             now = datetime.now()
             purchase_info = {
                 "date_time": now.strftime(self.__class__.purchase_time_format),
                 "customer_name": self.camper_name.get(),
-                "purchase_type": "Camper Account",
+                "purchase_type": "",
                 "items": items,
                 "sum_total": self.sum_total.get()
             }
+            
+            purchase_types = list()
+            if self.remaining_balance.get() != self.account_total.get():
+                purchase_types.append("Account")
+            if float(self.donation.get()[1:]) > 0:
+                purchase_types.append("Donation")
+            if float(self.returns.get()[1:]) > 0:
+                purchase_types.append("Returns")
+            if float(self.cash.get()[1:]) > 0:
+                purchase_types.append("Cash")
+            
+            for idx, pt in enumerate(purchase_types):
+                if idx == 0:
+                    purchase_info["purchase_type"] += pt
+                else:
+                    purchase_info["purchase_type"] += f" | {pt}"
             
             # ----- Updating Camper Account
             self.active_camper.curr_bal = float(self.remaining_balance.get()[1:])
@@ -481,6 +520,12 @@ class CamperTransactions:
             cmd = ("api/history/new_purchase", purchase_info)
             client.send( cmd )
             res = client.response_from_server()
+            
+            if float(self.cash.get()[1:]) > 0 and res == client.SUCCESS_MSG:
+                cmd = ("api/bank/cash", float(self.cash.get()[1:]))
+                client.send( cmd )
+                res = client.response_from_server()
+                self.reset_content()
             
             if res == client.SUCCESS_MSG:
                 cmd = ("api/campers/update", self.active_camper)

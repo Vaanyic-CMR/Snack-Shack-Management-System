@@ -7,7 +7,6 @@ class Settings:
     def __init__( self, data ) -> None:
         self.host_name = data["host_name"]
         self.port = data["port"]
-        self.station = data["station"]
         self.food_limit = data["food_limit"]
         self.dark_mode = data["dark_mode"]
         self.title_font = data["title_font"]
@@ -30,11 +29,9 @@ class Settings:
     def load( cls ):
         data = json.load( open(cls.file_name) )
         return cls( data )
-    
     @classmethod
     def save( cls, data ):
-        settings = cls.to_dict( data )
-        j = json.dumps( settings, indent = 4 )
+        j = json.dumps( data, indent=4 )
         with open(cls.file_name, 'w') as f:
             f.write(j)
             f.close()

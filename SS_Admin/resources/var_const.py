@@ -15,7 +15,6 @@ except Exception as e:
     settings = s.Settings({
         "host_name": socket.gethostname(),
         "port": 9000,
-        "station": "boys",
         "food_limit": 2.0,
         "dark_mode": False,
         "title_font": {
@@ -28,6 +27,9 @@ except Exception as e:
             "size": 10
         }
     })
+def reload_settings():
+    global settings
+    settings = s.Settings.load()
 
 # ---------- Variables
 running = True

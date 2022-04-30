@@ -122,7 +122,6 @@ class Staff:
                 :created_at, :updated_at )""", data )
         conn.commit()
         conn.close()
-    
     @classmethod
     def delete( cls, id ):
         try:
@@ -136,7 +135,6 @@ class Staff:
         c.execute( f"DELETE FROM {cls.tbl_name} WHERE oid='{id}'" )
         conn.commit()
         conn.close()
-    
     @classmethod
     def update( cls, data ):
         try:
@@ -190,7 +188,6 @@ class Staff:
         conn.commit()
         conn.close()
         return results
-    
     @classmethod
     def get_by_id( cls, id ):
         try:
@@ -209,7 +206,6 @@ class Staff:
         conn.commit()
         conn.close()
         return result
-    
     @classmethod
     def get_by_name( cls, name ):
         try:
@@ -229,7 +225,6 @@ class Staff:
         conn.commit()
         conn.close()
         return result
-    
     @classmethod
     def get_all_names( cls ):
         try:
