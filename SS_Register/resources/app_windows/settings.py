@@ -3,13 +3,19 @@ from tkinter import ttk
 from tkinter.font import Font
 
 from .. import var_const as vc
-from . import main
+from . import (
+    main,
+    camper_transactions,
+    staff_transactions,
+    cash_transactions
+)
 from ..models import settings as s_model
 
 class Settings:
-    def __init__( self, main=None ):
+    def __init__( self, main, active_window ):
         self.main_window = main
-
+        self.active_window = active_window
+        
         # --------------------- Title Bar and General
         self.master = Toplevel()
         self.master.title("SSMS | Settings")
@@ -136,4 +142,11 @@ class Settings:
         vc.reload_settings()
         
         self.main_window.master.destroy()
-        main.Main()
+        if self.active_window == "main":
+            main.Main()
+        elif self.active_window == "campers":
+            camper_transactions.CamperTransactions()
+        elif self.active_window == "staff":
+            staff_transactions.StaffTransactions()
+        elif self.active_window == "cash":
+            cash_transactions.CashTransactions()

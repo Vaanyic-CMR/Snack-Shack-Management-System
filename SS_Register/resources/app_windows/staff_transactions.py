@@ -134,7 +134,7 @@ class StaffTransactions:
         # Options Menu
         self.option_menu = Menu(self.t_menu, tearoff=False)
         self.t_menu.add_cascade(label='Options', menu=self.option_menu)
-        self.option_menu.add_command(label='Settings', command=lambda : sett_window.Settings(self))
+        self.option_menu.add_command(label='Settings', command=lambda : sett_window.Settings(self, "staff"))
         self.option_menu.add_command(label='About')#, command=self.openAbout)
     def _on_mousewheel(self, event):
         self.body_canvas.yview_scroll(int(-1*(event.delta/120)), "units")

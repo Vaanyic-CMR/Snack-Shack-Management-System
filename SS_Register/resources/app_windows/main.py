@@ -36,6 +36,7 @@ class Main:
         
         # ----- Constructing widgets
         self.__menu_bar()
+        self.__build_title()
         self.__build_nav_buttons()
         self.__set_geometery()
     
@@ -66,12 +67,15 @@ class Main:
         # Options Menu
         self.option_menu = Menu(self.t_menu, tearoff=False)
         self.t_menu.add_cascade(label='Options', menu=self.option_menu)
-        # self.file_menu.add_command(label = 'Font Size +', command = self.fontUp)
-        # self.file_menu.add_command(label = 'Font Size -', command = self.fontDown)
         # self.option_menu.add_separator()
-        self.option_menu.add_command(label='Settings')#, command=self.openSettings)
+        self.option_menu.add_command(label='Settings', command=lambda : sett_window.Settings(self, "main"))
         self.option_menu.add_command(label='About')#, command=self.openAbout)
     
+    def __build_title( self ):
+        Label(self.master, text="Snack Shack Management System\nRegister", bg="light grey",
+                font=self.title_font
+            ).pack(padx=10)
+        ttk.Separator(self.master, orient="horizontal").pack(fill=X, expand=True, pady=(5, 20))
     def __build_nav_buttons( self ):
         btnCamper = Button(self.master, text="Camper Transactions", font=self.base_font,
                         command=self.open_camper_transactions)
@@ -82,9 +86,6 @@ class Main:
         btnCT = Button(self.master, text="Cash Transaction", font=self.base_font,
                     command=self.open_cash_transactions)
         btnCT.pack( padx=10, pady=5 )
-        btnS = Button(self.master, text="Settings", font=self.base_font,
-            command=lambda : sett_window.Settings(self))
-        btnS.pack( padx=10, pady=5 )
     
     # ------------------ Open Window Methods
     def open_camper_transactions( self ):

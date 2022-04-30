@@ -55,7 +55,7 @@ class CamperTransactions:
         s.configure("TCombobox", darkcolor="grey", lightcolor="grey" )
         
         # ----- Declaring tk Variables
-        self.gender = StringVar(value="Select Gender")
+        self.gender = StringVar(value=vc.settings.station.title())
         self.camper_name = StringVar()
         self.last_purchase = StringVar( value="Month, day Year | 00:00:00 pm" )
         
@@ -86,12 +86,15 @@ class CamperTransactions:
         
         # ----- Constructing main builds
         self.__menu_bar()
+        
         self.__build_header()
         self.__build_body()
         self.__build_footer()
         
         # Add a row of transaction items.
         self.__add_row()
+        
+        self.__update_cmbobox()
         
         self.__set_geometery()
     
@@ -131,10 +134,13 @@ class CamperTransactions:
         # Options Menu
         self.option_menu = Menu(self.t_menu, tearoff=False)
         self.t_menu.add_cascade(label='Options', menu=self.option_menu)
-        self.option_menu.add_command(label='Settings', command=lambda : sett_window.Settings(self))
+        self.option_menu.add_command(label='Settings', command=lambda : sett_window.Settings(self, "campers"))
         self.option_menu.add_command(label='About')#, command=self.openAbout)
-    def _on_mousewheel(self, event):
+    def __on_mousewheel(self, event):
         self.body_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+    def __configure_body_scroll( self ):
+        self.body_canvas.bind( '<Configure>',
+            lambda e: self.body_canvas.configure(scrollregion=self.body_canvas.bbox("all")) )
     
     # ---------------------- Contruct Components
     def __build_header( self ):
@@ -180,7 +186,7 @@ class CamperTransactions:
         self.body_canvas.configure( yscrollcommand=body_scrollbar.set )
         self.body_canvas.bind( '<Configure>',
             lambda e: self.body_canvas.configure(scrollregion=self.body_canvas.bbox("all")) )
-        self.body_canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+        self.body_canvas.bind_all("<MouseWheel>", self.__on_mousewheel)
         
         # New canvas frame
         self.canvas_frame = Frame( self.body_canvas )
@@ -196,6 +202,7 @@ class CamperTransactions:
         self.__load_inventory_names()
         for idx, row in enumerate(self.rows):
             self.rows[idx].populate_listboxes(self.inventory_names)
+        self.__configure_body_scroll()
     def __build_footer( self ):
         Label(self.footer_frame, text="Total In Account", font=self.base_font, anchor=S
             ).grid(row=0, column=0, padx=5)
@@ -231,7 +238,7 @@ class CamperTransactions:
         
         # Footer Right side
         Button(self.footer_frame, text="Cash\n(With Account)", font=self.base_font,
-            width=8, borderwidth=5, command=self.__cash
+            width=15, borderwidth=5, command=self.__cash
             ).grid(row=0, column=7, rowspan=2, padx=5, pady=1)
         
         Button(self.footer_frame, text="Donation", font=self.base_font,
@@ -241,11 +248,11 @@ class CamperTransactions:
             width=10, borderwidth=5, command=self.__returns
         ).grid(row=1, column=8, padx=5, pady=1)
         
-        Button(self.footer_frame, text="Complete Transaction", font=self.base_font,
-            width=20, borderwidth=5, command = self.complete_transaction
+        Button(self.footer_frame, text="Complete\nTransaction", font=self.base_font,
+            width=15, borderwidth=5, command = self.complete_transaction
         ).grid(row=0, column=9, padx=5, pady=1)
         Button(self.footer_frame, text="Add Row", font=self.base_font, state="disabled",
-            width=20, borderwidth=5, command=self.__add_row
+            width=15, borderwidth=5, command=self.__add_row
         ).grid(row=1, column=9, padx=5, pady=1)
         
         # configure colume to seperate left and right
