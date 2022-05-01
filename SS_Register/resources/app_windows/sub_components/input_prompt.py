@@ -49,7 +49,7 @@ class InputPrompt:
     
     def handle_submit( self, e=None ):
         self.return_data.set(
-            "${:,.2f}".format(float(self.entry_data.get()[1:]))
+            "${:,.2f}".format(float(self.entry_data.get()))
         )
         self.update()
         self.master.destroy()

@@ -44,21 +44,19 @@ class Shopping_List:
     """
     @classmethod
     def get_all( cls ):
-        # cls.update_list()
-        results =  cls.load()
-        cls.save(results)
+        results =  cls.__load()
+        cls.__save(results)
         return results
     
     @classmethod
-    def load( cls ):
+    def __load( cls ):
         results = json.load( open(cls.file_name) )
         data = list()
         for result in results:
             data.append( cls(result) )
         return data
-    
     @classmethod
-    def save( cls, data ):
+    def __save( cls, data ):
         results = list()
         for d in data:
             results.append( d.to_dict() )
@@ -67,48 +65,55 @@ class Shopping_List:
         with open(cls.file_name, 'w') as f:
             f.write(j)
             f.close()
-    
     @classmethod
     def update( cls, item ):
-        data = cls.load()
-        for index, d in data:
-            if d.name == item.name:
-                data[index].in_stock = item.in_stock
-                data[index].threshold = item.threshold
-        cls.save(data)
-    
+        data = cls.__load()
+        for index, d in enumerate(data):
+            if d.name == item["name"]:
+                data[index].in_stock = item["in_stock"]
+                data[index].threshold = item["threshold"]
+        cls.__save(data)
     @classmethod
     def delete( cls, item ):
-        data = cls.load()
+        data = cls.__load()
         
-        for index, d in data:
-            if d.name == item.name:
+        for index, d in enumerate(data):
+            if d.name == item["name"]:
                 del data[index]
-        cls.save( data )
+        cls.__save( data )
     
     @classmethod
-    def add_item( cls, inv_data ):
-        sl = cls.load()
-        new_item = cls({
-            "name": inv_data.name,
-            "in_stock": inv_data.in_stock,
-            "threshold": inv_data.threshold,
-            "time_on_list": [
-                datetime.now().strftime(cls.date_format),
-                "0 Days"
-            ]
-        })
-        new_sl = sl.append(new_item)
-        cls.save( new_sl )
-    
+    def add_item( cls, item, catagory=None ):
+        sl = cls.__load()
+        new_item = None
+        if catagory == "Clothing":
+            new_item = cls({
+                "name": f"{item['name']} | {item['size']}",
+                "in_stock": item['in_stock'],
+                "threshold": item['threshold'],
+                "time_on_list": [
+                    datetime.now().strftime(cls.date_format),
+                    "0 Days"
+                ]
+            })
+        else:
+            new_item = cls({
+                "name": item['name'],
+                "in_stock": item["in_stock"],
+                "threshold": item["threshold"],
+                "time_on_list": [
+                    datetime.now().strftime(cls.date_format),
+                    "0 Days"
+                ]
+            })
+        sl.append(new_item)
+        cls.__save( sl )
     @classmethod
-    def __in( cls, item ):
-        results = cls.load()
+    def In( cls, item ):
+        results = cls.__load()
         for result in results:
-            if item.name == result.name:
+            if item == result.name:
                 return True
         return False
-    
-    
     
     

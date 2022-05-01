@@ -2,25 +2,27 @@
     {
         "year": "2021",
         "bank_total": 10.0,
-        "cash_total": 10.0,
-        "check_total": 0,
-        "card_total": 0,
-        "scholar_total": 0,
+        "cash_total": 0.0,
+        "account_cash_total": 10.0,
+        "account_check_total": 0,
+        "account_card_total": 0,
+        "account_scholar_total": 0,
         "camper_total": 10.0,
         "staff_total": 0,
-        "updated_at": "2022-04-23 20:24:53.216451",
+        "updated_at": "2022-04-30 17:47:54.968033",
         "created_at": "2021-04-21 09:34:49.562874"
     },
     {
         "year": "2022",
         "bank_total": 185.0,
-        "cash_total": 50.0,
-        "check_total": 25.0,
-        "card_total": 80.0,
-        "scholar_total": 10.0,
+        "cash_total": 0.0,
+        "account_cash_total": 50.0,
+        "account_check_total": 25.0,
+        "account_card_total": 80.0,
+        "account_scholar_total": 10.0,
         "camper_total": 135.0,
         "staff_total": 50.0,
-        "updated_at": "2022-04-29 21:00:23.738682",
+        "updated_at": "2022-04-30 20:12:12.041208",
         "created_at": "2022-04-21 09:34:49.562874"
     }
 ]

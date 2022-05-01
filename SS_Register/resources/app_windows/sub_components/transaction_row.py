@@ -256,7 +256,6 @@ class TransactionRow:
     
     def cloth_listbox_1_select( self, e=None ):
         self.data.col1["size_box_val"].set( self.cloth_listbox_1.get(ANCHOR) )
-        print(self.data.col1["size_box_val"].get())
     def cloth_listbox_2_select( self, e=None ):
         self.data.col2["size_box_val"].set( self.cloth_listbox_2.get(ANCHOR) )
     def cloth_listbox_3_select( self, e=None ):

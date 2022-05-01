@@ -4,6 +4,7 @@ from tkinter import ttk
 from tkinter.font import Font
 
 from datetime import datetime
+from turtle import pu
 
 from . import (
     settings as sett_window,
@@ -57,7 +58,9 @@ class CashTransactions:
         self.name = StringVar()
         
         self.sum_total = StringVar(value="${:,.2f}".format(0))
+        self.cash_received = StringVar(value="${:,.2f}".format(0))
         self.donation = StringVar(value="${:,.2f}".format(0))
+        self.change = StringVar(value="${:,.2f}".format(0))
         
         # ----- Initializing Frames
         self.header_frame = Frame( self.master, relief="ridge", borderwidth=5 )
@@ -111,7 +114,6 @@ class CashTransactions:
         self.t_menu.add_cascade(label='File', menu = self.file_menu)
         self.file_menu.add_command(label='Exit', command = self.master.destroy)
         self.file_menu.add_separator()
-        self.file_menu.add_command(label='Reload Camper Names', command = self.__update_cmbobox)
 
         # Options Menu
         self.option_menu = Menu(self.t_menu, tearoff=False)
@@ -167,30 +169,44 @@ class CashTransactions:
         for idx, row in enumerate(self.rows):
             self.rows[idx].populate_listboxes(self.inventory_names)
     def __build_footer( self ):
-        Label(self.footer_frame, text="Total Item Price", font=self.base_font, anchor=S
-            ).grid(row=0, column=1, padx=10, pady=10)
+        Label(self.footer_frame, text="Sum Total", font=self.base_font, anchor=S
+            ).grid(row=0, column=0, padx=10, pady=10)
         Label(self.footer_frame, textvariable=self.sum_total, font=self.base_font, anchor=N
+            ).grid(row=1, column=0, padx=5)
+        
+        Label(self.footer_frame, text="Cash Received", font=self.base_font, anchor=S
+            ).grid(row=0, column=1, padx=5)
+        Label(self.footer_frame, textvariable=self.cash_received, font=self.base_font, anchor=N
             ).grid(row=1, column=1, padx=5)
-
+        
         Label(self.footer_frame, text="Donation", font=self.base_font, anchor=S
             ).grid(row=0, column=2, padx=5)
         Label(self.footer_frame, textvariable=self.donation, font=self.base_font, anchor=N
             ).grid(row=1, column=2, padx=5)
         
+        Label(self.footer_frame, text="Change Due", font=self.base_font, anchor=S
+            ).grid(row=0, column=3, padx=10, pady=10)
+        self.lbl_change = Label(self.footer_frame, textvariable=self.change, font=self.base_font, anchor=N
+            )
+        self.lbl_change.grid(row=1, column=3, padx=5)
+        
         # Footer Right side
         Button(self.footer_frame, text="Donation", font=self.base_font,
             width=10, borderwidth=5, command=self.__donation
-        ).grid(row=0, column=8, padx=5, pady=1)
+        ).grid(row=1, column=5, padx=10, pady=1)
+        Button(self.footer_frame, text="Cash", font=self.base_font,
+            width=10, borderwidth=5, command=self.__cash
+            ).grid(row=0, column=5, padx=10, pady=1)
         
         Button(self.footer_frame, text="Complete Transaction", font=self.base_font,
             width=20, borderwidth=5, command = self.complete_transaction
-        ).grid(row=0, column=9, padx=5, pady=1)
+        ).grid(row=0, column=6, padx=10, pady=1)
         Button(self.footer_frame, text="Add Row", font=self.base_font, state="disabled",
             width=20, borderwidth=5, command=self.__add_row
-        ).grid(row=1, column=9, padx=5, pady=1)
+        ).grid(row=1, column=6, padx=10, pady=1)
         
         # configure colume to seperate left and right
-        Grid.columnconfigure(self.footer_frame, 6, weight=1)
+        Grid.columnconfigure(self.footer_frame, 4, weight=1)
 
     # ---------------------- Retrieving and displaying data
     # ----- Inventory Data
@@ -214,19 +230,37 @@ class CashTransactions:
                 total += row.data.col5["item"].price * row.data.col5["spinbox_val"].get()
         
         self.sum_total.set("${:,.2f}".format(total))
+        change = float(self.cash_received.get()[1:]) - total
+        self.change.set("${:,.2f}".format(change))
+        self.__check_change()
     def reset_content( self ):
         self.name.set("")
         
         self.sum_total.set("${:,.2f}".format(0))
+        self.cash_received.set("${:,.2f}".format(0))
         self.donation.set("${:,.2f}".format(0))
+        self.change.set("${:,.2f}".format(0))
         
         for row in self.rows:
             row.reset_widgets()
     def __donation( self ):
         ip.InputPrompt( title="Donation", return_data=self.donation, update=self.update_values )
+    def __cash( self ):
+        ip.InputPrompt( title="Cash Received", return_data=self.cash_received, update=self.update_values )
 
     # ---------------------- Validation Checks & Complete Transaction.
+    def __check_change( self ):
+        if float(self.change.get()[1:]) < 0:
+            self.lbl_change.config( fg="orange" )
+            return False
+        else:
+            self.lbl_change.config( fg="black" )
+            return True
     def complete_transaction( self, e=None ):
+        if not self.__check_change():
+            messagebox.showerror("Error", "Change is Negative\nMore cash from customer is required.")
+            return None
+        
         items = list()
         for row in self.rows:
             if row.data.col1["spinbox_val"].get() > 0 and row.data.col1["item"] is not None:
@@ -306,20 +340,24 @@ class CashTransactions:
                     )
         
         if len(items) <= 0:
-            messagebox.showerror("Error", """No list of items.\n
-                                            Make sure selected items have a quantity.""")
+            messagebox.showerror("Error", """No list of items.\nMake sure selected items have a quantity.""")
             return None
         
         now = datetime.now()
         purchase_info = {
             "date_time": now.strftime(self.__class__.purchase_time_format),
-            "customer_name": self.camper_name.get(),
+            "customer_name": "",
             "purchase_type": "",
             "items": items,
             "sum_total": self.sum_total.get()
         }
+        if self.name.get() == "":
+            purchase_info["customer_name"] = "Unknown"
+        else:
+            purchase_info["customer_name"] = self.name.get()
+        
         purchase_types = list()
-        if float(self.cash.get()[1:]) > 0:
+        if float(self.cash_received.get()[1:]) > 0:
             purchase_types.append("Cash")
         if float(self.donation.get()[1:]) > 0:
             purchase_types.append("Donation")
@@ -334,8 +372,8 @@ class CashTransactions:
         client.send( cmd )
         res = client.response_from_server()
         
-        if float(self.cash.get()[1:]) > 0 and res == client.SUCCESS_MSG:
-            cmd = ("api/bank/cash", float(self.cash.get()[1:]))
+        if float(self.cash_received.get()[1:]) > 0 and res == client.SUCCESS_MSG:
+            cmd = ("api/bank/cash", float(self.cash_received.get()[1:]))
             client.send( cmd )
             res = client.response_from_server()
             self.reset_content()

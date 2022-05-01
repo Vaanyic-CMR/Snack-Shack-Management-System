@@ -10,11 +10,12 @@ class Bank:
     def __init__( self, data ):
         self.year = data["year"]
         self.bank_total = data["bank_total"]
-        
         self.cash_total = data["cash_total"]
-        self.check_total = data["check_total"]
-        self.card_total = data["card_total"]
-        self.scholar_total = data["scholar_total"]
+        
+        self.account_cash_total = data["account_cash_total"]
+        self.account_check_total = data["account_check_total"]
+        self.account_card_total = data["account_card_total"]
+        self.account_scholar_total = data["account_scholar_total"]
         
         self.camper_total = data["camper_total"]
         self.staff_total = data["staff_total"]
@@ -35,11 +36,15 @@ class Bank:
             "year": self.year,
             "bank_total": self.bank_total,
             "cash_total": self.cash_total,
-            "check_total": self.check_total,
-            "card_total": self.card_total,
-            "scholar_total": self.scholar_total,
+            
+            "account_cash_total": self.account_cash_total,
+            "account_check_total": self.account_check_total,
+            "account_card_total": self.account_card_total,
+            "account_scholar_total": self.account_scholar_total,
+            
             "camper_total": self.camper_total,
             "staff_total": self.staff_total,
+            
             "created_at": self._created_at,
             "updated_at": self._updated_at
         }
@@ -50,9 +55,10 @@ class Bank:
         print( "Year:", self.year )
         print( "Bank Total:", self.bank_total )
         print( "Cash Total:", self.cash_total )
-        print( "Check Total:", self.check_total )
-        print( "Card Total:", self.card_total)
-        print( "Scholarship Total:", self.scholar_total )
+        print( "Account Cash Total:", self.account_cash_total )
+        print( "Account Check Total:", self.account_check_total )
+        print( "Account Card Total:", self.account_card_total)
+        print( "Account Scholarship Total:", self.account_scholar_total )
         print( "Camper Total:", self.camper_total )
         print( "Staff Total:", self.staff_total )
         print( "Created At:", self._created_at )
@@ -121,14 +127,16 @@ class Bank:
     def update_fields( cls ):
         campers = camper.Camper.get_all()
         staff_members = staff.Staff.get_all()
+        curr_bank = cls.get_by_year(vc.active_year)
         bank = {
             "year": vc.active_year,
             "bank_total": 0,
+            "cash_total": curr_bank.cash_total,
             
-            "cash_total": 0,
-            "check_total": 0,
-            "card_total": 0,
-            "scholar_total": 0,
+            "account_cash_total": 0,
+            "account_check_total": 0,
+            "account_card_total": 0,
+            "account_scholar_total": 0,
             
             "camper_total": 0,
             "staff_total": 0
@@ -140,13 +148,13 @@ class Bank:
             bank["camper_total"] += c.init_bal
             bank["camper_total"] -= c.eow_return
             if c.pay_method == "cash":
-                bank["cash_total"] += c.init_bal
+                bank["account_cash_total"] += c.init_bal
             elif c.pay_method == "check":
-                bank["check_total"] += c.init_bal
+                bank["account_check_total"] += c.init_bal
             elif c.pay_method == "card":
-                bank["card_total"] += c.init_bal
+                bank["account_card_total"] += c.init_bal
             elif c.pay_method == "scholarship":
-                bank["scholar_total"] += c.init_bal
+                bank["account_scholar_total"] += c.init_bal
         
         for s in staff_members:
             bank["bank_total"] += s.init_bal
@@ -154,14 +162,15 @@ class Bank:
             bank["staff_total"] += s.init_bal
             bank["staff_total"] -= s.eos_return
             if s.pay_method == "cash":
-                bank["cash_total"] += s.init_bal
+                bank["account_cash_total"] += s.init_bal
             elif s.pay_method == "check":
-                bank["check_total"] += s.init_bal
+                bank["account_check_total"] += s.init_bal
             elif s.pay_method == "card":
-                bank["card_total"] += s.init_bal
+                bank["account_card_total"] += s.init_bal
             elif s.pay_method == "scholarship":
-                bank["scholar_total"] += s.init_bal
+                bank["account_scholar_total"] += s.init_bal
         
+        bank["bank_total"] += curr_bank.cash_total
         cls.save( bank )
     
     @classmethod

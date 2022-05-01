@@ -1,7 +1,9 @@
 from datetime import datetime
 import json
+import re
 
 from ..var_const import datetime_format
+from . import shopping_list as sl
 
 class Inventory:
     file_name = "databases/inventory.json"
@@ -130,6 +132,35 @@ class Inventory:
         results = json.load( open(cls.file_name) )
         data = list()
         for result in results:
+            if result["catagory"] == "Clothing":
+                for size in result["sizes"]:
+                    if size["in_stock"] < size["threshold"] and sl.Shopping_List.In(f"{result['name']} | {size['size']}"):
+                        sl.Shopping_List.update({
+                            "name": f"{result['name']} | {size['size']}",
+                            "in_stock": size["in_stock"],
+                            "threshold": size["threshold"]
+                        })
+                    elif size["in_stock"] < size["threshold"] and not sl.Shopping_List.In(f"{result['name']} | {size['size']}"):
+                        sl.Shopping_List.add_item({
+                            "name": result["name"],
+                            "size": size["size"],
+                            "in_stock": size["in_stock"],
+                            "threshold": size["threshold"]
+                        }, "Clothing")
+                    elif size["in_stock"] > size["threshold"] and sl.Shopping_List.In(f"{result['name']} | {size['size']}"):
+                        sl.Shopping_List.delete({
+                            "name": f"{result['name']} | {size['size']}",
+                            "in_stock": size["in_stock"],
+                            "threshold": size["threshold"]
+                        })
+            else:
+                if result["in_stock"] < result["threshold"] and sl.Shopping_List.In(result["name"]):
+                    sl.Shopping_List.update(result)
+                elif result["in_stock"] < result["threshold"] and not sl.Shopping_List.In(result["name"]):
+                    sl.Shopping_List.add_item(result)
+                elif result["in_stock"] > result["threshold"] and sl.Shopping_List.In(result["name"]):
+                    sl.Shopping_List.delete(result)
+            
             result["created_at"] = datetime.strptime( result["created_at"], datetime_format )
             result["updated_at"] = datetime.strptime( result["updated_at"], datetime_format )
             data.append( cls(result) )
@@ -159,9 +190,6 @@ class Inventory:
                 data.append( result["name"] )
         return data
     
-    @classmethod # Probably not nessesary.
-    def add_size( cls, data ):
-        pass
 
 class Size:
     def __init__( self, data ) -> None:

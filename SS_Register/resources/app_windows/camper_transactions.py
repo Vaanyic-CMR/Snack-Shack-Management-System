@@ -138,9 +138,6 @@ class CamperTransactions:
         self.option_menu.add_command(label='About')#, command=self.openAbout)
     def __on_mousewheel(self, event):
         self.body_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
-    def __configure_body_scroll( self ):
-        self.body_canvas.bind( '<Configure>',
-            lambda e: self.body_canvas.configure(scrollregion=self.body_canvas.bbox("all")) )
     
     # ---------------------- Contruct Components
     def __build_header( self ):
