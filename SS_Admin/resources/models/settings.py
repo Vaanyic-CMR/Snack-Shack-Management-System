@@ -11,6 +11,8 @@ class Settings:
         self.dark_mode = data["dark_mode"]
         self.title_font = data["title_font"]
         self.base_font = data["base_font"]
+        self.table_header_font = data["table_header_font"]
+        self.table_row_font = data["table_row_font"]
     
     def to_dict( self ):
         data = {
@@ -19,7 +21,9 @@ class Settings:
             "food_limit": self.food_limit,
             "dark_mode": self.dark_mode,
             "title_font": self.title_font,
-            "base_font": self.base_font
+            "base_font": self.base_font,
+            "table_header_font": self.table_header_font,
+            "table_row_font": self.table_row_font
         }
         return data
     

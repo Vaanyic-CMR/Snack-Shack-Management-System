@@ -11,5 +11,14 @@
     "base_font": {
         "family": "monospace",
         "size": 13
+    },
+    "table_header_font": {
+        "family": "monospace",
+        "size": 11,
+        "weight": "bold"
+    },
+    "table_row_font": {
+        "family": "monospace",
+        "size": 11
     }
 }

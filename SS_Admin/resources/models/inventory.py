@@ -48,7 +48,6 @@ class Inventory:
             "created_at": self._created_at.strftime(datetime_format),
             "updated_at": self._updated_at.strftime(datetime_format)
         }
-    
     def display( self ):
         print( ">>---------------<<" )
         print( "Name:", self.name )

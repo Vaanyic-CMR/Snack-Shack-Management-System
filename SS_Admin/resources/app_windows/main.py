@@ -54,12 +54,21 @@ class MainDisplay:
             family = vc.settings.base_font["family"],
             size = vc.settings.base_font["size"]
         )
+        self.table_header_font = Font(
+            family = vc.settings.table_header_font["family"],
+            size = vc.settings.table_header_font["size"],
+            weight = vc.settings.table_header_font["weight"]
+        )
+        self.table_row_font = Font(
+            family = vc.settings.table_row_font["family"],
+            size = vc.settings.table_row_font["size"]
+        )
         
         s = ttk.Style()
         s.theme_use('vista') # Default is "vista"
         s.configure('TNotebook.Tab', font=self.base_font)
-        # s.configure('Treeview', font=self.base_font) # ----- Add Treeview Specifc fonts to settings.
-        # s.configure('Treeview.Heading', font=self.base_font)
+        s.configure('Treeview', font=self.table_row_font)
+        s.configure('Treeview.Heading', font=self.table_header_font)
         s.configure("TCombobox", borderwidth=5 )
         
         # --------------------- General Variables

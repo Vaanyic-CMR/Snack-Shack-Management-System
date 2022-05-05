@@ -25,6 +25,15 @@ except Exception as e:
         "base_font": {
             "family": "monospace",
             "size": 10
+        },
+        "table_header_font": {
+            "family": "monospace",
+            "size": 13,
+            "weight": "bold"
+        },
+        "table_row_font": {
+            "family": "monospace",
+            "size": 11
         }
     })
     s.Settings.save(settings.to_dict())

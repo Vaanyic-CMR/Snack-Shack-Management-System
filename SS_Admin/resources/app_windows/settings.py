@@ -36,6 +36,8 @@ class Settings:
         
         self.title_size = IntVar(value=vc.settings.title_font["size"])
         self.base_size = IntVar(value=vc.settings.base_font["size"])
+        self.table_header_size = IntVar(value=vc.settings.table_header_font["size"])
+        self.table_row_size = IntVar(value=vc.settings.table_row_font["size"])
         
         # -------------------- Build Main Structure
         Label( self.master, text="Settings:", font=self.title_font ).pack()
@@ -85,6 +87,18 @@ class Settings:
         Entry(self.frame_2, textvariable=self.base_size, borderwidth=5,
                 font=self.base_font
             ).grid(row=1, column=1)
+        
+        Label(self.frame_2, text="Table Header Font Size", font=self.base_font, anchor=W
+            ).grid(row=2, column=0)
+        Entry(self.frame_2, textvariable=self.table_header_size, borderwidth=5,
+                font=self.base_font
+            ).grid(row=3, column=0)
+        
+        Label(self.frame_2, text="Table Row Font Size", font=self.base_font, anchor=W
+            ).grid(row=2, column=1)
+        Entry(self.frame_2, textvariable=self.table_row_size, borderwidth=5,
+                font=self.base_font
+            ).grid(row=3, column=1)
     def __build_frame_3( self ):
         Label(self.frame_3, text="Food Limit", font=self.base_font, anchor=W
             ).grid(row=0, column=0)
@@ -123,6 +137,15 @@ class Settings:
             "base_font": {
                 "family": "monospace",
                 "size": self.base_size.get()
+            },
+            "table_header_font": {
+                "family": "monospace",
+                "size": self.table_header_size.get(),
+                "weight": "bold"
+            },
+            "table_row_font": {
+                "family": "monospace",
+                "size": self.table_row_size.get()
             }
         })
         vc.reload_settings()

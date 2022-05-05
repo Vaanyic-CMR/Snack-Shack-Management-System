@@ -4,7 +4,10 @@ from tkinter import font
 from tkinter.font import Font
 
 from .. import var_const as vc
-from ..models import inventory as inv_m
+from ..models import (
+    inventory as inv_m,
+    shopping_list as shop_m
+)
 
 class Inventory:
     def __init__( self, main ):
@@ -351,7 +354,7 @@ class Inventory:
                     { "size": "Small", "in_stock": self.txt_small.get(), "threshold": self.thres_small.get() },
                     { "size": "Medium", "in_stock": self.txt_medium.get(), "threshold": self.thres_medium.get() },
                     { "size": "Large", "in_stock": self.txt_large.get(), "threshold": self.thres_large.get() },
-                    { "size": "XX-Large", "in_stock": self.txt_Xlarge.get(), "threshold": self.thres_Xlarge.get() },
+                    { "size": "X-Large", "in_stock": self.txt_Xlarge.get(), "threshold": self.thres_Xlarge.get() },
                     { "size": "XX-Large", "in_stock": self.txt_XXlarge.get(), "threshold": self.thres_XXlarge.get() }
                 ]
             else:
@@ -373,7 +376,7 @@ class Inventory:
                     inv_m.Size({ "size": "Small", "in_stock": self.txt_small.get(), "threshold": self.thres_small.get() }),
                     inv_m.Size({ "size": "Medium", "in_stock": self.txt_medium.get(), "threshold": self.thres_medium.get() }),
                     inv_m.Size({ "size": "Large", "in_stock": self.txt_large.get(), "threshold": self.thres_large.get() }),
-                    inv_m.Size({ "size": "XX-Large", "in_stock": self.txt_Xlarge.get(), "threshold": self.thres_Xlarge.get() }),
+                    inv_m.Size({ "size": "X-Large", "in_stock": self.txt_Xlarge.get(), "threshold": self.thres_Xlarge.get() }),
                     inv_m.Size({ "size": "XX-Large", "in_stock": self.txt_XXlarge.get(), "threshold": self.thres_XXlarge.get() })
                 ]
             else:
@@ -384,11 +387,18 @@ class Inventory:
             inv_item.threshold = int(self.txt_threshold.get())
             inv_item.sizes = sizes
             inv_m.Inventory.update( inv_item.to_dict() )
+        
+        shop_m.Shopping_List.update({
+            "name": self.cmbo_item.get(),
+            "in_stock": int(self.txt_total_stock.get()),
+            "threshold": int(self.txt_threshold.get()),
+        })
         self.__reset_values()
         self.main_window.update_tables()
     
     def delete_item( self, e=None ):
         inv_m.Inventory.delete( self.cmbo_item.get() )
+        shop_m.Shopping_List.delete( {"name": self.cmbo_item.get()} )
         self.__reset_values()
         self.main_window.update_tables()
     

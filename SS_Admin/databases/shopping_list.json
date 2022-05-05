@@ -9,60 +9,6 @@
         ]
     },
     {
-        "name": "T-Shirt (SJBC Hoodie) | Large",
-        "in_stock": 0,
-        "threshold": 5,
-        "time_on_list": [
-            "04/30/2022",
-            "5 Days"
-        ]
-    },
-    {
-        "name": "T-Shirt (SJBC Hoodie) | XX-Large",
-        "in_stock": 0,
-        "threshold": 5,
-        "time_on_list": [
-            "04/30/2022",
-            "5 Days"
-        ]
-    },
-    {
-        "name": "T-Shirt (Victory in Christ) | C-Small",
-        "in_stock": 0,
-        "threshold": 1,
-        "time_on_list": [
-            "04/30/2022",
-            "5 Days"
-        ]
-    },
-    {
-        "name": "T-Shirt (Victory in Christ) | C-Medium",
-        "in_stock": 0,
-        "threshold": 1,
-        "time_on_list": [
-            "04/30/2022",
-            "5 Days"
-        ]
-    },
-    {
-        "name": "T-Shirt (Victory in Christ) | C-Large",
-        "in_stock": 0,
-        "threshold": 1,
-        "time_on_list": [
-            "04/30/2022",
-            "5 Days"
-        ]
-    },
-    {
-        "name": "T-Shirt (Victory in Christ) | Small",
-        "in_stock": 0,
-        "threshold": 1,
-        "time_on_list": [
-            "04/30/2022",
-            "5 Days"
-        ]
-    },
-    {
         "name": "T-Shirt (Go For The Gold) | XX-Large",
         "in_stock": 0,
         "threshold": 1,
