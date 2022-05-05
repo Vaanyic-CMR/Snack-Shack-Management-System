@@ -1,5 +1,5 @@
 {
-    "host_name": "Caleb-Gaming-Desktop",
+    "host_name": "Tenkara37-Laptop",
     "port": 9000,
     "station": "male",
     "food_limit": 2.0,
@@ -11,6 +11,6 @@
     },
     "base_font": {
         "family": "monospace",
-        "size": 15
+        "size": 13
     }
 }

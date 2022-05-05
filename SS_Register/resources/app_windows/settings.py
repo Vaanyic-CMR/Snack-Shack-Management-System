@@ -2,7 +2,10 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.font import Font
 
-from .. import var_const as vc
+from .. import(
+    var_const as vc,
+    client
+)
 from . import (
     main,
     camper_transactions,
@@ -18,9 +21,9 @@ class Settings:
         
         # --------------------- Title Bar and General
         self.master = Toplevel()
+        self.master.grab_set()
         self.master.title("SSMS | Settings")
         self.master.iconbitmap("resources/images/logo.ico")
-        self.master.grab_set()
 
         # --------------------- Font Variables
         self.title_font = Font(
@@ -70,7 +73,7 @@ class Settings:
         Label(self.frame_1, text="Server Hostname", font=self.base_font, anchor=W
             ).grid(row=0, column=0)
         Entry(self.frame_1, textvariable=self.host_name, borderwidth=5,
-                font=self.base_font, state="readonly"
+                font=self.base_font
             ).grid(row=1, column=0)
         
         Label(self.frame_1, text="Server Port", font=self.base_font, anchor=W
@@ -140,8 +143,10 @@ class Settings:
             }
         })
         vc.reload_settings()
+        client.reload_address()
         
         self.main_window.master.destroy()
+        
         if self.active_window == "main":
             main.Main()
         elif self.active_window == "campers":

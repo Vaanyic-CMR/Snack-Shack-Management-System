@@ -14,7 +14,7 @@ from .controllers import (
 HEADER = 64
 
 PORT = r.settings.port
-SERVER = socket.gethostbyname(r.settings.host_name)
+SERVER = socket.gethostbyname(socket.gethostname())
 ADDRESS = (SERVER, PORT)
 
 FORMAT = "utf-8"

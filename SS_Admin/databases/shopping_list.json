@@ -1,20 +1,11 @@
 [
     {
-        "name": "Pepsi",
-        "in_stock": 0,
-        "threshold": 10,
-        "time_on_list": [
-            "12/19/2021",
-            "132 Days"
-        ]
-    },
-    {
         "name": "Leather Cross Bracelet",
         "in_stock": 3,
         "threshold": 5,
         "time_on_list": [
             "04/30/2022",
-            "0 Days"
+            "4 Days"
         ]
     },
     {
@@ -23,7 +14,7 @@
         "threshold": 5,
         "time_on_list": [
             "04/30/2022",
-            "0 Days"
+            "4 Days"
         ]
     },
     {
@@ -32,7 +23,7 @@
         "threshold": 5,
         "time_on_list": [
             "04/30/2022",
-            "0 Days"
+            "4 Days"
         ]
     },
     {
@@ -41,7 +32,7 @@
         "threshold": 1,
         "time_on_list": [
             "04/30/2022",
-            "0 Days"
+            "4 Days"
         ]
     },
     {
@@ -50,7 +41,7 @@
         "threshold": 1,
         "time_on_list": [
             "04/30/2022",
-            "0 Days"
+            "4 Days"
         ]
     },
     {
@@ -59,7 +50,7 @@
         "threshold": 1,
         "time_on_list": [
             "04/30/2022",
-            "0 Days"
+            "4 Days"
         ]
     },
     {
@@ -68,7 +59,7 @@
         "threshold": 1,
         "time_on_list": [
             "04/30/2022",
-            "0 Days"
+            "4 Days"
         ]
     },
     {
@@ -76,7 +67,7 @@
         "in_stock": 0,
         "threshold": 1,
         "time_on_list": [
-            "04/30/2022",
+            "05/04/2022",
             "0 Days"
         ]
     }

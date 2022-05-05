@@ -199,7 +199,6 @@ class CamperTransactions:
         self.__load_inventory_names()
         for idx, row in enumerate(self.rows):
             self.rows[idx].populate_listboxes(self.inventory_names)
-        self.__configure_body_scroll()
     def __build_footer( self ):
         Label(self.footer_frame, text="Total In Account", font=self.base_font, anchor=S
             ).grid(row=0, column=0, padx=5)

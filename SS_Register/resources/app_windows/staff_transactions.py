@@ -227,7 +227,7 @@ class StaffTransactions:
         
         # Footer Right side
         Button(self.footer_frame, text="Cash\n(With Account)", font=self.base_font,
-            width=8, borderwidth=5, command=self.__cash
+            width=15, borderwidth=5, command=self.__cash
             ).grid(row=0, column=6, rowspan=2, padx=5, pady=1)
         
         Button(self.footer_frame, text="Donation", font=self.base_font,

@@ -27,6 +27,7 @@ except Exception as e:
             "size": 10
         }
     })
+    s.Settings.save(settings.to_dict())
 def reload_settings():
     global settings
     settings = s.Settings.load()

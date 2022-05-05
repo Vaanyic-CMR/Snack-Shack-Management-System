@@ -20,13 +20,14 @@ def handle_history_command( data ):
                     if size.size == name[1].strip():
                         if i.sizes[idx].in_stock - item[1] >= 0:
                             i.sizes[idx].in_stock -= item[1]
+                            i.in_stock -= item[1]
                         else:
-                            return f"Not enough inventory for {item[1]} of {item[0]}"
+                            return f"Not enough inventory for quantity '{item[1]}' of '{item[0]}'"
             else:
                 if i.in_stock - item[1] >= 0:
                     i.in_stock -= item[1]
                 else:
-                    return f"Not enough inventory for {item[1]} of {item[0]}"
+                    return f"Not enough inventory for quantity '{item[1]}' of '{item[0]}'"
             updated_items.append(i.to_dict())
         
         for updated_item in updated_items:

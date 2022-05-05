@@ -13,18 +13,16 @@ class Settings:
         self.title_font = data["title_font"]
         self.base_font = data["base_font"]
     
-    @staticmethod
-    def to_dict( data ):
-        data = {
-            "host_name": data.host_name,
-            "port": data.port,
-            "station": data.station,
-            "food_limit": data.food_limit,
-            "dark_mode": data.dark_mode,
-            "title_font": data.title_font,
-            "base_font": data.base_font
+    def to_dict( self ):
+        return {
+            "host_name": self.host_name,
+            "port": self.port,
+            "station": self.station,
+            "food_limit": self.food_limit,
+            "dark_mode": self.dark_mode,
+            "title_font": self.title_font,
+            "base_font": self.base_font
         }
-        return data
     
     @classmethod
     def load( cls ):

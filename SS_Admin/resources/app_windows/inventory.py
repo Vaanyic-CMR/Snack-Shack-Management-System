@@ -46,8 +46,8 @@ class Inventory:
         # --------------------- Variables
         self.cmbo_item = StringVar()
         self.txt_price = DoubleVar()
-        self.txt_total_stock = StringVar()
-        self.txt_threshold = StringVar()
+        self.txt_total_stock = IntVar()
+        self.txt_threshold = IntVar()
         
         self.catagory_list = ['Food & Drink', 'Clothing', 'Accessories', 'Miscellaneous']
         self.catagory = StringVar()
@@ -327,15 +327,16 @@ class Inventory:
         self.thres_Csmall.set( 0 ), self.thres_Cmedium .set( 0 ), self.thres_Clarge.set( 0 )
         self.thres_small.set( 0 ), self.thres_medium.set( 0 ), self.thres_large.set( 0 )
         self.thres_Xlarge.set( 0 ), self.thres_XXlarge.set( 0 )
-        self._update_cmbo()
+        self.__update_cmbo()
         self.__check_catagory()
     
     def __on_change( self, *args ):
         try:
-            self.txt_total_stock.set(
-                self.txt_Csmall.get() + self.txt_Cmedium.get() + self.txt_Clarge.get() + self.txt_small.get() +
-                self.txt_medium.get() + self.txt_large.get() + self.txt_Xlarge.get() + self.txt_XXlarge.get()
-            )
+            if self.catagory.get() == "Clothing":
+                self.txt_total_stock.set(
+                    self.txt_Csmall.get() + self.txt_Cmedium.get() + self.txt_Clarge.get() + self.txt_small.get() +
+                    self.txt_medium.get() + self.txt_large.get() + self.txt_Xlarge.get() + self.txt_XXlarge.get()
+                )
         except:
             pass
     
@@ -383,11 +384,11 @@ class Inventory:
             inv_item.threshold = int(self.txt_threshold.get())
             inv_item.sizes = sizes
             inv_m.Inventory.update( inv_item.to_dict() )
-        self._reset_values()
+        self.__reset_values()
         self.main_window.update_tables()
     
     def delete_item( self, e=None ):
         inv_m.Inventory.delete( self.cmbo_item.get() )
-        self._reset_values()
+        self.__reset_values()
         self.main_window.update_tables()
     

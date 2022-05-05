@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 from tkinter.font import Font
 
 from . import (
@@ -8,7 +9,10 @@ from . import (
     cash_transactions as cashT,
     settings as sett_window
 )
-from .. import var_const as vc
+from .. import (
+    var_const as vc,
+    client
+)
 
 class Main:
     def __init__(self) -> None:
@@ -89,11 +93,35 @@ class Main:
     
     # ------------------ Open Window Methods
     def open_camper_transactions( self ):
-        self.master.destroy()
-        camperT.CamperTransactions()
+        try:
+            if client.client is None:
+                client.connect_to_host()
+            self.master.destroy()
+            camperT.CamperTransactions()
+        except Exception as e:
+            messagebox.showerror(
+                "Network Error",
+                f"There was a problem connecting to the server.\n{e}"
+            )
     def open_staff_transactions( self ):
-        self.master.destroy()
-        staffT.StaffTransactions()
+        try:
+            if client.client is None:
+                client.connect_to_host()
+            self.master.destroy()
+            staffT.StaffTransactions()
+        except Exception as e:
+            messagebox.showerror(
+                "Network Error",
+                f"There was a problem connecting to the server.\n{e}"
+            )
     def open_cash_transactions( self ):
-        self.master.destroy()
-        cashT.CashTransactions()
+        try:
+            if client.client is None:
+                client.connect_to_host()
+            self.master.destroy()
+            cashT.CashTransactions()
+        except Exception as e:
+            messagebox.showerror(
+                "Network Error",
+                f"There was a problem connecting to the server.\n{e}"
+            )

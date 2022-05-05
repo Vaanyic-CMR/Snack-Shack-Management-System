@@ -1,7 +1,7 @@
 from resources import client
 import resources as r
 
-from tkinter import mainloop
+from tkinter import mainloop, messagebox
 
 splash = None
 """
@@ -11,15 +11,14 @@ splash = None
 def run():
     global splash
     splash = r.splash.Splash()
-    
     splash.master.after(3000, main)
-    mainloop()
     
+    mainloop()
     client.send( client.DISCONNECT_CMD )
 
 def main():
     global splash
-    splash.master.destroy()
+    splash.close()
     
     r.main.Main()
 

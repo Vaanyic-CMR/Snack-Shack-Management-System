@@ -248,13 +248,13 @@ class MainDisplay:
         # Camper Table
         self.camper_table['columns'] = headers
         self.camper_table.column('#0', width=20, stretch=NO)
-        self.camper_table.column('Name', anchor=W, width=m.floor(self.screen_width/2*0.2))
+        self.camper_table.column('Name', anchor=W, width=m.floor(self.screen_width/2*0.15))
         self.camper_table.column('Gender', anchor=W, width=m.floor(self.screen_width/2*0.1))
-        self.camper_table.column('Balance', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
+        self.camper_table.column('Balance', anchor=CENTER, width=m.floor(self.screen_width/2*0.08))
         self.camper_table.column('Spent', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
         self.camper_table.column('Donations', anchor=CENTER, width=m.floor(self.screen_width/2*0.1))
-        self.camper_table.column('EOW Parent', anchor=CENTER, width=m.floor(self.screen_width/2*0.15))
-        self.camper_table.column('Last Purchase', anchor=CENTER, width=m.floor(self.screen_width/2*0.20))
+        self.camper_table.column('EOW Parent', anchor=CENTER, width=m.floor(self.screen_width/2*0.13))
+        self.camper_table.column('Last Purchase', anchor=CENTER, width=m.floor(self.screen_width/2*0.3))
 
         self.camper_table.heading('#0', text='', anchor=W,
                                     command=self.load_camper_table)
