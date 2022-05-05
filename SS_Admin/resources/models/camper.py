@@ -1,4 +1,4 @@
-from .. import var_const as vc # import vc.vc.active_year, vc.datetime_format
+from .. import var_const as vc
 from datetime import datetime
 import sqlite3 as sql
 
@@ -40,7 +40,7 @@ class Camper:
         return self._updated_at
     
     def to_dict( self ):
-        data = {
+        return {
             "id": self.id,
             "name": self.name,
             "gender": self.gender,
@@ -54,9 +54,23 @@ class Camper:
             "last_purchase": self.last_purchase,
             "eow_remainder": self.eow_remainder,
             "created_at": self._created_at,
-            "updated_at": self._updated_at
-        }
-        return data
+            "updated_at": self._updated_at }
+    def to_string( self ):
+        return (
+            f"ID: {self.id}\n" +
+            f"Name: {self.name}\n" +
+            f"Gender: {self.gender}\n" +
+            f"Camp: {self.camp}\n" +
+            f"Payment Method: {self.pay_method}\n" +
+            f"Initial Balance: {self.init_bal}\n" +
+            f"Current Balance: {self.curr_bal}\n" +
+            f"Current Spent: {self.curr_spent}\n" +
+            f"Donations: {self.total_donated}\n" +
+            f"Returns: {self.eow_return}\n" +
+            f"Last Purchase: {self.last_purchase}\n" +
+            f"EOW Remainder: {self.eow_remainder}\n" +
+            f"Created At: {self._created_at}\n" +
+            f"Updated At: {self._updated_at}\n" )
     
     def display( self ):
         print( ">>---------------<<" )
@@ -125,7 +139,6 @@ class Camper:
                 data )
         conn.commit()
         conn.close()
-    
     @classmethod
     def delete( cls, id ):
         try:
@@ -139,7 +152,6 @@ class Camper:
         c.execute( f"DELETE FROM {cls.tbl_name} WHERE oid='{id}'" )
         conn.commit()
         conn.close()
-    
     @classmethod
     def update( cls, data ):
         try:
@@ -189,7 +201,6 @@ class Camper:
         conn.commit()
         conn.close()
         return result
-    
     @classmethod
     def get_by_name_and_camp( cls, name, camp ):
         try:
@@ -209,7 +220,6 @@ class Camper:
         conn.commit()
         conn.close()
         return result
-    
     @classmethod
     def get_id_by_name_and_camp( cls, name, camp ):
         try:
@@ -229,7 +239,6 @@ class Camper:
         conn.commit()
         conn.close()
         return result
-    
     @classmethod
     def get_all( cls ):
         try:
@@ -272,7 +281,6 @@ class Camper:
         conn.commit()
         conn.close()
         return results
-    
     @classmethod
     def get_all_names_by_camp_and_gender( cls, camp, gender ):
         try:
@@ -296,7 +304,6 @@ class Camper:
         conn.commit()
         conn.close()
         return data
-    
     @classmethod
     def get_all_names_by_camp( cls, camp ):
         try:
@@ -344,7 +351,6 @@ class Camper:
         conn.commit()
         conn.close()
         return results
-    
     @classmethod
     def get_all_by_camp_sorted_by( cls, camp, sort ):
         try:
@@ -360,6 +366,29 @@ class Camper:
         c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
                     WHERE camp = '{camp}'
                     ORDER BY {sort} asc""")
+        query = [ dict(row) for row in c.fetchall() ]
+        
+        results = list()
+        for q in query:
+            results.append( cls(q) )
+        
+        conn.commit()
+        conn.close()
+        return results
+    @classmethod
+    def get_all_sort_camp_gender_name( cls ):
+        try:
+            cls.__table_check()
+        except Exception as e:
+            # print(e)
+            pass
+        
+        conn = sql.connect( cls.db_name )
+        conn.row_factory = sql.Row
+        c = conn.cursor()
+        
+        c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
+                    ORDER BY camp desc, gender asc, name asc""")
         query = [ dict(row) for row in c.fetchall() ]
         
         results = list()

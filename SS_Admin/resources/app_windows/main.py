@@ -1,10 +1,13 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 from tkinter.font import Font
-
 import math as m
 
-from .. import var_const as vc
+from .. import (
+    data_processing,
+    var_const as vc
+)
 
 from . import (
     settings,
@@ -12,7 +15,8 @@ from . import (
     bank,
     campers,
     staff,
-    change_year
+    change_year,
+    eow_results
 )
 
 from ..models import (
@@ -45,11 +49,11 @@ class MainDisplay:
             family = vc.settings.title_font["family"],
             size = vc.settings.title_font["size"],
             weight = vc.settings.title_font["weight"]
-            )
+        )
         self.base_font = Font(
             family = vc.settings.base_font["family"],
             size = vc.settings.base_font["size"]
-            )
+        )
         
         s = ttk.Style()
         s.theme_use('vista') # Default is "vista"
@@ -160,8 +164,8 @@ class MainDisplay:
         self.file_menu.add_command( label="Manage Inventory", command=self.__open_inventory )
         self.file_menu.add_command( label="Manage Bank", command=self.__open_bank )
         self.file_menu.add_separator()
-        self.file_menu.add_command( label="Export Data | Excel")#, command=AddCommand )
-        self.file_menu.add_command( label="Run EOW Check")#, command=AddCommand )
+        self.file_menu.add_command( label="Export Data | Excel", command=data_processing.export_to_excel )
+        self.file_menu.add_command( label="Run EOW Check", command=self.__eow_check )
         
         # Options Menu
         self.option_menu = Menu( self.menu_bar, tearoff=False, font=self.base_font )
@@ -170,6 +174,17 @@ class MainDisplay:
         
         self.menu_bar.add_cascade( label="File", menu=self.file_menu )
         self.menu_bar.add_cascade( label="Options", menu=self.option_menu )
+    def __eow_check( self ):
+        try:
+            results = data_processing.eow_check()
+            if len(results) > 0:
+                messagebox.showwarning("Warning", "End of Week Check Completed.\nSome Problem Accounts Have Been Found")
+                eow_results.EOWResults( results )
+            else:
+                messagebox.showinfo("Notice", "End of Week Check Completed.\nNo Problem Accounts Found")
+            self.update_tables()
+        except Exception as e:
+            messagebox.showerror("Error", f"An error has occured:\n{e}")
     
     def __history_table( self ):
         headers = ('DateTime', 'Name', 'Purchase Type', '# Items', 'Total')

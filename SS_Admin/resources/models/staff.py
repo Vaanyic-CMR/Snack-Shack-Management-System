@@ -178,7 +178,8 @@ class Staff:
         conn.row_factory = sql.Row
         c = conn.cursor()
         
-        c.execute( f"SELECT oid, * FROM {cls.tbl_name}")
+        c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
+                        ORDER BY name asc""")
         query = [ dict(row) for row in c.fetchall() ]
         
         results = list()
