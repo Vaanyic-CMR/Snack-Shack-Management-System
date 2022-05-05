@@ -153,5 +153,23 @@
         "sum_total": "$0.75",
         "created_at": "2022-04-30 19:27:42.008024",
         "updated_at": "2022-04-30 19:27:42.008024"
+    },
+    {
+        "date_time": "Thu, May 05, 2022 | 12:30:51 PM",
+        "customer_name": "Adrian Monk",
+        "purchase_type": "Account",
+        "items": [
+            [
+                "Snickers",
+                2
+            ],
+            [
+                "Leather Cross Bracelet",
+                1
+            ]
+        ],
+        "sum_total": "$6.50",
+        "created_at": "2022-05-05 12:30:51.478430",
+        "updated_at": "2022-05-05 12:30:51.478430"
     }
 ]
