@@ -501,8 +501,10 @@ class CamperTransactions:
                 purchase_types.append("Account")
             if float(self.donation.get()[1:]) > 0:
                 purchase_types.append("Donation")
+                items.append( ( "Donation", self.donation.get() ) )
             if float(self.returns.get()[1:]) > 0:
                 purchase_types.append("Returns")
+                items.append( ( "Return", self.returns.get() ) )
             if float(self.cash.get()[1:]) > 0:
                 purchase_types.append("Cash")
             
@@ -519,7 +521,6 @@ class CamperTransactions:
             self.active_camper.eow_return += float(self.donation.get()[1:])
             self.active_camper.last_purchase = now.strftime(self.__class__.purchase_time_format)
             
-            # time.sleep(1)
             cmd = ("api/history/new_purchase", purchase_info)
             client.send( cmd )
             res = client.response_from_server()
@@ -528,7 +529,10 @@ class CamperTransactions:
                 cmd = ("api/bank/cash", float(self.cash.get()[1:]))
                 client.send( cmd )
                 res = client.response_from_server()
-                self.reset_content()
+            if float(self.donation.get()[1:]) > 0 and res == client.SUCCESS_MSG:
+                cmd = ("api/bank/donation", float(self.donation.get()[1:]))
+                client.send( cmd )
+                res = client.response_from_server()
             
             if res == client.SUCCESS_MSG:
                 cmd = ("api/campers/update", self.active_camper)

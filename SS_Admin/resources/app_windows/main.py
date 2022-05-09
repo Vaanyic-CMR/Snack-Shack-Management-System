@@ -452,14 +452,15 @@ class MainDisplay:
         data = bank_model.Bank.get_by_year( vc.active_year )
         self.bank_table.insert(parent='', index='end', iid=0, values=("Bank Total", data.bank_total))
         self.bank_table.insert(parent='', index='end', iid=1, values=("Cash Total", data.cash_total))
-        self.bank_table.insert(parent='', index='end', iid=2, values=("", ""))
-        self.bank_table.insert(parent='', index='end', iid=3, values=("Account Cash Total", data.account_cash_total))
-        self.bank_table.insert(parent='', index='end', iid=4, values=("Account Check Total", data.account_check_total))
-        self.bank_table.insert(parent='', index='end', iid=5, values=("Account Card Total", data.account_card_total))
-        self.bank_table.insert(parent='', index='end', iid=6, values=("Account Scholarship Total", data.account_scholar_total))
-        self.bank_table.insert(parent='', index='end', iid=7, values=("", ""))
-        self.bank_table.insert(parent='', index='end', iid=8, values=("Camper Total", data.camper_total))
-        self.bank_table.insert(parent='', index='end', iid=9, values=("Staff Total", data.staff_total))
+        self.bank_table.insert(parent='', index='end', iid=2, values=("Donation Total", data.donation_total))
+        self.bank_table.insert(parent='', index='end', iid=3, values=("", ""))
+        self.bank_table.insert(parent='', index='end', iid=4, values=("Account Cash Total", data.account_cash_total))
+        self.bank_table.insert(parent='', index='end', iid=5, values=("Account Check Total", data.account_check_total))
+        self.bank_table.insert(parent='', index='end', iid=6, values=("Account Card Total", data.account_card_total))
+        self.bank_table.insert(parent='', index='end', iid=7, values=("Account Scholarship Total", data.account_scholar_total))
+        self.bank_table.insert(parent='', index='end', iid=8, values=("", ""))
+        self.bank_table.insert(parent='', index='end', iid=9, values=("Camper Total", data.camper_total))
+        self.bank_table.insert(parent='', index='end', iid=10, values=("Staff Total", data.staff_total))
     def load_inventory_table( self ):
         # Clear Current Data
         self.inv_count = 0

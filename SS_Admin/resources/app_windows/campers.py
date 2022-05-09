@@ -249,6 +249,7 @@ class Campers:
     
     def __create_camper( self ):
         self.active_camper.curr_bal = float(self.init_bal.get())
+        
         camper.Camper.create( self.active_camper.to_dict() )
         self.__reset_content()
     def __update_camper( self ):

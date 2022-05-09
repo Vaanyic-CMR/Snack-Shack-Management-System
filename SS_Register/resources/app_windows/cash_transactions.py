@@ -230,7 +230,7 @@ class CashTransactions:
                 total += row.data.col5["item"].price * row.data.col5["spinbox_val"].get()
         
         self.sum_total.set("${:,.2f}".format(total))
-        change = float(self.cash_received.get()[1:]) - total
+        change = float(self.cash_received.get()[1:]) - float(self.donation.get()[1:]) - total
         self.change.set("${:,.2f}".format(change))
         self.__check_change()
     def reset_content( self ):
@@ -361,6 +361,7 @@ class CashTransactions:
             purchase_types.append("Cash")
         if float(self.donation.get()[1:]) > 0:
             purchase_types.append("Donation")
+            items.append( ( "Donation", self.donation.get() ) )
         
         for idx, pt in enumerate(purchase_types):
             if idx == 0:
@@ -372,10 +373,16 @@ class CashTransactions:
         client.send( cmd )
         res = client.response_from_server()
         
+        if float(self.donation.get()[1:]) > 0 and res == client.SUCCESS_MSG:
+            cmd = ("api/bank/donation", float(self.donation.get()[1:]))
+            client.send( cmd )
+            res = client.response_from_server()
         if float(self.cash_received.get()[1:]) > 0 and res == client.SUCCESS_MSG:
             cmd = ("api/bank/cash", float(self.cash_received.get()[1:]))
             client.send( cmd )
             res = client.response_from_server()
+        
+        if res == client.SUCCESS_MSG:
             self.reset_content()
         else:
             messagebox.showerror("Error", res)

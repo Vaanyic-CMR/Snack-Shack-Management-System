@@ -477,8 +477,10 @@ class StaffTransactions:
                 purchase_types.append("Account")
             if float(self.donation.get()[1:]) > 0:
                 purchase_types.append("Donation")
+                items.append( ( "Donation", self.donation.get() ) )
             if float(self.returns.get()[1:]) > 0:
                 purchase_types.append("Returns")
+                items.append( ( "Return", self.returns.get() ) )
             if float(self.cash.get()[1:]) > 0 and float(self.sum_total.get()[1:]) > 0:
                 purchase_types.append("Cash")
             
@@ -507,7 +509,10 @@ class StaffTransactions:
                 cmd = ("api/bank/cash", float(self.cash.get()[1:]))
                 client.send( cmd )
                 res = client.response_from_server()
-                self.reset_content()
+            if float(self.donation.get()[1:]) > 0 and res == client.SUCCESS_MSG:
+                cmd = ("api/bank/donation", float(self.donation.get()[1:]))
+                client.send( cmd )
+                res = client.response_from_server()
             
             if res == client.SUCCESS_MSG:
                 cmd = ("api/staff/update", self.active_staffer)

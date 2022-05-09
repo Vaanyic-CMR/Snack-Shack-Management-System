@@ -11,6 +11,7 @@ class Bank:
         self.year = data["year"]
         self.bank_total = data["bank_total"]
         self.cash_total = data["cash_total"]
+        self.donation_total = data["donation_total"]
         
         self.account_cash_total = data["account_cash_total"]
         self.account_check_total = data["account_check_total"]
@@ -36,6 +37,7 @@ class Bank:
             "year": self.year,
             "bank_total": self.bank_total,
             "cash_total": self.cash_total,
+            "donation_total": self.donation_total,
             
             "account_cash_total": self.account_cash_total,
             "account_check_total": self.account_check_total,
@@ -55,6 +57,7 @@ class Bank:
         print( "Year:", self.year )
         print( "Bank Total:", self.bank_total )
         print( "Cash Total:", self.cash_total )
+        print( "Donation Total:", self.donation_total )
         print( "Account Cash Total:", self.account_cash_total )
         print( "Account Check Total:", self.account_check_total )
         print( "Account Card Total:", self.account_card_total)
@@ -132,6 +135,7 @@ class Bank:
             "year": vc.active_year,
             "bank_total": 0,
             "cash_total": curr_bank.cash_total,
+            "donation_total": curr_bank.donation_total,
             
             "account_cash_total": 0,
             "account_check_total": 0,

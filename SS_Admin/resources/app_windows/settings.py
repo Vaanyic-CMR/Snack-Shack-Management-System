@@ -64,13 +64,13 @@ class Settings:
         self.__set_geometery()
     
     def __build_frame_1( self ):
-        Label(self.frame_1, text="Server Hostname", font=self.base_font, anchor=W
+        Label(self.frame_1, text="Server Hostname", anchor=W, font=self.base_font
             ).grid(row=0, column=0)
         Entry(self.frame_1, textvariable=self.host_name, borderwidth=5,
-                font=self.base_font, state="readonly"
+                state="readonly", font=self.base_font
             ).grid(row=1, column=0)
         
-        Label(self.frame_1, text="Server Port", font=self.base_font, anchor=W
+        Label(self.frame_1, text="Server Port", anchor=W, font=self.base_font
             ).grid(row=0, column=1)
         Entry(self.frame_1, textvariable=self.port, borderwidth=5,
                 font=self.base_font
@@ -115,11 +115,11 @@ class Settings:
         self.screen_width = self.master.winfo_screenwidth()
         self.screen_height = self.master.winfo_screenheight()
         
-        self.window_width = int( self.screen_width*0.30 )
-        self.window_height = int( self.screen_height*0.30 )
+        self.window_width = self.master.winfo_width()#int( self.screen_width*0.30 )
+        self.window_height = self.master.winfo_height()#int( self.screen_height*0.30 )
         
-        self.window_position_x = int( self.screen_width/2 - self.window_width/2 )
-        self.window_position_y = int( self.screen_height/2 - self.window_height/2 )
+        self.window_position_x = int( self.screen_width/2 - self.window_width )
+        self.window_position_y = int( self.screen_height/2 - self.window_height )
         
         self.master.geometry( f"+{ self.window_position_x }+{ self.window_position_y }" )
     

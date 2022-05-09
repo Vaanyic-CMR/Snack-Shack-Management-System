@@ -269,6 +269,7 @@ def __export_history():
     history_sheet.write("E3", "Sum Total", bold)
     
     row = 4
+    total_donations = 0
     for purchase in purchases:
         history_sheet.write(f"A{row}", purchase.date_time)
         history_sheet.write(f"B{row}", purchase.customer_name)
@@ -281,5 +282,10 @@ def __export_history():
         for item in purchase.items:
             history_sheet.write(f"D{row}", item[0], align_left)
             history_sheet.write(f"E{row}", item[1], money)
+            if item[0] == "Donation":
+                total_donations += float(item[1][1:])
             row += 1
+    
+    history_sheet.write("D2", "Total Donations", bold)
+    history_sheet.write("E2", total_donations, money)
     pass

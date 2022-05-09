@@ -14,8 +14,9 @@ def handle_history_command( data ):
             
             name = item[0].split("|")
             i = inv.Inventory.get_by_name( name[0].strip() )
-            
-            if i.catagory == "Clothing":
+            if i == None:
+                pass
+            elif i.catagory == "Clothing":
                 for idx, size in enumerate(i.sizes):
                     if size.size == name[1].strip():
                         if i.sizes[idx].in_stock - item[1] >= 0:
@@ -28,7 +29,9 @@ def handle_history_command( data ):
                     i.in_stock -= item[1]
                 else:
                     return f"Not enough inventory for quantity '{item[1]}' of '{item[0]}'"
-            updated_items.append(i.to_dict())
+            
+            if i != None:
+                updated_items.append(i.to_dict())
         
         for updated_item in updated_items:
             inv.Inventory.update(updated_item)

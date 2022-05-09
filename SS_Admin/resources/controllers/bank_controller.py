@@ -9,6 +9,12 @@ def handle_bank_command( data ):
     
     if data[0] == "api/bank/cash":
         b = bank.Bank.get_by_year(vc.active_year)
-        b.account_cash_total += data[1]
+        b.bank_total += data[1]
+        b.cash_total += data[1]
+        bank.Bank.save(b.to_dict())
+        return server.SUCCESS_MSG
+    if data[0] == "api/bank/donation":
+        b = bank.Bank.get_by_year(vc.active_year)
+        b.donation_total += data[1]
         bank.Bank.save(b.to_dict())
         return server.SUCCESS_MSG
