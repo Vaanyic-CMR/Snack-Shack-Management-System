@@ -33,7 +33,7 @@ class Bank:
         return self._updated_at
     
     def to_dict( self ):
-        data = {
+        return {
             "year": self.year,
             "bank_total": self.bank_total,
             "cash_total": self.cash_total,
@@ -50,8 +50,6 @@ class Bank:
             "created_at": self._created_at,
             "updated_at": self._updated_at
         }
-        return data
-    
     def display( self ):
         print( ">>---------------<<" )
         print( "Year:", self.year )
