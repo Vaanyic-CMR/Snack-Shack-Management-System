@@ -51,7 +51,7 @@ class Campers:
         })
         self.camp_list = [ "Trekker", "Pathfinder", "Journey", "Trail Blazer", "Navigator" ]
         self.pay_methods = [ "Cash", "Check", "Card", "Scholarship", "Multiple" ]
-        self.eow_remainder_options = [ "Return", "Donate", "Partial Return/Donate", "Transfer" ]
+        self.eow_remainder_options = [ "Unknown", "Return", "Donate", "Transfer" ]
         
         # Form Data Variables
         self.create_update = StringVar( value="create")
@@ -205,7 +205,7 @@ class Campers:
         self.curr_spent.set(0)
         self.total_donated.set(0)
         self.eow_return.set(0)
-        self.last_purchase.set( "00-00-00 00:00:00" )
+        self.last_purchase.set( "Month, day Year | 00:00:00 pm" )
         self.eow_remainder.set("Select Action")
     def __update_content( self, e=None ):
         if self.create_update.get() == "update":
@@ -255,19 +255,21 @@ class Campers:
         bnk = bank.Bank.get_by_year( vc.active_year )
         bnk.bank_total += float(self.init_bal.get())
         bnk.camper_total += float(self.init_bal.get())
-        if self.pay_method.get() == "cash":
+        if self.pay_method.get() == "Cash":
             bnk.account_cash_total += float(self.init_bal.get())
-        elif self.pay_method.get() == "check":
+        elif self.pay_method.get() == "Check":
             bnk.account_check_total += float(self.init_bal.get())
-        elif self.pay_method.get() == "card":
+        elif self.pay_method.get() == "Card":
             bnk.account_card_total += float(self.init_bal.get())
-        elif self.pay_method.get() == "scholarship":
+        elif self.pay_method.get() == "Scholarship":
             bnk.account_scholar_total += float(self.init_bal.get())
         
-        self.__reset_content()
+        bank.Bank.save( bnk.to_dict() )
     def __update_camper( self ):
         bnk = bank.Bank.get_by_year( vc.active_year )
-        updating_camper = camper.Camper.get_by_name_and_camp( name=self.name.get(), camp=self.camp.get() )
+        updating_camper = camper.Camper.get_by_name_and_camp(
+            self.name.get(), self.camp.get().lower()
+        )
         
         bnk.bank_total += self.active_camper.init_bal - updating_camper.init_bal
         bnk.donation_total += self.active_camper.total_donated - updating_camper.total_donated
@@ -283,7 +285,6 @@ class Campers:
         
         bank.Bank.save( bnk.to_dict() )
         camper.Camper.update( self.active_camper.to_dict() )
-        self.__reset_content()
     def delete_camper( self, e=None ):
         bnk = bank.Bank.get_by_year( vc.active_year )
         
@@ -305,6 +306,10 @@ class Campers:
         except Exception as e:
             messagebox.showerror("Error", f"Something went wrong:\n{e}")
     def save_camper( self, e=None ):
+        if self.eow_remainder.get() == "Select Action":
+            messagebox.showerror("Error", "Please select an 'End of Week' action.")
+            return None
+        
         self.active_camper.name = self.name.get()
         self.active_camper.gender = self.gender.get()
         self.active_camper.camp = self.camp.get().lower()
@@ -324,6 +329,7 @@ class Campers:
         else:
             print("Error: Variable self.create_update has invalid value:", self.create_update.get() )
         
+        self.__reset_content()
         self.__update_name_cmbo()
         self.main_window.update_tables()
     

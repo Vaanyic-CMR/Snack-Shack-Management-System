@@ -91,10 +91,6 @@ class Inventory:
         data["created_at"] = now
         data["updated_at"] = now
         
-        
-        # catagory_list = ['Food & Drink', 'Clothing', 'Accessories', 'Miscellaneous']
-        
-        
         if len(inv) == 0 or data["name"] > inv[-1].name:
             inv.append( cls(data) )
         elif data["name"] < inv[0].name:
@@ -144,7 +140,7 @@ class Inventory:
             f.close()
     
     @classmethod
-    def get_all( cls ):
+    def get_all( cls, JSON=False ):
         results = json.load( open(cls.file_name) )
         data = list()
         for result in results:
@@ -179,7 +175,11 @@ class Inventory:
             
             result["created_at"] = datetime.strptime( result["created_at"], datetime_format )
             result["updated_at"] = datetime.strptime( result["updated_at"], datetime_format )
-            data.append( cls(result) )
+            if JSON:
+                data.append( result )
+            else:
+                data.append( cls(result) )
+        
         return data
     @classmethod
     def get_by_name( cls, name ):
@@ -206,6 +206,25 @@ class Inventory:
                 data.append( result["name"] )
         return data
     
+    @classmethod
+    def get_all_sort_catagory_names( cls ):
+        food_drink=list()
+        clothing=list()
+        accessories=list()
+        miscellaneous=list()
+        
+        results = cls.get_all( JSON=True )
+        for result in results:
+            if result["catagory"] == "Food & Drink":
+                food_drink.append( cls(result) )
+            if result["catagory"] == "Clothing":
+                clothing.append( cls(result) )
+            if result["catagory"] == "Accessories":
+                accessories.append( cls(result) )
+            if result["catagory"] == "Miscellaneous":
+                miscellaneous.append( cls(result) )
+        
+        return food_drink + clothing + accessories + miscellaneous
 
 class Size:
     def __init__( self, data ) -> None:

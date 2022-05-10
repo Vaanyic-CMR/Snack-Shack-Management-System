@@ -316,7 +316,7 @@ class MainDisplay:
         self.bank_table.heading('Category', text='Category', anchor=W)
         self.bank_table.heading('Total', text='Total', anchor=CENTER)
     def __inventory_table( self ):
-        headers = ('Name', 'Catagory', 'In Stock', 'Item Price', 'Low Threshold')
+        headers = ('Name', 'Catagory', 'In Stock', 'Item Price', 'Threshold')
         
         Label(self.inventory_pane, text = "Inventory Data", font=self.title_font).pack(side=TOP, fill=X)
         self.inventory_slider = Scrollbar(self.inventory_pane, orient=VERTICAL)
@@ -332,16 +332,16 @@ class MainDisplay:
         self.inventory_table.column('Catagory', anchor=CENTER, width=100)
         self.inventory_table.column('In Stock', anchor=CENTER, width=80)
         self.inventory_table.column('Item Price', anchor=CENTER, width=80)
-        self.inventory_table.column('Low Threshold', anchor=CENTER, width=80)
+        self.inventory_table.column('Threshold', anchor=CENTER, width=80)
 
         self.inventory_table.heading('#0', text='', anchor=W)
         self.inventory_table.heading('Name', text='Name', anchor=W)
         self.inventory_table.heading('Catagory', text='Catagory', anchor=CENTER)
         self.inventory_table.heading('In Stock', text='In Stock', anchor=CENTER)
         self.inventory_table.heading('Item Price', text='Item Price', anchor=CENTER)
-        self.inventory_table.heading('Low Threshold', text='Low Threshold', anchor=CENTER)
+        self.inventory_table.heading('Threshold', text='Threshold', anchor=CENTER)
     def __shopping_list_table( self ):
-        headers = ('Name', 'In Stock', 'Low Threshold', 'Time on List')
+        headers = ('Name', 'In Stock', 'Threshold', 'Time on List')
         
         Label(self.shopping_list_pane, text = "Shopping List", font=self.title_font).pack(side=TOP, fill=X)
         self.shopping_slider = Scrollbar(self.shopping_list_pane, orient=VERTICAL)
@@ -355,13 +355,13 @@ class MainDisplay:
         self.shopping_table.column('#0', width=0, stretch=NO)
         self.shopping_table.column('Name', anchor=W, width=200)
         self.shopping_table.column('In Stock', anchor=CENTER, width=80)
-        self.shopping_table.column('Low Threshold', anchor=CENTER, width=90)
+        self.shopping_table.column('Threshold', anchor=CENTER, width=90)
         self.shopping_table.column('Time on List', anchor=CENTER, width=150)
 
         self.shopping_table.heading('#0', text='', anchor=W)
         self.shopping_table.heading('Name', text='Name', anchor=W)
         self.shopping_table.heading('In Stock', text='In Stock', anchor=CENTER)
-        self.shopping_table.heading('Low Threshold', text='Low Threshold', anchor=CENTER)
+        self.shopping_table.heading('Threshold', text='Threshold', anchor=CENTER)
         self.shopping_table.heading('Time on List', text='Time on List', anchor=CENTER)
     
     def auto_update( self ):
@@ -476,10 +476,10 @@ class MainDisplay:
         # Enter New Data
         data = None
         try:
-            data = inv_model.Inventory.get_all()
+            data = inv_model.Inventory.get_all_sort_catagory_names()
         except Exception as e:
             inv_model.Inventory.create_file()
-            data = inv_model.Inventory.get_all()
+            data = inv_model.Inventory.get_all_sort_catagory_names()
         
         for d in data:
             info = (d.name, d.catagory, d.in_stock, d.price, d.threshold)

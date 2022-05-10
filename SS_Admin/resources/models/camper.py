@@ -215,30 +215,30 @@ class Camper:
         
         c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
                     WHERE name='{name}' AND camp='{camp}'""")
-        result = cls( dict( c.fetchone() ) )
+        result = cls( dict( c.fetchall()[0] ) )
         
         conn.commit()
         conn.close()
         return result
-    @classmethod
-    def get_id_by_name_and_camp( cls, name, camp ):
-        try:
-            cls.__table_check()
-        except Exception as e:
-            # print(e)
-            pass
+    # @classmethod
+    # def get_id_by_name_and_camp( cls, name, camp ):
+    #     try:
+    #         cls.__table_check()
+    #     except Exception as e:
+    #         # print(e)
+    #         pass
         
-        conn = sql.connect( cls.db_name )
-        conn.row_factory = sql.Row
-        c = conn.cursor()
+    #     conn = sql.connect( cls.db_name )
+    #     conn.row_factory = sql.Row
+    #     c = conn.cursor()
         
-        c.execute( f"""SELECT oid FROM {cls.tbl_name}
-                    WHERE name={name} camp={camp}""")
-        result = c.fetchone()
+    #     c.execute( f"""SELECT oid FROM {cls.tbl_name}
+    #                 WHERE name={name} camp={camp}""")
+    #     result = c.fetchone()
         
-        conn.commit()
-        conn.close()
-        return result
+    #     conn.commit()
+    #     conn.close()
+    #     return result
     @classmethod
     def get_all( cls ):
         try:

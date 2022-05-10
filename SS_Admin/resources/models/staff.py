@@ -123,7 +123,7 @@ class Staff:
         conn.commit()
         conn.close()
     @classmethod
-    def delete( cls, id ):
+    def delete( cls, name ):
         try:
             cls.__table_check()
         except:
@@ -132,7 +132,7 @@ class Staff:
         
         conn = sql.connect( cls.db_name )
         c = conn.cursor()
-        c.execute( f"DELETE FROM {cls.tbl_name} WHERE oid='{id}'" )
+        c.execute( f"DELETE FROM {cls.tbl_name} WHERE name='{name}'" )
         conn.commit()
         conn.close()
     @classmethod

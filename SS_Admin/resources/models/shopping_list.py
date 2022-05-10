@@ -1,9 +1,5 @@
-from ast import operator
 from datetime import datetime
 import json
-from turtle import update
-
-from . import inventory as inv_m
 
 class Shopping_List:
     file_name = "databases/shopping_list.json";
@@ -29,15 +25,13 @@ class Shopping_List:
         print( "Threshold", self.threshold )
         print( "Time on List:", self.time_on_list )
         print( ">>---------------<<" )
-    
     def to_dict( self ):
-        data = {
+        return {
             "name": self.name,
             "in_stock": self.in_stock,
             "threshold": self.threshold,
             "time_on_list": self.time_on_list
         }
-        return data
     
     """
         Class Methods.
@@ -83,10 +77,11 @@ class Shopping_List:
     def delete( cls, item ):
         data = cls.__load()
         
+        new_list=list()
         for index, d in enumerate(data):
-            if d.name == item["name"]:
-                del data[index]
-        cls.__save( data )
+            if d.name != item["name"]:
+                new_list.append( d )
+        cls.__save( new_list )
     
     @classmethod
     def add_item( cls, item, catagory=None ):

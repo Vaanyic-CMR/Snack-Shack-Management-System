@@ -57,7 +57,7 @@ class Staff:
         
         # Staffer Data Variables
         self.name = StringVar()
-        self.pay_method = StringVar( value="Select Payment Method" )
+        self.pay_method = StringVar( value=self.pay_methods[0] )
         self.num_of_free_items = IntVar()
         self.last_free_item = StringVar( value="Month, day Year | 00:00:00 pm" )
         
@@ -232,16 +232,18 @@ class Staff:
             self.last_purchase.set( self.active_staff.last_purchase )
     def __reset_content( self ):
         self.name.set("")
-        self.pay_method.set( "Select Payment Method" )
+        self.pay_method.set("None")
         self.num_of_free_items.set(0)
-        self.last_free_item.set( "00-00-00 00:00:00" )
+        self.last_free_item.set( "Month, day Year | 00:00:00 pm" )
         
         self.init_bal.set(0)
         self.curr_bal.set(0)
         self.curr_spent.set(0)
         self.total_donated.set(0)
         self.eos_return.set(0)
-        self.last_purchase.set( "00-00-00 00:00:00" )
+        self.last_purchase.set( "Month, day Year | 00:00:00 pm" )
+        
+        self.name_cmbo.focus()
     
     # ---------------------- Write to Database
     def save_staffer( self, e=None ):
@@ -287,6 +289,9 @@ class Staff:
             bank.Bank.save( bnk.to_dict() )
         except Exception as e:
             messagebox.showerror("Error", f"Something went wrong:\n{e}")
+        
+        self.__reset_content()
+        self.main_window.update_tables()
     def __update( self ):
         bnk = bank.Bank.get_by_year( vc.active_year )
         updating_staff = staff.Staff.get_by_name( self.name.get() )
@@ -307,21 +312,26 @@ class Staff:
         staff.Staff.update( self.active_staff.to_dict() )
         self.__reset_content()
     def __create( self ):
+        if self.pay_method.get() == "None" and float(self.init_bal.get()) > 0:
+            messagebox.showerror("Error", "When Initial Balance is greater than 0\nPayment Method cannot be 'None'")
+            return None
+        
         self.active_staff.curr_bal = float(self.init_bal.get())
         staff.Staff.create( self.active_staff.to_dict() )
         
         bnk = bank.Bank.get_by_year( vc.active_year )
         bnk.bank_total += float(self.init_bal.get())
-        bnk.camper_total += float(self.init_bal.get())
-        if self.pay_method.get() == "cash":
+        bnk.staff_total += float(self.init_bal.get())
+        if self.pay_method.get() == "Cash":
             bnk.account_cash_total += float(self.init_bal.get())
-        elif self.pay_method.get() == "check":
+        elif self.pay_method.get() == "Check":
             bnk.account_check_total += float(self.init_bal.get())
-        elif self.pay_method.get() == "card":
+        elif self.pay_method.get() == "Card":
             bnk.account_card_total += float(self.init_bal.get())
-        elif self.pay_method.get() == "scholarship":
+        elif self.pay_method.get() == "Scholarship":
             bnk.account_scholar_total += float(self.init_bal.get())
         
+        bank.Bank.save( bnk.to_dict() )
         self.__reset_content()
     
     
