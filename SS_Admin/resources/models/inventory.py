@@ -101,9 +101,8 @@ class Inventory:
             inv.insert( 0, cls(data) )
         elif len(inv) > 1:
             n = 0;
-            catagory = False
             while n < (len(inv)-1):
-                if data["name"] > inv[n].name and data["name"] < inv[n+1].name and catagory:
+                if data["name"] > inv[n].name and data["name"] < inv[n+1].name:
                     inv.insert( n+1, cls(data) )
                     break
                 n+=1
