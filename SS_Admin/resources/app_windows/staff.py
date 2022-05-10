@@ -1,9 +1,10 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter.font import Font
+from tkinter import messagebox
 
 from .. import var_const as vc
-from ..models import staff
+from ..models import staff, bank
 
 class Staff:
     def __init__( self, main ):
@@ -48,7 +49,7 @@ class Staff:
             "init_bal": 0, "curr_bal": 0, "curr_spent": 0, "total_donated": 0, "eos_return": 0,
             "last_purchase": None, "created_at": None, "updated_at": None
         })
-        self.pay_methods = [ "None", "Cash", "Check", "Card", "Scholarship", "Multiple" ]
+        self.pay_methods = [ "None", "Cash", "Check", "Card", "Scholarship"]#, "Multiple" ]
         
         # Form Data Variables
         self.create_update = StringVar( value="create")
@@ -58,7 +59,7 @@ class Staff:
         self.name = StringVar()
         self.pay_method = StringVar( value="Select Payment Method" )
         self.num_of_free_items = IntVar()
-        self.last_free_item = StringVar( value="00-00-00 00:00:00" )
+        self.last_free_item = StringVar( value="Month, day Year | 00:00:00 pm" )
         
         self.init_bal = StringVar()
         self.curr_bal = StringVar()
@@ -66,7 +67,7 @@ class Staff:
         self.total_donated = StringVar()
         self.eos_return = StringVar()
         
-        self.last_purchase = StringVar( value="00-00-00 00:00:00" )
+        self.last_purchase = StringVar( value="Month, day Year | 00:00:00 pm" )
         
         # ----- Frames
         # Contains self.create_update and self.name
@@ -267,13 +268,60 @@ class Staff:
         self.__update_name_cmbo()
         self.main_window.update_tables()
     def delete_staffer( self, e=None ):
-        staff.Staff.delete( self.name.get() )
+        bnk = bank.Bank.get_by_year( vc.active_year )
+        
+        bnk.bank_total -= float(self.init_bal.get())
+        bnk.donation_total -= float(self.total_donated.get())
+        bnk.staff_total -= float(self.init_bal.get())
+        if self.pay_method.get() == "cash":
+            bnk.account_cash_total -= float(self.init_bal.get())
+        elif self.pay_method.get() == "check":
+            bnk.account_check_total -= float(self.init_bal.get())
+        elif self.pay_method.get() == "card":
+            bnk.account_card_total -= float(self.init_bal.get())
+        elif self.pay_method.get() == "scholarship":
+            bnk.account_scholar_total -= float(self.init_bal.get())
+        
+        try:
+            staff.Staff.delete( self.name.get() )
+            bank.Bank.save( bnk.to_dict() )
+        except Exception as e:
+            messagebox.showerror("Error", f"Something went wrong:\n{e}")
     def __update( self ):
+        bnk = bank.Bank.get_by_year( vc.active_year )
+        updating_staff = staff.Staff.get_by_name( self.name.get() )
+        
+        bnk.bank_total += self.active_staff.init_bal - updating_staff.init_bal
+        bnk.donation_total += self.active_staff.total_donated - updating_staff.total_donated
+        bnk.staff_total += self.active_staff.init_bal - updating_staff.init_bal
+        if self.pay_method.get() == "cash":
+            bnk.account_cash_total += self.active_staff.init_bal - updating_staff.init_bal
+        elif self.pay_method.get() == "check":
+            bnk.account_check_total += self.active_staff.init_bal - updating_staff.init_bal
+        elif self.pay_method.get() == "card":
+            bnk.account_card_total += self.active_staff.init_bal - updating_staff.init_bal
+        elif self.pay_method.get() == "scholarship":
+            bnk.account_scholar_total += self.active_staff.init_bal - updating_staff.init_bal
+        
+        bank.Bank.save( bnk.to_dict() )
         staff.Staff.update( self.active_staff.to_dict() )
         self.__reset_content()
     def __create( self ):
         self.active_staff.curr_bal = float(self.init_bal.get())
         staff.Staff.create( self.active_staff.to_dict() )
+        
+        bnk = bank.Bank.get_by_year( vc.active_year )
+        bnk.bank_total += float(self.init_bal.get())
+        bnk.camper_total += float(self.init_bal.get())
+        if self.pay_method.get() == "cash":
+            bnk.account_cash_total += float(self.init_bal.get())
+        elif self.pay_method.get() == "check":
+            bnk.account_check_total += float(self.init_bal.get())
+        elif self.pay_method.get() == "card":
+            bnk.account_card_total += float(self.init_bal.get())
+        elif self.pay_method.get() == "scholarship":
+            bnk.account_scholar_total += float(self.init_bal.get())
+        
         self.__reset_content()
     
     

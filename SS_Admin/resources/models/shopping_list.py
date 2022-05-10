@@ -43,6 +43,12 @@ class Shopping_List:
         Class Methods.
     """
     @classmethod
+    def create_file( cls ):
+        j = json.dumps( [], indent = 4 )
+        with open(cls.file_name, 'w') as f:
+            f.write(j)
+            f.close()
+    @classmethod
     def get_all( cls ):
         results =  cls.__load()
         cls.__save(results)

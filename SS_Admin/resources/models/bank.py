@@ -72,6 +72,28 @@ class Bank:
         Class Methods.
     """
     @classmethod
+    def create_file( cls ):
+        j = json.dumps( [], indent = 4 )
+        with open(cls.file_name, 'w') as f:
+            f.write(j)
+            f.close()
+        
+        cls.create_year()
+    @classmethod
+    def create_year( cls ):
+        cls.__create({
+        "year": vc.active_year,
+        "bank_total": 0.0,
+        "cash_total": 0.0,
+        "donation_total": 0.0,
+        "account_cash_total": 0.0,
+        "account_check_total": 0.0,
+        "account_card_total": 0.0,
+        "account_scholar_total": 0.0,
+        "camper_total": 0.0,
+        "staff_total": 0.0,
+    })
+    @classmethod
     def __create( cls, data ):
         bnk = cls.get_all( JSON=True )
         
@@ -126,56 +148,6 @@ class Bank:
         with open(cls.file_name, 'w') as f:
             f.write(j)
             f.close()
-    @classmethod
-    def update_fields( cls ):
-        campers = camper.Camper.get_all()
-        staff_members = staff.Staff.get_all()
-        curr_bank = cls.get_by_year(vc.active_year)
-        bank = {
-            "year": vc.active_year,
-            "bank_total": 0,
-            "cash_total": curr_bank.cash_total,
-            "donation_total": curr_bank.donation_total,
-            
-            "account_cash_total": 0,
-            "account_check_total": 0,
-            "account_card_total": 0,
-            "account_scholar_total": 0,
-            
-            "camper_total": 0,
-            "staff_total": 0
-        }
-        
-        for c in campers:
-            bank["bank_total"] += c.init_bal
-            bank["bank_total"] -= c.eow_return
-            bank["camper_total"] += c.init_bal
-            bank["camper_total"] -= c.eow_return
-            if c.pay_method == "cash":
-                bank["account_cash_total"] += c.init_bal
-            elif c.pay_method == "check":
-                bank["account_check_total"] += c.init_bal
-            elif c.pay_method == "card":
-                bank["account_card_total"] += c.init_bal
-            elif c.pay_method == "scholarship":
-                bank["account_scholar_total"] += c.init_bal
-        
-        for s in staff_members:
-            bank["bank_total"] += s.init_bal
-            bank["bank_total"] -= s.eos_return
-            bank["staff_total"] += s.init_bal
-            bank["staff_total"] -= s.eos_return
-            if s.pay_method == "cash":
-                bank["account_cash_total"] += s.init_bal
-            elif s.pay_method == "check":
-                bank["account_check_total"] += s.init_bal
-            elif s.pay_method == "card":
-                bank["account_card_total"] += s.init_bal
-            elif s.pay_method == "scholarship":
-                bank["account_scholar_total"] += s.init_bal
-        
-        bank["bank_total"] += curr_bank.cash_total
-        cls.save( bank )
     
     @classmethod
     def get_all( cls, JSON=False ):

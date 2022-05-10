@@ -328,11 +328,11 @@ class MainDisplay:
         # Inventory Table
         self.inventory_table['columns'] = headers
         self.inventory_table.column('#0', width=20, stretch=NO)
-        self.inventory_table.column('Name', anchor=W, width=300)
+        self.inventory_table.column('Name', anchor=W, width=250)
         self.inventory_table.column('Catagory', anchor=CENTER, width=100)
         self.inventory_table.column('In Stock', anchor=CENTER, width=80)
         self.inventory_table.column('Item Price', anchor=CENTER, width=80)
-        self.inventory_table.column('Low Threshold', anchor=CENTER, width=90)
+        self.inventory_table.column('Low Threshold', anchor=CENTER, width=80)
 
         self.inventory_table.heading('#0', text='', anchor=W)
         self.inventory_table.heading('Name', text='Name', anchor=W)
@@ -445,20 +445,26 @@ class MainDisplay:
         for r in self.bank_table.get_children():
             self.bank_table.delete(r)
         
-        # update data in bank fields
-        bank_model.Bank.update_fields()
-        
         # Enter New Data
-        data = bank_model.Bank.get_by_year( vc.active_year )
+        data = None
+        try:
+            data = bank_model.Bank.get_by_year( vc.active_year )
+            if data is None:
+                bank_model.Bank.create_year()
+                data = bank_model.Bank.get_by_year( vc.active_year )
+        except Exception as e:
+            bank_model.Bank.create_file()
+            data = bank_model.Bank.get_by_year( vc.active_year )
+        
         self.bank_table.insert(parent='', index='end', iid=0, values=("Bank Total", data.bank_total))
         self.bank_table.insert(parent='', index='end', iid=1, values=("Cash Total", data.cash_total))
         self.bank_table.insert(parent='', index='end', iid=2, values=("Donation Total", data.donation_total))
-        self.bank_table.insert(parent='', index='end', iid=3, values=("", ""))
+        self.bank_table.insert(parent='', index='end', iid=3, values=("----- | -----", "--- | ---"))
         self.bank_table.insert(parent='', index='end', iid=4, values=("Account Cash Total", data.account_cash_total))
         self.bank_table.insert(parent='', index='end', iid=5, values=("Account Check Total", data.account_check_total))
         self.bank_table.insert(parent='', index='end', iid=6, values=("Account Card Total", data.account_card_total))
         self.bank_table.insert(parent='', index='end', iid=7, values=("Account Scholarship Total", data.account_scholar_total))
-        self.bank_table.insert(parent='', index='end', iid=8, values=("", ""))
+        self.bank_table.insert(parent='', index='end', iid=8, values=("----- | -----", "--- | ---"))
         self.bank_table.insert(parent='', index='end', iid=9, values=("Camper Total", data.camper_total))
         self.bank_table.insert(parent='', index='end', iid=10, values=("Staff Total", data.staff_total))
     def load_inventory_table( self ):
@@ -466,8 +472,15 @@ class MainDisplay:
         self.inv_count = 0
         for r in self.inventory_table.get_children():
             self.inventory_table.delete(r)
+        
         # Enter New Data
-        data = inv_model.Inventory.get_all()
+        data = None
+        try:
+            data = inv_model.Inventory.get_all()
+        except Exception as e:
+            inv_model.Inventory.create_file()
+            data = inv_model.Inventory.get_all()
+        
         for d in data:
             info = (d.name, d.catagory, d.in_stock, d.price, d.threshold)
             if len(d.sizes) > 0:
@@ -488,7 +501,13 @@ class MainDisplay:
             self.shopping_table.delete(r)
         
         # Enter New Data
-        data = shop_list_model.Shopping_List.get_all()
+        data = None
+        try:
+            data = shop_list_model.Shopping_List.get_all()
+        except Exception as e:
+            shop_list_model.Shopping_List.create_file()
+            data = shop_list_model.Shopping_List.get_all()
+        
         for d in data:
             info = (d.name, d.in_stock, d.threshold, d.time_on_list)
             self.shopping_table.insert(parent='', index='end', iid=self.shop_list_count, values=info)

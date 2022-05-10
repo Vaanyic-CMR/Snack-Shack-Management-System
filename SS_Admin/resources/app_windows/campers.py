@@ -1,9 +1,10 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 from tkinter.font import Font
 
 from .. import var_const as vc
-from ..models import camper
+from ..models import camper, bank
 
 class Campers:
     def __init__( self, main ):
@@ -68,7 +69,7 @@ class Campers:
         self.total_donated = StringVar(value=0)
         self.eow_return = StringVar(value=0)
         
-        self.last_purchase = StringVar( value="00-00-00 00:00:00" )
+        self.last_purchase = StringVar( value="Month, day Year | 00:00:00 pm" )
         
         self.eow_remainder = StringVar( value="Select Action" )
         
@@ -249,14 +250,60 @@ class Campers:
     
     def __create_camper( self ):
         self.active_camper.curr_bal = float(self.init_bal.get())
-        
         camper.Camper.create( self.active_camper.to_dict() )
+        
+        bnk = bank.Bank.get_by_year( vc.active_year )
+        bnk.bank_total += float(self.init_bal.get())
+        bnk.camper_total += float(self.init_bal.get())
+        if self.pay_method.get() == "cash":
+            bnk.account_cash_total += float(self.init_bal.get())
+        elif self.pay_method.get() == "check":
+            bnk.account_check_total += float(self.init_bal.get())
+        elif self.pay_method.get() == "card":
+            bnk.account_card_total += float(self.init_bal.get())
+        elif self.pay_method.get() == "scholarship":
+            bnk.account_scholar_total += float(self.init_bal.get())
+        
         self.__reset_content()
     def __update_camper( self ):
+        bnk = bank.Bank.get_by_year( vc.active_year )
+        updating_camper = camper.Camper.get_by_name_and_camp( name=self.name.get(), camp=self.camp.get() )
+        
+        bnk.bank_total += self.active_camper.init_bal - updating_camper.init_bal
+        bnk.donation_total += self.active_camper.total_donated - updating_camper.total_donated
+        bnk.camper_total += self.active_camper.init_bal - updating_camper.init_bal
+        if self.pay_method.get() == "cash":
+            bnk.account_cash_total += self.active_camper.init_bal - updating_camper.init_bal
+        elif self.pay_method.get() == "check":
+            bnk.account_check_total += self.active_camper.init_bal - updating_camper.init_bal
+        elif self.pay_method.get() == "card":
+            bnk.account_card_total += self.active_camper.init_bal - updating_camper.init_bal
+        elif self.pay_method.get() == "scholarship":
+            bnk.account_scholar_total += self.active_camper.init_bal - updating_camper.init_bal
+        
+        bank.Bank.save( bnk.to_dict() )
         camper.Camper.update( self.active_camper.to_dict() )
         self.__reset_content()
     def delete_camper( self, e=None ):
-        camper.Camper.delete( self.name.get() )
+        bnk = bank.Bank.get_by_year( vc.active_year )
+        
+        bnk.bank_total -= float(self.init_bal.get())
+        bnk.donation_total -= float(self.total_donated.get())
+        bnk.camper_total -= float(self.init_bal.get())
+        if self.pay_method.get() == "cash":
+            bnk.account_cash_total -= float(self.init_bal.get())
+        elif self.pay_method.get() == "check":
+            bnk.account_check_total -= float(self.init_bal.get())
+        elif self.pay_method.get() == "card":
+            bnk.account_card_total -= float(self.init_bal.get())
+        elif self.pay_method.get() == "scholarship":
+            bnk.account_scholar_total -= float(self.init_bal.get())
+        
+        try:
+            camper.Camper.delete( self.name.get() )
+            bank.Bank.save( bnk.to_dict() )
+        except Exception as e:
+            messagebox.showerror("Error", f"Something went wrong:\n{e}")
     def save_camper( self, e=None ):
         self.active_camper.name = self.name.get()
         self.active_camper.gender = self.gender.get()

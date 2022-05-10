@@ -70,6 +70,19 @@ class Inventory:
     """
         Class Methods.
     """
+    @classmethod
+    def __catagory_in( cls, catagory ):
+        inv = cls.get_all()
+        for i in inv:
+            if i.catagory == catagory:
+                return True
+        return False
+    @classmethod
+    def create_file( cls ):
+        j = json.dumps( [], indent = 4 )
+        with open(cls.file_name, 'w') as f:
+            f.write(j)
+            f.close()
     @classmethod # Pass in a dictionary.
     def create( cls, data ):
         inv = cls.get_all()
@@ -78,16 +91,21 @@ class Inventory:
         data["created_at"] = now
         data["updated_at"] = now
         
+        
+        # catagory_list = ['Food & Drink', 'Clothing', 'Accessories', 'Miscellaneous']
+        
+        
         if len(inv) == 0 or data["name"] > inv[-1].name:
             inv.append( cls(data) )
         elif data["name"] < inv[0].name:
             inv.insert( 0, cls(data) )
         elif len(inv) > 1:
             n = 0;
-            while n < ( len(inv) - 1 ):
-                if data["name"] > inv[n].name and data["name"] < inv[n+1].name:
+            catagory = False
+            while n < (len(inv)-1):
+                if data["name"] > inv[n].name and data["name"] < inv[n+1].name and catagory:
                     inv.insert( n+1, cls(data) )
-                    n+=1
+                    break
                 n+=1
         else:
             print("Error: could not find location to save Inventory Data.")

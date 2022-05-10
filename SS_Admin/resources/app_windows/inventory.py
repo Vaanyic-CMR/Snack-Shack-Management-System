@@ -103,11 +103,11 @@ class Inventory:
         self.screen_width = self.master.winfo_screenwidth()
         self.screen_height = self.master.winfo_screenheight()
         
-        self.window_width = int( self.screen_width*0.30 )
-        self.window_height = int( self.screen_height*0.30 )
+        self.window_width = self.master.winfo_width()# int( self.screen_width*0.30 )
+        self.window_height = self.master.winfo_height()# int( self.screen_height*0.30 )
         
-        self.window_position_x = int( self.screen_width/2 - self.window_width/2 )
-        self.window_position_y = int( self.screen_height/2 - self.window_height/2 )
+        self.window_position_x = int( self.screen_width/4 - self.window_width/2 )
+        self.window_position_y = int( self.screen_height/4 - self.window_height/2 )
         
         self.master.geometry( f"""+{ self.window_position_x }+{ self.window_position_y }""" )
     
@@ -321,7 +321,7 @@ class Inventory:
         self.__check_catagory()
     def __reset_values( self, e=None ):
         self.cmbo_item.set(""), self.txt_price.set( 0 ), self.txt_total_stock.set( 0 )
-        self.txt_threshold.set( 0 ), self.catagory.set( self.catagory_list[0] )
+        self.txt_threshold.set( 0 )
         
         self.txt_Csmall.set( 0 ), self.txt_Cmedium.set( 0 ), self.txt_Clarge.set( 0 )
         self.txt_small.set( 0 ), self.txt_medium.set( 0 ), self.txt_large.set( 0 )
@@ -395,6 +395,7 @@ class Inventory:
         })
         self.__reset_values()
         self.main_window.update_tables()
+        self.cmbo.focus()
     
     def delete_item( self, e=None ):
         inv_m.Inventory.delete( self.cmbo_item.get() )

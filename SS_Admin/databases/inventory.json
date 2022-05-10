@@ -1,205 +1,222 @@
 [
     {
-        "name": "Coca Cola",
+        "name": "A&W Root Beer",
         "catagory": "Food & Drink",
-        "in_stock": 24,
+        "in_stock": 48,
         "price": 0.5,
-        "threshold": 10,
+        "threshold": 12,
         "sizes": [],
-        "created_at": "2021-12-18 21:10:45.545646",
-        "updated_at": "2022-04-29 16:18:47.233321"
+        "created_at": "2022-05-10 13:22:47.687151",
+        "updated_at": "2022-05-10 13:22:47.687151"
     },
     {
-        "name": "Leather Cross Bracelet",
-        "catagory": "Accessories",
-        "in_stock": 2,
-        "price": 5.0,
+        "name": "Butterfinger",
+        "catagory": "Food & Drink",
+        "in_stock": 30,
+        "price": 0.75,
         "threshold": 5,
         "sizes": [],
-        "created_at": "2022-03-01 17:54:08.181113",
-        "updated_at": "2022-05-05 12:30:51.478430"
+        "created_at": "2022-05-10 13:48:09.197688",
+        "updated_at": "2022-05-10 13:48:09.197688"
+    },
+    {
+        "name": "Coca Cola",
+        "catagory": "Food & Drink",
+        "in_stock": 48,
+        "price": 0.5,
+        "threshold": 12,
+        "sizes": [],
+        "created_at": "2022-05-10 13:19:09.905269",
+        "updated_at": "2022-05-10 13:19:09.905269"
+    },
+    {
+        "name": "Coca Cola (Cherry)",
+        "catagory": "Food & Drink",
+        "in_stock": 48,
+        "price": 0.5,
+        "threshold": 12,
+        "sizes": [],
+        "created_at": "2022-05-10 13:38:07.783123",
+        "updated_at": "2022-05-10 13:38:07.783123"
+    },
+    {
+        "name": "Coca Cola (Vanilla)",
+        "catagory": "Food & Drink",
+        "in_stock": 48,
+        "price": 0.5,
+        "threshold": 12,
+        "sizes": [],
+        "created_at": "2022-05-10 13:38:28.528258",
+        "updated_at": "2022-05-10 13:38:28.528258"
+    },
+    {
+        "name": "Dr. Pepper",
+        "catagory": "Food & Drink",
+        "in_stock": 48,
+        "price": 0.5,
+        "threshold": 12,
+        "sizes": [],
+        "created_at": "2022-05-10 13:22:04.219441",
+        "updated_at": "2022-05-10 13:22:04.219441"
+    },
+    {
+        "name": "Fresca",
+        "catagory": "Food & Drink",
+        "in_stock": 48,
+        "price": 0.5,
+        "threshold": 12,
+        "sizes": [],
+        "created_at": "2022-05-10 13:21:23.851444",
+        "updated_at": "2022-05-10 13:21:23.851444"
+    },
+    {
+        "name": "Gatorade (Blue)",
+        "catagory": "Food & Drink",
+        "in_stock": 36,
+        "price": 1.0,
+        "threshold": 8,
+        "sizes": [],
+        "created_at": "2022-05-10 13:39:16.286678",
+        "updated_at": "2022-05-10 13:39:16.286678"
+    },
+    {
+        "name": "Gatorade (Purple)",
+        "catagory": "Food & Drink",
+        "in_stock": 36,
+        "price": 1.0,
+        "threshold": 8,
+        "sizes": [],
+        "created_at": "2022-05-10 13:40:35.306332",
+        "updated_at": "2022-05-10 13:40:35.306332"
+    },
+    {
+        "name": "Gatorade (Red)",
+        "catagory": "Food & Drink",
+        "in_stock": 36,
+        "price": 1.0,
+        "threshold": 8,
+        "sizes": [],
+        "created_at": "2022-05-10 13:39:28.693974",
+        "updated_at": "2022-05-10 13:39:28.693974"
+    },
+    {
+        "name": "Gatorade (White)",
+        "catagory": "Food & Drink",
+        "in_stock": 36,
+        "price": 1.0,
+        "threshold": 8,
+        "sizes": [],
+        "created_at": "2022-05-10 13:39:41.818199",
+        "updated_at": "2022-05-10 13:39:41.818199"
+    },
+    {
+        "name": "M&Ms",
+        "catagory": "Food & Drink",
+        "in_stock": 40,
+        "price": 0.75,
+        "threshold": 10,
+        "sizes": [],
+        "created_at": "2022-05-10 13:41:19.339239",
+        "updated_at": "2022-05-10 13:41:19.339239"
+    },
+    {
+        "name": "M&Ms (Peanut)",
+        "catagory": "Food & Drink",
+        "in_stock": 40,
+        "price": 0.75,
+        "threshold": 10,
+        "sizes": [],
+        "created_at": "2022-05-10 13:41:38.807070",
+        "updated_at": "2022-05-10 13:41:38.807070"
     },
     {
         "name": "Mountain Dew",
         "catagory": "Food & Drink",
-        "in_stock": 36,
+        "in_stock": 48,
         "price": 0.5,
-        "threshold": 6,
+        "threshold": 12,
         "sizes": [],
-        "created_at": "2022-05-05 12:46:14.329191",
-        "updated_at": "2022-05-05 12:46:36.604455"
+        "created_at": "2022-05-10 13:21:13.061159",
+        "updated_at": "2022-05-10 13:21:13.061159"
     },
     {
         "name": "Pepsi",
         "catagory": "Food & Drink",
-        "in_stock": 35,
+        "in_stock": 48,
         "price": 0.5,
-        "threshold": 10,
+        "threshold": 12,
         "sizes": [],
-        "created_at": "2021-12-19 21:17:30.546540",
-        "updated_at": "2022-05-09 09:59:47.865984"
+        "created_at": "2022-05-10 13:20:48.979598",
+        "updated_at": "2022-05-10 13:46:06.733609"
+    },
+    {
+        "name": "SJBC Mug (Blue)",
+        "catagory": "Miscellaneous",
+        "in_stock": 30,
+        "price": 5.0,
+        "threshold": 5,
+        "sizes": [],
+        "created_at": "2022-05-10 13:53:52.245412",
+        "updated_at": "2022-05-10 13:53:52.245412"
+    },
+    {
+        "name": "SJBC Mug (Green)",
+        "catagory": "Miscellaneous",
+        "in_stock": 30,
+        "price": 5.0,
+        "threshold": 5,
+        "sizes": [],
+        "created_at": "2022-05-10 13:54:44.011138",
+        "updated_at": "2022-05-10 13:54:44.011138"
+    },
+    {
+        "name": "Skittles",
+        "catagory": "Food & Drink",
+        "in_stock": 30,
+        "price": 0.75,
+        "threshold": 5,
+        "sizes": [],
+        "created_at": "2022-05-10 13:49:48.653814",
+        "updated_at": "2022-05-10 13:49:48.653814"
+    },
+    {
+        "name": "Skittles (Berry)",
+        "catagory": "Food & Drink",
+        "in_stock": 30,
+        "price": 0.75,
+        "threshold": 5,
+        "sizes": [],
+        "created_at": "2022-05-10 13:51:47.727713",
+        "updated_at": "2022-05-10 13:51:47.727713"
+    },
+    {
+        "name": "Skittles (Sour)",
+        "catagory": "Food & Drink",
+        "in_stock": 30,
+        "price": 0.75,
+        "threshold": 5,
+        "sizes": [],
+        "created_at": "2022-05-10 13:51:35.973633",
+        "updated_at": "2022-05-10 13:51:35.973633"
     },
     {
         "name": "Snickers",
         "catagory": "Food & Drink",
-        "in_stock": 17,
+        "in_stock": 40,
         "price": 0.75,
         "threshold": 10,
         "sizes": [],
-        "created_at": "2022-03-22 16:25:22.294691",
-        "updated_at": "2022-05-09 16:54:19.349484"
+        "created_at": "2022-05-10 13:45:05.163526",
+        "updated_at": "2022-05-10 13:45:05.163526"
     },
     {
-        "name": "T-Shirt (Go For The Gold)",
-        "catagory": "Clothing",
-        "in_stock": 42,
-        "price": 10.0,
-        "threshold": 0,
-        "sizes": [
-            {
-                "size": "C-Small",
-                "in_stock": 2,
-                "threshold": 1
-            },
-            {
-                "size": "C-Medium",
-                "in_stock": 5,
-                "threshold": 1
-            },
-            {
-                "size": "C-Large",
-                "in_stock": 8,
-                "threshold": 1
-            },
-            {
-                "size": "Small",
-                "in_stock": 5,
-                "threshold": 1
-            },
-            {
-                "size": "Medium",
-                "in_stock": 10,
-                "threshold": 1
-            },
-            {
-                "size": "Large",
-                "in_stock": 9,
-                "threshold": 1
-            },
-            {
-                "size": "X-Large",
-                "in_stock": 2,
-                "threshold": 1
-            },
-            {
-                "size": "XX-Large",
-                "in_stock": 1,
-                "threshold": 1
-            }
-        ],
-        "created_at": "2022-03-01 18:21:16.713230",
-        "updated_at": "2022-05-05 10:46:41.401388"
-    },
-    {
-        "name": "T-Shirt (SJBC Hoodie)",
-        "catagory": "Clothing",
-        "in_stock": 49,
-        "price": 30.0,
-        "threshold": 0,
-        "sizes": [
-            {
-                "size": "C-Small",
-                "in_stock": 5,
-                "threshold": 0
-            },
-            {
-                "size": "C-Medium",
-                "in_stock": 10,
-                "threshold": 0
-            },
-            {
-                "size": "C-Large",
-                "in_stock": 10,
-                "threshold": 0
-            },
-            {
-                "size": "Small",
-                "in_stock": 15,
-                "threshold": 0
-            },
-            {
-                "size": "Medium",
-                "in_stock": 9,
-                "threshold": 0
-            },
-            {
-                "size": "Large",
-                "in_stock": 0,
-                "threshold": 0
-            },
-            {
-                "size": "XX-Large",
-                "in_stock": 0,
-                "threshold": 0
-            },
-            {
-                "size": "XX-Large",
-                "in_stock": 0,
-                "threshold": 0
-            }
-        ],
-        "created_at": "2021-12-16 17:41:21.226381",
-        "updated_at": "2022-05-05 10:18:06.251964"
-    },
-    {
-        "name": "T-Shirt (Victory in Christ)",
-        "catagory": "Clothing",
-        "in_stock": 7,
-        "price": 10.0,
-        "threshold": 0,
-        "sizes": [
-            {
-                "size": "C-Small",
-                "in_stock": 0,
-                "threshold": 0
-            },
-            {
-                "size": "C-Medium",
-                "in_stock": 0,
-                "threshold": 0
-            },
-            {
-                "size": "C-Large",
-                "in_stock": 0,
-                "threshold": 0
-            },
-            {
-                "size": "Small",
-                "in_stock": 0,
-                "threshold": 0
-            },
-            {
-                "size": "Medium",
-                "in_stock": 5,
-                "threshold": 0
-            },
-            {
-                "size": "Large",
-                "in_stock": 2,
-                "threshold": 0
-            },
-            {
-                "size": "XX-Large",
-                "in_stock": 0,
-                "threshold": 0
-            },
-            {
-                "size": "XX-Large",
-                "in_stock": 0,
-                "threshold": 0
-            }
-        ],
-        "created_at": "2022-03-01 18:31:07.992836",
-        "updated_at": "2022-05-05 10:18:53.610857"
+        "name": "Sprite",
+        "catagory": "Food & Drink",
+        "in_stock": 48,
+        "price": 0.5,
+        "threshold": 12,
+        "sizes": [],
+        "created_at": "2022-05-10 13:37:36.853972",
+        "updated_at": "2022-05-10 13:37:36.853972"
     }
 ]
