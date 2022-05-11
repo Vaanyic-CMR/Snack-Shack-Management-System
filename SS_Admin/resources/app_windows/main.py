@@ -44,6 +44,14 @@ class MainDisplay:
         
         self.master.geometry(f"{int(self.screen_width*0.75)}x{int(self.screen_height*0.75)}")
         
+        # --------------------- Window Colors
+        if vc.settings.dark_mode:
+            self.bg_color = "darkgrey"
+            self.fg_color = "white"
+        else:
+            self.bg_color = "lightgrey"
+            self.fg_color = "black"
+        
         # --------------------- Font Variables
         self.title_font = Font(
             family = vc.settings.title_font["family"],

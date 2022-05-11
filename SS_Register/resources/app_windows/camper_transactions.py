@@ -183,7 +183,7 @@ class CamperTransactions:
         self.body_canvas.configure( yscrollcommand=body_scrollbar.set )
         self.body_canvas.bind( '<Configure>',
             lambda e: self.body_canvas.configure(scrollregion=self.body_canvas.bbox("all")) )
-        self.body_canvas.bind_all("<MouseWheel>", self.__on_mousewheel)
+        # self.body_canvas.bind_all("<MouseWheel>", self.__on_mousewheel)
         
         # New canvas frame
         self.canvas_frame = Frame( self.body_canvas )
@@ -515,8 +515,9 @@ class CamperTransactions:
                     purchase_info["purchase_type"] += f" | {pt}"
             
             # ----- Updating Camper Account
+            if self.account_total.get() != self.remaining_balance.get():
+                self.active_camper.curr_spent += float(self.sum_total.get()[1:]) - float(self.cash.get()[1:])
             self.active_camper.curr_bal = float(self.remaining_balance.get()[1:])
-            self.active_camper.curr_spent += float(self.sum_total.get()[1:])
             self.active_camper.total_donated += float(self.donation.get()[1:])
             self.active_camper.eow_return += float(self.donation.get()[1:])
             self.active_camper.last_purchase = now.strftime(self.__class__.purchase_time_format)

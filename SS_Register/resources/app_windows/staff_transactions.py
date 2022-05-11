@@ -136,7 +136,7 @@ class StaffTransactions:
         self.t_menu.add_cascade(label='Options', menu=self.option_menu)
         self.option_menu.add_command(label='Settings', command=lambda : sett_window.Settings(self, "staff"))
         self.option_menu.add_command(label='About')#, command=self.openAbout)
-    def _on_mousewheel(self, event):
+    def __on_mousewheel(self, event):
         self.body_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
     
     # ---------------------- Contruct Components
@@ -182,7 +182,7 @@ class StaffTransactions:
         self.body_canvas.configure( yscrollcommand=body_scrollbar.set )
         self.body_canvas.bind( '<Configure>',
             lambda e: self.body_canvas.configure(scrollregion=self.body_canvas.bbox("all")) )
-        self.body_canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+        # self.body_canvas.bind_all("<MouseWheel>", self.__on_mousewheel)
         
         # New canvas frame
         self.canvas_frame = Frame( self.body_canvas )
@@ -491,8 +491,9 @@ class StaffTransactions:
                     purchase_info["purchase_type"] += f" | {pt}"
             
             # ----- Updating Camper Account
+            if self.account_total.get() != self.remaining_balance.get():
+                self.active_staffer.curr_spent += float(self.sum_total.get()[1:]) - float(self.cash.get()[1:])
             self.active_staffer.curr_bal = float(self.remaining_balance.get()[1:])
-            self.active_staffer.curr_spent += float(self.sum_total.get()[1:])
             self.active_staffer.total_donated += float(self.donation.get()[1:])
             self.active_staffer.eos_return += float(self.returns.get()[1:])
             if self.free_item_name.get() != "Select Free Item": # Check if staff member is getting a free item.
