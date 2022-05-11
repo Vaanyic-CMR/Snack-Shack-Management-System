@@ -106,7 +106,7 @@ class Settings:
                 font=self.base_font, state="disabled"
             ).grid(row=1, column=0)
         
-        Checkbutton(self.frame_3, variable=self.dark_mode, text="Dark Mode",
+        Checkbutton(self.frame_3, variable=self.dark_mode, text="Dark Mode", state="disabled",
                 font=self.base_font, onvalue=True, offvalue=False
             ).grid(row=1, column=1)
     

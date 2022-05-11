@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkinter.font import Font
 import math as m
+from turtle import back
 
 from .. import (
     data_processing,
@@ -36,21 +37,25 @@ class MainDisplay:
         self.master.iconbitmap("resources/images/logo.ico")
         
         # --------------------- Screen and Window Dimensions
-        self.master.state("zoomed")
         self.window_width = self.master.winfo_width()
         self.window_height = self.master.winfo_height()
         self.screen_width = self.master.winfo_screenwidth()
         self.screen_height = self.master.winfo_screenheight()
         
         self.master.geometry(f"{int(self.screen_width*0.75)}x{int(self.screen_height*0.75)}")
+        self.master.state("zoomed")
         
         # --------------------- Window Colors
         if vc.settings.dark_mode:
-            self.bg_color = "darkgrey"
-            self.fg_color = "white"
+            self.bg_color = "#343a40"
+            self.table_bg_color = "#6c757d"
+            self.fg_color = "#e9ecef"
         else:
-            self.bg_color = "lightgrey"
+            self.bg_color = "#D3D3D3"
+            self.table_bg_color = "white"
             self.fg_color = "black"
+        
+        self.master.config( bg=self.bg_color )
         
         # --------------------- Font Variables
         self.title_font = Font(
@@ -72,11 +77,28 @@ class MainDisplay:
             size = vc.settings.table_row_font["size"]
         )
         
-        s = ttk.Style()
-        s.theme_use('vista') # Default is "vista"
-        s.configure('TNotebook.Tab', font=self.base_font)
-        s.configure('Treeview', font=self.table_row_font)
+        s = ttk.Style(self.master)
+        s.theme_use('clam') # Default is "vista"
+        s.configure('TNotebook',
+            background="white"
+        )
+        s.configure('TNotebook.Tab',
+            font=self.base_font,
+            background=self.bg_color,
+            foreground=self.fg_color,
+        )
+        s.map("TNotebook", background= [("selected", self.table_bg_color)])
+        s.configure('Treeview',
+            font=self.table_row_font,
+            background=self.table_bg_color,
+            foreground=self.fg_color,
+            fieldbackground=self.table_bg_color,
+            rowheight=30
+        )
         s.configure('Treeview.Heading', font=self.table_header_font)
+        s.map('Treeview',
+            background=[('selected', '#087990')] #3d8bfd
+        )
         s.configure("TCombobox", borderwidth=5 )
         
         # --------------------- General Variables
@@ -97,7 +119,7 @@ class MainDisplay:
         self.window.pack( fill=BOTH, expand=1 )
         
         # Sections for personel tab.
-        self.tab_1 = Frame( self.window )
+        self.tab_1 = Frame( self.window, bg=self.bg_color )
         Grid.columnconfigure( self.tab_1, 0, weight=1 )
         Grid.columnconfigure( self.tab_1, 1, weight=1 )
         # Grid.rowconfigure( self.tab_1, 0, weight=1 )
@@ -106,32 +128,32 @@ class MainDisplay:
 
         self.left_pane = Frame( self.tab_1, 
                             highlightbackground="grey", highlightthickness=1,
-                            relief="raised", bd=4)#, bg="black" )
+                            relief="raised", bd=4, bg=self.bg_color )
         self.left_pane.grid( row=1, column=0, rowspan=2, sticky="NSWE" )
         self.top_pane = Frame( self.tab_1, 
                             highlightbackground="grey", highlightthickness=1,
-                            relief="raised", bd=4)#, bg="red" )
+                            relief="raised", bd=4, bg=self.bg_color )
         self.top_pane.grid( row=1, column=1, sticky="NSWE" )
         self.bottom_pane = Frame( self.tab_1, 
                             highlightbackground="grey", highlightthickness=1,
-                            relief="raised", bd=4)#, bg="blue" )
+                            relief="raised", bd=4, bg=self.bg_color )
         self.bottom_pane.grid( row=2, column=1, sticky="NSWE" )
         
         # Sections for bank/inventory tab.
-        self.tab_2 = Frame( self.window )
+        self.tab_2 = Frame( self.window, bg=self.bg_color )
         Grid.columnconfigure( self.tab_2, 0, weight=1 )
         Grid.columnconfigure( self.tab_2, 1, weight=3 )
         Grid.columnconfigure( self.tab_2, 2, weight=2 )
         Grid.rowconfigure( self.tab_2, 0, weight=1 )
         
-        self.bank_pane = Frame( self.tab_2, highlightbackground="grey",
-                                highlightthickness=1, relief="raised", bd=4)
+        self.bank_pane = Frame( self.tab_2, highlightbackground="grey", highlightthickness=1,
+                                relief="raised", bd=4, bg=self.bg_color )
         self.bank_pane.grid( row=0, column=0, sticky="NSWE" )
-        self.inventory_pane = Frame( self.tab_2, highlightbackground="grey",
-                                highlightthickness=1, relief="raised", bd=4)
+        self.inventory_pane = Frame( self.tab_2, highlightbackground="grey", highlightthickness=1,
+                                    relief="raised", bd=4, bg=self.bg_color )
         self.inventory_pane.grid( row=0, column=1, sticky="NSWE" )
-        self.shopping_list_pane = Frame( self.tab_2, highlightbackground="grey",
-                                highlightthickness=1, relief="raised", bd=4)
+        self.shopping_list_pane = Frame( self.tab_2, highlightbackground="grey", highlightthickness=1,
+                                        relief="raised", bd=4, bg=self.bg_color )
         self.shopping_list_pane.grid( row=0, column=2, sticky="NSWE" )
         
         # Apply Tabs.
@@ -162,10 +184,11 @@ class MainDisplay:
     
     def __menu_bar( self ):
         self.menu_bar = Menu( self.master, font=self.base_font )
-        self.master.config( menu=self.menu_bar )
         
         # File Menu
-        self.file_menu = Menu( self.menu_bar, tearoff=False, font=self.base_font )
+        self.file_menu = Menu( self.menu_bar, tearoff=False,
+            font=self.base_font
+        )
         self.file_menu.add_command( label="Exit", command=self.master.quit )
         self.file_menu.add_separator()
         self.file_menu.add_checkbutton(
@@ -185,12 +208,16 @@ class MainDisplay:
         self.file_menu.add_command( label="Run EOW Check", command=self.__eow_check )
         
         # Options Menu
-        self.option_menu = Menu( self.menu_bar, tearoff=False, font=self.base_font )
+        self.option_menu = Menu( self.menu_bar, tearoff=False,
+            font=self.base_font
+        )
         self.option_menu.add_command( label="Settings", command=self.__open_settings )
         self.option_menu.add_command( label="About")#, command=AddCommand )
         
         self.menu_bar.add_cascade( label="File", menu=self.file_menu )
         self.menu_bar.add_cascade( label="Options", menu=self.option_menu )
+        
+        self.master.config( menu=self.menu_bar )
     def __eow_check( self ):
         try:
             results = data_processing.eow_check()
@@ -207,8 +234,12 @@ class MainDisplay:
         headers = ('DateTime', 'Name', 'Purchase Type', '# Items', 'Total')
         
         # History Pane
-        Label(self.left_pane, text = "Purchase History", font=self.title_font).pack( side=TOP, fill=X )
-        self.history_slider = Scrollbar( self.left_pane, orient=VERTICAL )
+        Label(self.left_pane, text = "Purchase History",
+            font=self.title_font, bg=self.bg_color, fg=self.fg_color
+        ).pack( side=TOP, fill=X )
+        self.history_slider = Scrollbar( self.left_pane, orient=VERTICAL,
+            bg=self.bg_color, troughcolor=self.table_bg_color
+        )
         self.history_slider.pack(side=RIGHT, fill=Y)
         self.history_table = ttk.Treeview( self.left_pane, selectmode='browse', yscrollcommand=self.history_slider.set )
         self.history_table.pack(fill=BOTH, expand=1)
@@ -233,7 +264,9 @@ class MainDisplay:
         headers = ('Name', 'Last Free Item', '# of Free Items', 'Balance', 'Spent', 'Donations', 'Returned')
         
         # Staff Pane.
-        Label(self.top_pane, text = "Staff Data", font=self.title_font).pack(side=TOP, fill=X)
+        Label(self.top_pane, text = "Staff Data",
+            font=self.title_font, bg=self.bg_color, fg=self.fg_color
+        ).pack(side=TOP, fill=X)
         self.staff_slider = Scrollbar(self.top_pane, orient=VERTICAL)
         self.staff_slider.pack(side=RIGHT, fill=Y)
         self.staff_table = ttk.Treeview(self.top_pane, selectmode='browse', yscrollcommand=self.staff_slider.set)
@@ -266,7 +299,7 @@ class MainDisplay:
         
         # Label(self.bottom_pane, text = "Camper Data", font=self.title_font).pack(side=LEFT)
         camp_menu = OptionMenu( self.bottom_pane, self.camp, *camp_list, command=self.update_tables )
-        camp_menu.config( font=self.title_font )
+        camp_menu.config( font=self.title_font, bg=self.bg_color, fg=self.fg_color, highlightthickness=0 )
         self.master.nametowidget(camp_menu.menuname).config( font=self.base_font )
         camp_menu.pack(side=TOP)
         
@@ -307,7 +340,9 @@ class MainDisplay:
     def __bank_table( self ):
         headers = ('Category', 'Total')
         
-        Label(self.bank_pane, text = "Bank Data", font=self.title_font).pack(side=TOP, fill=X)
+        Label(self.bank_pane, text = "Bank Data",
+            font=self.title_font, bg=self.bg_color, fg=self.fg_color
+        ).pack(side=TOP, fill=X)
         self.bank_slider = Scrollbar(self.bank_pane, orient=VERTICAL)
         self.bank_slider.pack(side=RIGHT, fill=Y)
         self.bank_table = ttk.Treeview(self.bank_pane, selectmode='browse', yscrollcommand=self.bank_slider.set)
@@ -326,7 +361,9 @@ class MainDisplay:
     def __inventory_table( self ):
         headers = ('Name', 'Catagory', 'In Stock', 'Item Price', 'Threshold')
         
-        Label(self.inventory_pane, text = "Inventory Data", font=self.title_font).pack(side=TOP, fill=X)
+        Label(self.inventory_pane, text="Inventory Data",
+            font=self.title_font, bg=self.bg_color, fg=self.fg_color
+        ).pack(side=TOP, fill=X)
         self.inventory_slider = Scrollbar(self.inventory_pane, orient=VERTICAL)
         self.inventory_slider.pack(side=RIGHT, fill=Y)
         self.inventory_table = ttk.Treeview(self.inventory_pane, selectmode='browse', yscrollcommand=self.inventory_slider.set)
@@ -351,7 +388,9 @@ class MainDisplay:
     def __shopping_list_table( self ):
         headers = ('Name', 'In Stock', 'Threshold', 'Time on List')
         
-        Label(self.shopping_list_pane, text = "Shopping List", font=self.title_font).pack(side=TOP, fill=X)
+        Label(self.shopping_list_pane, text="Shopping List",
+            font=self.title_font, bg=self.bg_color, fg=self.fg_color
+        ).pack(side=TOP, fill=X)
         self.shopping_slider = Scrollbar(self.shopping_list_pane, orient=VERTICAL)
         self.shopping_slider.pack(side=RIGHT, fill=Y)
         self.shopping_table = ttk.Treeview(self.shopping_list_pane, selectmode='browse', yscrollcommand=self.shopping_slider.set)
