@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter import ttk
-from tkinter import font
 from tkinter.font import Font
 
 from .. import var_const as vc

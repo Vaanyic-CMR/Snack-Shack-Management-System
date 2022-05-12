@@ -2,7 +2,7 @@ from datetime import datetime
 import json
 
 class Settings:
-    file_name = "resources/settings.json"
+    file_name = "./resources/settings.json"
     
     def __init__( self, data ) -> None:
         self.host_name = data["host_name"]

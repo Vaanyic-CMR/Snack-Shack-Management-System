@@ -3,7 +3,6 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkinter.font import Font
 import math as m
-from turtle import back
 
 from .. import (
     data_processing,

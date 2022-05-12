@@ -1,6 +1,5 @@
 from datetime import datetime
 import json
-import re
 
 from ..var_const import datetime_format
 from . import shopping_list as sl

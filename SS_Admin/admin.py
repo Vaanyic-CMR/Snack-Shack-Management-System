@@ -1,8 +1,8 @@
-from resources import server
 import resources as r
 
 from tkinter import mainloop
 import threading
+import time
 
 splash = None
 """
@@ -13,7 +13,7 @@ def run():
     global splash
     splash = r.splash.Splash()
     
-    server_thread = threading.Thread(target=server.start, args=())
+    server_thread = threading.Thread(target=r.server.start, args=())
     server_thread.daemon = True
     server_thread.start()
     
@@ -29,4 +29,8 @@ def main():
     r.main.MainDisplay()
 
 if __name__ == '__main__':
-    run()
+    try:
+        run()
+    except Exception as e:
+        print(e)
+        time.sleep(10)
