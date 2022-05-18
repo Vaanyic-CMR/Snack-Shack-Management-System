@@ -15,7 +15,7 @@ except Exception as e:
     settings = s.Settings({
         "host_name": socket.gethostname(),
         "port": 9000,
-        "station": "boys",
+        "station": "male",
         "food_limit": 2.0,
         "dark_mode": False,
         "title_font": {
