@@ -16,6 +16,7 @@ HEADER = 64
 PORT = r.settings.port
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDRESS = (SERVER, PORT)
+RUNNING = True
 
 FORMAT = "utf-8"
 DISCONNECT_MSG = "!DISCONNECT"
@@ -80,10 +81,11 @@ def handle_command( conn, data ):
 
 # ----------| Starts running the server | ----------
 def start():
+    global RUNNING
     print("[STARTING] | Server is starting...")
     server.listen()
     print(f"[LISTENING] | Server is listening on IP: {SERVER}, PORT: {PORT}")
-    while r.running:
+    while RUNNING:
         conn, address = server.accept()
         
         thread = threading.Thread(target=handle_client, args=(conn, address))
@@ -91,8 +93,15 @@ def start():
         thread.start()
         
         print(f"[ACTIVE CONNECTIONS] | {threading.active_count() - 2}")
-    print(f"[DEACTIVATING] | Server is closing...")
+    close()
     server.close()
+
+# ----------| Closes the server | ----------
+def close():
+    global RUNNING
+    RUNNING = False
+    
+    print(f"[DEACTIVATING] | Server is closing...")
 
 if __name__ == '__main__':
     start()

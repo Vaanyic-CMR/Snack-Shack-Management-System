@@ -20,7 +20,7 @@ def run():
     splash.master.after(3000, main)
     mainloop()
     
-    r.running = False
+    r.server.close()
 
 def main():
     global splash
@@ -31,6 +31,7 @@ def main():
 if __name__ == '__main__':
     try:
         run()
+        time.sleep(5)
     except Exception as e:
         print(e)
         time.sleep(10)

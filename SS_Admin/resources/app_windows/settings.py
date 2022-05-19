@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter.font import Font
+import socket
 
 from .. import var_const as vc
 from . import main
@@ -28,7 +29,7 @@ class Settings:
             )
         
         # -------------------- Tkinter Variables
-        self.host_name = StringVar(value=vc.settings.host_name)
+        self.host_name = StringVar(value=socket.gethostbyname(vc.settings.host_name))
         self.port = IntVar(value=vc.settings.port)
         self.food_limit = StringVar(value=vc.settings.food_limit)
         
@@ -64,7 +65,7 @@ class Settings:
         self.__set_geometery()
     
     def __build_frame_1( self ):
-        Label(self.frame_1, text="Server Hostname", anchor=W, font=self.base_font
+        Label(self.frame_1, text="Server IP", anchor=W, font=self.base_font
             ).grid(row=0, column=0)
         Entry(self.frame_1, textvariable=self.host_name, borderwidth=5,
                 state="readonly", font=self.base_font
@@ -125,7 +126,7 @@ class Settings:
     
     def __save( self ):
         s_model.Settings.save({
-            "host_name": self.host_name.get(),
+            "host_name": vc.settings.host_name,
             "port": self.port.get(),
             "food_limit": float(self.food_limit.get()),
             "dark_mode": self.dark_mode.get(),
