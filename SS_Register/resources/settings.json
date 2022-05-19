@@ -1,16 +1,16 @@
 {
-    "host_name": "Tenkara37-Laptop",
+    "host_ip": "192.168.1.244",
     "port": 9000,
     "station": "male",
     "food_limit": 2.0,
     "dark_mode": false,
     "title_font": {
         "family": "monospace",
-        "size": 21,
+        "size": 16,
         "weight": "bold"
     },
     "base_font": {
         "family": "monospace",
-        "size": 14
+        "size": 10
     }
 }

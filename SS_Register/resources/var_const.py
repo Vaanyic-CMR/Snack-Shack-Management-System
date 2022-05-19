@@ -13,7 +13,7 @@ try:
 except Exception as e:
     print( e )
     settings = s.Settings({
-        "host_name": socket.gethostname(),
+        "host_ip": socket.gethostbyname(socket.gethostname()),
         "port": 9000,
         "station": "male",
         "food_limit": 2.0,

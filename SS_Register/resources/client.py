@@ -7,13 +7,14 @@ from . import var_const as vc
 HEADER = 64
 
 PORT = vc.settings.port
-SERVER = socket.gethostbyname(vc.settings.host_name)
+SERVER = vc.settings.host_ip
 ADDRESS = (SERVER, PORT)
+print(ADDRESS)
 
 def reload_address():
     global SERVER, PORT, ADDRESS
     PORT = vc.settings.port
-    SERVER = socket.gethostbyname(vc.settings.host_name)
+    SERVER = vc.settings.host_ip
     ADDRESS = (SERVER, PORT)
 
 FORMAT = "utf-8"

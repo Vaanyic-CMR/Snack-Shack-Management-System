@@ -37,7 +37,7 @@ class Settings:
             )
         
         # -------------------- Tkinter Variables
-        self.host_name = StringVar(value=vc.settings.host_name)
+        self.host_ip = StringVar(value=vc.settings.host_ip)
         self.port = IntVar(value=vc.settings.port)
         self.food_limit = StringVar(value=vc.settings.food_limit)
         self.station = StringVar(value=vc.settings.station.title())
@@ -70,9 +70,9 @@ class Settings:
         self.__set_geometery()
     
     def __build_frame_1( self ):
-        Label(self.frame_1, text="Server Hostname", font=self.base_font, anchor=W
+        Label(self.frame_1, text="Server IP", font=self.base_font, anchor=W
             ).grid(row=0, column=0)
-        Entry(self.frame_1, textvariable=self.host_name, borderwidth=5,
+        Entry(self.frame_1, textvariable=self.host_ip, borderwidth=5,
                 font=self.base_font
             ).grid(row=1, column=0)
         
@@ -127,7 +127,7 @@ class Settings:
     
     def __save( self ):
         s_model.Settings.save({
-            "host_name": self.host_name.get(),
+            "host_ip": self.host_ip.get(),
             "port": self.port.get(),
             "station": self.station.get().lower(),
             "food_limit": float(self.food_limit.get()),

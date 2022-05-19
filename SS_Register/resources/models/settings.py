@@ -5,7 +5,7 @@ class Settings:
     file_name = "resources/settings.json"
     
     def __init__( self, data ) -> None:
-        self.host_name = data["host_name"]
+        self.host_ip = data["host_ip"]
         self.port = data["port"]
         self.station = data["station"]
         self.food_limit = data["food_limit"]
@@ -15,7 +15,7 @@ class Settings:
     
     def to_dict( self ):
         return {
-            "host_name": self.host_name,
+            "host_ip": self.host_ip,
             "port": self.port,
             "station": self.station,
             "food_limit": self.food_limit,
