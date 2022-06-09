@@ -53,7 +53,10 @@ class History:
     """
     @classmethod
     def update_active_database( cls ):
-        cls.file_name = f"databases/purchase_history/{vc.active_year}_{vc.active_camp}.json"
+        if vc.active_camp != "off-season":
+            cls.file_name = f"databases/purchase_history/{vc.active_year}_{vc.active_camp}.json"
+        else:
+            cls.file_name = f"databases/purchase_history/{vc.active_year}_{vc.active_camp}_{datetime.now().month}.json"
     @classmethod
     def create_file( cls ):
         with open(cls.file_name, 'w+') as f:
@@ -87,5 +90,14 @@ class History:
             result["updated_at"] = datetime.strptime( result["updated_at"], vc.datetime_format )
             data.append( cls(result) )
         return data
-    
+    @classmethod
+    def get_all_reversed( cls ):
+        results = json.load( open(cls.file_name) )
+        
+        data = list()
+        for result in results:
+            result["created_at"] = datetime.strptime( result["created_at"], vc.datetime_format )
+            result["updated_at"] = datetime.strptime( result["updated_at"], vc.datetime_format )
+            data.insert( 0, cls(result) )
+        return data
     

@@ -294,7 +294,7 @@ class MainDisplay:
         self.staff_table.heading('Returned', text='Returned', anchor=CENTER)
     def __camper_table( self ):
         headers = ('Name', 'Gender', 'Balance', 'Spent', 'Donations', 'EOW Parent', 'Last Purchase')
-        camp_list = [ "Trekker", "Pathfinder", "Journey", "Trail Blazer", "Navigator" ]
+        camp_list = [ "Trekker", "Pathfinder", "Journey", "Trail Blazer", "Navigator", "Off-Season" ]
         
         # Label(self.bottom_pane, text = "Camper Data", font=self.title_font).pack(side=LEFT)
         camp_menu = OptionMenu( self.bottom_pane, self.camp, *camp_list, command=self.update_tables )
@@ -439,11 +439,11 @@ class MainDisplay:
         
         data = list()
         try:
-            data = history_model.History.get_all()
+            data = history_model.History.get_all_reversed()
         except FileNotFoundError:
             if vc.active_camp != "select camp":
                 history_model.History.create_file()
-                data = history_model.History.get_all()
+                data = history_model.History.get_all_reversed()
         
         for d in data:
             info = (d.date_time, d.customer_name, d.purchase_type, len(d.items), d.sum_total)

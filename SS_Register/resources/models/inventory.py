@@ -2,6 +2,7 @@ from datetime import datetime
 import json
 
 from ..var_const import datetime_format
+# from . import shopping_list as sl
 
 class Inventory:
     file_name = "databases/inventory.json"
@@ -11,6 +12,10 @@ class Inventory:
         self.catagory = data["catagory"]
         self.in_stock = data["in_stock"]
         self.price = data["price"]
+        try:
+            self.staff_price = data["staff_price"]
+        except:
+            self.staff_price = data["price"]
         self.threshold = data["threshold"]
         
         self.sizes = list()
@@ -39,6 +44,7 @@ class Inventory:
             "catagory": self.catagory,
             "in_stock": self.in_stock,
             "price": self.price,
+            "staff_price": self.staff_price,
             "threshold": self.threshold,
             
             "sizes": dict_sizes,
@@ -46,13 +52,13 @@ class Inventory:
             "created_at": self._created_at.strftime(datetime_format),
             "updated_at": self._updated_at.strftime(datetime_format)
         }
-    
     def display( self ):
         print( ">>---------------<<" )
         print( "Name:", self.name )
         print( "Catagory:", self.catagory )
         print( "In Stock", self.in_stock )
         print( "Price", self.price )
+        print( "Staff Price", self.staff_price )
         print( "Threshold", self.threshold )
         for size in self.sizes:
             size.display()
@@ -69,6 +75,19 @@ class Inventory:
     """
         Class Methods.
     """
+    @classmethod
+    def __catagory_in( cls, catagory ):
+        inv = cls.get_all()
+        for i in inv:
+            if i.catagory == catagory:
+                return True
+        return False
+    @classmethod
+    def create_file( cls ):
+        j = json.dumps( [], indent = 4 )
+        with open(cls.file_name, 'w') as f:
+            f.write(j)
+            f.close()
     @classmethod # Pass in a dictionary.
     def create( cls, data ):
         inv = cls.get_all()
@@ -83,10 +102,10 @@ class Inventory:
             inv.insert( 0, cls(data) )
         elif len(inv) > 1:
             n = 0;
-            while n < ( len(inv) - 1 ):
+            while n < (len(inv)-1):
                 if data["name"] > inv[n].name and data["name"] < inv[n+1].name:
                     inv.insert( n+1, cls(data) )
-                    n+=1
+                    break
                 n+=1
         else:
             print("Error: could not find location to save Inventory Data.")
@@ -126,23 +145,57 @@ class Inventory:
             f.close()
     
     @classmethod
-    def get_all( cls ):
-        results = json.load( open(cls.file_name) )
-        data = list()
-        for result in results:
-            result["created_at"] = datetime.strptime( result["created_at"], datetime_format )
-            result["updated_at"] = datetime.strptime( result["updated_at"], datetime_format )
-            data.append( cls(result) )
-        return data
-    @classmethod
-    def get_by_name( cls, name ):
-        results = json.load( open(cls.file_name) )
-        for result in results:
-            if result["name"] == name:
-                result["created_at"] = datetime.strptime( result["created_at"], datetime_format )
-                result["updated_at"] = datetime.strptime( result["updated_at"], datetime_format )
-                return cls( result )
-        return None
+    def get_all( cls, JSON=False ):
+    #     results = json.load( open(cls.file_name) )
+    #     data = list()
+    #     for result in results:
+    #         if result["catagory"] == "Clothing":
+    #             for size in result["sizes"]:
+    #                 if size["in_stock"] < size["threshold"] and sl.Shopping_List.In(f"{result['name']} | {size['size']}"):
+    #                     sl.Shopping_List.update({
+    #                         "name": f"{result['name']} | {size['size']}",
+    #                         "in_stock": size["in_stock"],
+    #                         "threshold": size["threshold"]
+    #                     })
+    #                 elif size["in_stock"] < size["threshold"] and not sl.Shopping_List.In(f"{result['name']} | {size['size']}"):
+    #                     sl.Shopping_List.add_item({
+    #                         "name": result["name"],
+    #                         "size": size["size"],
+    #                         "in_stock": size["in_stock"],
+    #                         "threshold": size["threshold"]
+    #                     }, "Clothing")
+    #                 elif size["in_stock"] > size["threshold"] and sl.Shopping_List.In(f"{result['name']} | {size['size']}"):
+    #                     sl.Shopping_List.delete({
+    #                         "name": f"{result['name']} | {size['size']}",
+    #                         "in_stock": size["in_stock"],
+    #                         "threshold": size["threshold"]
+    #                     })
+    #         else:
+    #             if result["in_stock"] < result["threshold"] and sl.Shopping_List.In(result["name"]):
+    #                 sl.Shopping_List.update(result)
+    #             elif result["in_stock"] < result["threshold"] and not sl.Shopping_List.In(result["name"]):
+    #                 sl.Shopping_List.add_item(result)
+    #             elif result["in_stock"] > result["threshold"] and sl.Shopping_List.In(result["name"]):
+    #                 sl.Shopping_List.delete(result)
+            
+    #         result["created_at"] = datetime.strptime( result["created_at"], datetime_format )
+    #         result["updated_at"] = datetime.strptime( result["updated_at"], datetime_format )
+    #         if JSON:
+    #             data.append( result )
+    #         else:
+    #             data.append( cls(result) )
+        
+    #     return data
+    # @classmethod
+    # def get_by_name( cls, name ):
+    #     results = json.load( open(cls.file_name) )
+    #     for result in results:
+    #         if result["name"] == name:
+    #             result["created_at"] = datetime.strptime( result["created_at"], datetime_format )
+    #             result["updated_at"] = datetime.strptime( result["updated_at"], datetime_format )
+    #             return cls( result )
+    #     return None
+        pass
     @classmethod
     def get_all_names( cls ):
         results = json.load( open(cls.file_name) )
@@ -150,10 +203,42 @@ class Inventory:
         for result in results:
             data.append( result["name"] )
         return data
+    @classmethod
+    def get_all_clothing_names( cls ):
+        results = json.load( open(cls.file_name) )
+        data = list()
+        for result in results:
+            if result["catagory"] == "Clothing":
+                data.append( result["name"] )
+        return data
+    @classmethod
+    def get_all_food_drink_names( cls ):
+        results = json.load( open(cls.file_name) )
+        data = list()
+        for result in results:
+            if result["catagory"] == "Food & Drink":
+                data.append( result["name"] )
+        return data
     
-    @classmethod # Probably not nessesary.
-    def add_size( cls, data ):
-        pass
+    @classmethod
+    def get_all_sort_catagory_names( cls ):
+        food_drink=list()
+        clothing=list()
+        accessories=list()
+        miscellaneous=list()
+        
+        results = cls.get_all( JSON=True )
+        for result in results:
+            if result["catagory"] == "Food & Drink":
+                food_drink.append( cls(result) )
+            if result["catagory"] == "Clothing":
+                clothing.append( cls(result) )
+            if result["catagory"] == "Accessories":
+                accessories.append( cls(result) )
+            if result["catagory"] == "Miscellaneous":
+                miscellaneous.append( cls(result) )
+        
+        return food_drink + clothing + accessories + miscellaneous
 
 class Size:
     def __init__( self, data ) -> None:

@@ -1,5 +1,5 @@
 {
-    "host_ip": "192.168.1.244",
+    "host_ip": "192.168.1.174",
     "port": 9000,
     "station": "male",
     "food_limit": 2.0,
@@ -11,6 +11,10 @@
     },
     "base_font": {
         "family": "monospace",
-        "size": 10
+        "size": 15
+    },
+    "list_font": {
+        "family": "monospace",
+        "size": 17
     }
 }

@@ -129,13 +129,18 @@ class CamperTransactions:
         self.t_menu.add_cascade(label='File', menu = self.file_menu)
         self.file_menu.add_command(label='Exit', command = self.master.destroy)
         self.file_menu.add_separator()
-        self.file_menu.add_command(label='Reload Camper Names', command = self.__update_cmbobox)
+        self.file_menu.add_command(label='Reset Rows', command=self.reset_rows)
+        self.file_menu.add_command(label='Reset Content', command=self.reset_content)
+        self.file_menu.add_command(label='Reload Camper Names', command=self.__update_cmbobox)
 
         # Options Menu
         self.option_menu = Menu(self.t_menu, tearoff=False)
         self.t_menu.add_cascade(label='Options', menu=self.option_menu)
         self.option_menu.add_command(label='Settings', command=lambda : sett_window.Settings(self, "campers"))
         self.option_menu.add_command(label='About')#, command=self.openAbout)
+    def __reset_scrollregion(self):
+        self.body_frame.update_idletasks()
+        self.body_canvas.configure(scrollregion=self.body_canvas.bbox("all"))
     def __on_mousewheel(self, event):
         self.body_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
     
@@ -199,6 +204,7 @@ class CamperTransactions:
         self.__load_inventory_names()
         for idx, row in enumerate(self.rows):
             self.rows[idx].populate_listboxes(self.inventory_names)
+        self.__reset_scrollregion()
     def __build_footer( self ):
         Label(self.footer_frame, text="Total In Account", font=self.base_font, anchor=S
             ).grid(row=0, column=0, padx=5)
@@ -247,7 +253,7 @@ class CamperTransactions:
         Button(self.footer_frame, text="Complete\nTransaction", font=self.base_font,
             width=15, borderwidth=5, command = self.complete_transaction
         ).grid(row=0, column=9, padx=5, pady=1)
-        Button(self.footer_frame, text="Add Row", font=self.base_font, state="disabled",
+        Button(self.footer_frame, text="Add Row", font=self.base_font,# state="disabled",
             width=15, borderwidth=5, command=self.__add_row
         ).grid(row=1, column=9, padx=5, pady=1)
         
@@ -285,22 +291,52 @@ class CamperTransactions:
         food_limit = 0
         for row in self.rows:
             if row.data.col1["item"] is not None:
+                if row.data.col1["item"].in_stock - row.data.col1["spinbox_val"].get() < 0:
+                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col1['item'].in_stock}")
+                else:
+                    for size in row.data.col1["item"].sizes:
+                        if size.size == row.data.col1["size_box_val"].get() and size.in_stock - row.data.col1["spinbox_val"].get() < 0:
+                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
                 if row.data.col1["item"].catagory == "Food & Drink":
                     food_limit += row.data.col1["item"].price * row.data.col1["spinbox_val"].get()
                 total += row.data.col1["item"].price * row.data.col1["spinbox_val"].get()
             if row.data.col2["item"] is not None:
+                if row.data.col2["item"].in_stock - row.data.col2["spinbox_val"].get() < 0:
+                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col2['item'].in_stock}")
+                else:
+                    for size in row.data.col2["item"].sizes:
+                        if size.size == row.data.col2["size_box_val"].get() and size.in_stock - row.data.col2["spinbox_val"].get() < 0:
+                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
                 if row.data.col2["item"].catagory == "Food & Drink":
                     food_limit += row.data.col2["item"].price * row.data.col2["spinbox_val"].get()
                 total += row.data.col2["item"].price * row.data.col2["spinbox_val"].get()
             if row.data.col3["item"] is not None:
+                if row.data.col3["item"].in_stock - row.data.col3["spinbox_val"].get() < 0:
+                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col3['item'].in_stock}")
+                else:
+                    for size in row.data.col3["item"].sizes:
+                        if size.size == row.data.col3["size_box_val"].get() and size.in_stock - row.data.col3["spinbox_val"].get() < 0:
+                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
                 if row.data.col3["item"].catagory == "Food & Drink":
                     food_limit += row.data.col3["item"].price * row.data.col3["spinbox_val"].get()
                 total += row.data.col3["item"].price * row.data.col3["spinbox_val"].get()
             if row.data.col4["item"] is not None:
+                if row.data.col4["item"].in_stock - row.data.col4["spinbox_val"].get() < 0:
+                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col4['item'].in_stock}")
+                else:
+                    for size in row.data.col4["item"].sizes:
+                        if size.size == row.data.col4["size_box_val"].get() and size.in_stock - row.data.col4["spinbox_val"].get() < 0:
+                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
                 if row.data.col4["item"].catagory == "Food & Drink":
                     food_limit += row.data.col4["item"].price * row.data.col4["spinbox_val"].get()
                 total += row.data.col4["item"].price * row.data.col4["spinbox_val"].get()
             if row.data.col5["item"] is not None:
+                if row.data.col5["item"].in_stock - row.data.col5["spinbox_val"].get() < 0:
+                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col5['item'].in_stock}")
+                else:
+                    for size in row.data.col5["item"].sizes:
+                        if size.size == row.data.col5["size_box_val"].get() and size.in_stock - row.data.col5["spinbox_val"].get() < 0:
+                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
                 if row.data.col5["item"].catagory == "Food & Drink":
                     food_limit += row.data.col5["item"].price * row.data.col5["spinbox_val"].get()
                 total += row.data.col5["item"].price * row.data.col5["spinbox_val"].get()
@@ -348,9 +384,14 @@ class CamperTransactions:
         self.food_limit.set("${:,.2f}".format(0) + "/${:,.2f}".format(vc.settings.food_limit))
         
         self.active_camper = None
-        
-        for row in self.rows:
+        self.reset_rows()
+    def reset_rows( self ):
+        for idx, row in enumerate(self.rows):
             row.reset_widgets()
+            if idx > 0:
+                row.destroy_row()
+        del self.rows[1:]
+        self.__reset_scrollregion()
     def __cash( self ):
         ip.InputPrompt( title="Cash", return_data=self.cash, update=self.update_values )
     def __donation( self ):
@@ -393,154 +434,148 @@ class CamperTransactions:
         balance_exceeded = self.check_balance()
         if limit_exceeded:
             messagebox.showerror("Error:", "Food Limit has been exceeded.")
+            return None
         elif balance_exceeded[0]:
             if balance_exceeded[1]:
                 messagebox.showerror("Error:", "Balance has fallen below 0.")
-            else:
-                messagebox.showwarning("Warning:",
-                    """
-                    Balance has reach 0.\n
-                    Please confirm if this is desired.
-                    """
-                )
-        else: # ---------- Complete Transaction.
-            items = list()
-            for row in self.rows:
-                if row.data.col1["spinbox_val"].get() > 0 and row.data.col1["item"] is not None:
-                    if row.data.col1["item"].catagory == "Clothing":
-                        items.append(
-                            (
-                                f"{row.data.col1['listbox_val'].get()} | {row.data.col1['size_box_val'].get()}",
-                                row.data.col1["spinbox_val"].get()
-                            )
-                        )
-                    else:
-                        items.append(
-                            (
-                                row.data.col1["listbox_val"].get(),
-                                row.data.col1["spinbox_val"].get()
-                            )
-                        )
-                if row.data.col2["spinbox_val"].get() > 0 and row.data.col2["item"] is not None:
-                    if row.data.col2["item"].catagory == "Clothing":
-                        items.append(
-                            (
-                                f"{row.data.col2['listbox_val'].get()} | {row.data.col2['size_box_val'].get()}",
-                                row.data.col2["spinbox_val"].get()
-                            )
-                        )
-                    else:
-                        items.append(
-                            (
-                                row.data.col2["listbox_val"].get(),
-                                row.data.col2["spinbox_val"].get()
-                            )
-                        )
-                if row.data.col3["spinbox_val"].get() > 0 and row.data.col3["item"] is not None:
-                    if row.data.col3["item"].catagory == "Clothing":
-                        items.append(
-                            (
-                                f"{row.data.col3['listbox_val'].get()} | {row.data.col3['size_box_val'].get()}",
-                                row.data.col3["spinbox_val"].get()
-                            )
-                        )
-                    else:
-                        items.append(
-                            (
-                                row.data.col3["listbox_val"].get(),
-                                row.data.col3["spinbox_val"].get()
-                            )
-                        )
-                if row.data.col4["spinbox_val"].get() > 0 and row.data.col4["item"] is not None:
-                    if row.data.col4["item"].catagory == "Clothing":
-                        items.append(
-                            (
-                                f"{row.data.col4['listbox_val'].get()} | {row.data.col4['size_box_val'].get()}",
-                                row.data.col4["spinbox_val"].get()
-                            )
-                        )
-                    else:
-                        items.append(
-                            (
-                                row.data.col4["listbox_val"].get(),
-                                row.data.col4["spinbox_val"].get()
-                            )
-                        )
-                if row.data.col5["spinbox_val"].get() > 0 and row.data.col5["item"] is not None:
-                    if row.data.col5["item"].catagory == "Clothing":
-                        items.append(
-                            (
-                                f"{row.data.col5['listbox_val'].get()} | {row.data.col5['size_box_val'].get()}",
-                                row.data.col5["spinbox_val"].get()
-                            )
-                        )
-                    else:
-                        items.append(
-                            (
-                                row.data.col5["listbox_val"].get(),
-                                row.data.col5["spinbox_val"].get()
-                            )
-                        )
-            
-            if len(items) <= 0:
-                messagebox.showerror("Error", """No list of items.\n
-                                                Make sure selected items have a quantity.""")
                 return None
-            
-            now = datetime.now()
-            purchase_info = {
-                "date_time": now.strftime(self.__class__.purchase_time_format),
-                "customer_name": self.camper_name.get(),
-                "purchase_type": "",
-                "items": items,
-                "sum_total": self.sum_total.get()
-            }
-            
-            purchase_types = list()
-            if self.remaining_balance.get() != self.account_total.get():
-                purchase_types.append("Account")
-            if float(self.donation.get()[1:]) > 0:
-                purchase_types.append("Donation")
-                items.append( ( "Donation", self.donation.get() ) )
-            if float(self.returns.get()[1:]) > 0:
-                purchase_types.append("Returns")
-                items.append( ( "Return", self.returns.get() ) )
-            if float(self.cash.get()[1:]) > 0:
-                purchase_types.append("Cash")
-            
-            for idx, pt in enumerate(purchase_types):
-                if idx == 0:
-                    purchase_info["purchase_type"] += pt
+        # ---------- Complete Transaction.
+        items = list()
+        for row in self.rows:
+            if row.data.col1["spinbox_val"].get() > 0 and row.data.col1["item"] is not None:
+                if row.data.col1["item"].catagory == "Clothing":
+                    items.append(
+                        (
+                            f"{row.data.col1['listbox_val'].get()} | {row.data.col1['size_box_val'].get()}",
+                            row.data.col1["spinbox_val"].get()
+                        )
+                    )
                 else:
-                    purchase_info["purchase_type"] += f" | {pt}"
-            
-            # ----- Updating Camper Account
-            if self.account_total.get() != self.remaining_balance.get():
-                self.active_camper.curr_spent += float(self.sum_total.get()[1:]) - float(self.cash.get()[1:])
-            self.active_camper.curr_bal = float(self.remaining_balance.get()[1:])
-            self.active_camper.total_donated += float(self.donation.get()[1:])
-            self.active_camper.eow_return += float(self.donation.get()[1:])
-            self.active_camper.last_purchase = now.strftime(self.__class__.purchase_time_format)
-            
-            cmd = ("api/history/new_purchase", purchase_info)
+                    items.append(
+                        (
+                            row.data.col1["listbox_val"].get(),
+                            row.data.col1["spinbox_val"].get()
+                        )
+                    )
+            if row.data.col2["spinbox_val"].get() > 0 and row.data.col2["item"] is not None:
+                if row.data.col2["item"].catagory == "Clothing":
+                    items.append(
+                        (
+                            f"{row.data.col2['listbox_val'].get()} | {row.data.col2['size_box_val'].get()}",
+                            row.data.col2["spinbox_val"].get()
+                        )
+                    )
+                else:
+                    items.append(
+                        (
+                            row.data.col2["listbox_val"].get(),
+                            row.data.col2["spinbox_val"].get()
+                        )
+                    )
+            if row.data.col3["spinbox_val"].get() > 0 and row.data.col3["item"] is not None:
+                if row.data.col3["item"].catagory == "Clothing":
+                    items.append(
+                        (
+                            f"{row.data.col3['listbox_val'].get()} | {row.data.col3['size_box_val'].get()}",
+                            row.data.col3["spinbox_val"].get()
+                        )
+                    )
+                else:
+                    items.append(
+                        (
+                            row.data.col3["listbox_val"].get(),
+                            row.data.col3["spinbox_val"].get()
+                        )
+                    )
+            if row.data.col4["spinbox_val"].get() > 0 and row.data.col4["item"] is not None:
+                if row.data.col4["item"].catagory == "Clothing":
+                    items.append(
+                        (
+                            f"{row.data.col4['listbox_val'].get()} | {row.data.col4['size_box_val'].get()}",
+                            row.data.col4["spinbox_val"].get()
+                        )
+                    )
+                else:
+                    items.append(
+                        (
+                            row.data.col4["listbox_val"].get(),
+                            row.data.col4["spinbox_val"].get()
+                        )
+                    )
+            if row.data.col5["spinbox_val"].get() > 0 and row.data.col5["item"] is not None:
+                if row.data.col5["item"].catagory == "Clothing":
+                    items.append(
+                        (
+                            f"{row.data.col5['listbox_val'].get()} | {row.data.col5['size_box_val'].get()}",
+                            row.data.col5["spinbox_val"].get()
+                        )
+                    )
+                else:
+                    items.append(
+                        (
+                            row.data.col5["listbox_val"].get(),
+                            row.data.col5["spinbox_val"].get()
+                        )
+                    )
+        
+        if len(items) <= 0:
+            messagebox.showerror("Error", """No list of items.\nMake sure selected items have a quantity.""")
+            return None
+        
+        now = datetime.now()
+        purchase_info = {
+            "date_time": now.strftime(self.__class__.purchase_time_format),
+            "customer_name": self.camper_name.get(),
+            "purchase_type": "",
+            "items": items,
+            "sum_total": self.sum_total.get()
+        }
+        
+        purchase_types = list()
+        if self.remaining_balance.get() != self.account_total.get():
+            purchase_types.append("Account")
+        if float(self.donation.get()[1:]) > 0:
+            purchase_types.append("Donation")
+            items.append( ( "Donation", self.donation.get() ) )
+        if float(self.returns.get()[1:]) > 0:
+            purchase_types.append("Returns")
+            items.append( ( "Return", self.returns.get() ) )
+        if float(self.cash.get()[1:]) > 0:
+            purchase_types.append("Cash")
+        
+        for idx, pt in enumerate(purchase_types):
+            if idx == 0:
+                purchase_info["purchase_type"] += pt
+            else:
+                purchase_info["purchase_type"] += f" | {pt}"
+        
+        # ----- Updating Camper Account
+        if self.account_total.get() != self.remaining_balance.get():
+            self.active_camper.curr_spent += float(self.sum_total.get()[1:]) - float(self.cash.get()[1:])
+        self.active_camper.curr_bal = float(self.remaining_balance.get()[1:])
+        self.active_camper.total_donated += float(self.donation.get()[1:])
+        self.active_camper.eow_return += float(self.donation.get()[1:])
+        self.active_camper.last_purchase = now.strftime(self.__class__.purchase_time_format)
+        
+        cmd = ("api/history/new_purchase", purchase_info)
+        client.send( cmd )
+        res = client.response_from_server()
+        
+        if float(self.cash.get()[1:]) > 0 and res == client.SUCCESS_MSG:
+            cmd = ("api/bank/cash", float(self.cash.get()[1:]))
             client.send( cmd )
             res = client.response_from_server()
-            
-            if float(self.cash.get()[1:]) > 0 and res == client.SUCCESS_MSG:
-                cmd = ("api/bank/cash", float(self.cash.get()[1:]))
-                client.send( cmd )
-                res = client.response_from_server()
-            if float(self.donation.get()[1:]) > 0 and res == client.SUCCESS_MSG:
-                cmd = ("api/bank/donation", float(self.donation.get()[1:]))
-                client.send( cmd )
-                res = client.response_from_server()
-            
-            if res == client.SUCCESS_MSG:
-                cmd = ("api/campers/update", self.active_camper)
-                client.send( cmd )
-                self.reset_content()
-            else:
-                messagebox.showerror("Error", res)
+        if float(self.donation.get()[1:]) > 0 and res == client.SUCCESS_MSG:
+            cmd = ("api/bank/donation", float(self.donation.get()[1:]))
+            client.send( cmd )
+            res = client.response_from_server()
+        
+        if res == client.SUCCESS_MSG:
+            cmd = ("api/campers/update", self.active_camper)
+            client.send( cmd )
+            self.reset_content()
+        else:
+            messagebox.showerror("Error", res)
     
 
 class Row:

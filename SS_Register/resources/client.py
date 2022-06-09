@@ -9,7 +9,6 @@ HEADER = 64
 PORT = vc.settings.port
 SERVER = vc.settings.host_ip
 ADDRESS = (SERVER, PORT)
-print(ADDRESS)
 
 def reload_address():
     global SERVER, PORT, ADDRESS
@@ -20,6 +19,7 @@ def reload_address():
 FORMAT = "utf-8"
 DISCONNECT_CMD = "!DISCONNECT"
 SUCCESS_MSG = "!SUCCESS!"
+FAIL_MSG = "!FAILED!"
 
 client = None
 

@@ -128,6 +128,7 @@ class StaffTransactions:
         self.t_menu.add_cascade(label='File', menu = self.file_menu)
         self.file_menu.add_command(label='Exit', command = self.master.destroy)
         self.file_menu.add_separator()
+        self.file_menu.add_command(label='Reset Rows', command=self.reset_rows)
         self.file_menu.add_command(label='Reset Content', command=self.reset_content)
         self.file_menu.add_command(label='Reload Staff Names', command=self.__update_cmbobox)
 
@@ -136,6 +137,9 @@ class StaffTransactions:
         self.t_menu.add_cascade(label='Options', menu=self.option_menu)
         self.option_menu.add_command(label='Settings', command=lambda : sett_window.Settings(self, "staff"))
         self.option_menu.add_command(label='About')#, command=self.openAbout)
+    def __reset_scrollregion(self):
+        self.body_frame.update_idletasks()
+        self.body_canvas.configure(scrollregion=self.body_canvas.bbox("all"))
     def __on_mousewheel(self, event):
         self.body_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
     
@@ -198,6 +202,7 @@ class StaffTransactions:
         self.__load_inventory_names()
         for idx, row in enumerate(self.rows):
             self.rows[idx].populate_listboxes(self.inventory_names)
+        self.__reset_scrollregion()
     def __build_footer( self ):
         Label(self.footer_frame, text="Total In Account", font=self.base_font, anchor=S
             ).grid(row=0, column=0, padx=5)
@@ -240,7 +245,7 @@ class StaffTransactions:
         Button(self.footer_frame, text="Complete Transaction", font=self.base_font,
             width=20, borderwidth=5, command = self.complete_transaction
         ).grid(row=0, column=8, padx=5, pady=1)
-        Button(self.footer_frame, text="Add Row", font=self.base_font, state="disabled",
+        Button(self.footer_frame, text="Add Row", font=self.base_font,# state="disabled",
             width=20, borderwidth=5, command=self.__add_row
         ).grid(row=1, column=8, padx=5, pady=1)
         
@@ -286,15 +291,45 @@ class StaffTransactions:
         total = 0.0
         for row in self.rows:
             if row.data.col1["item"] is not None:
-                total += row.data.col1["item"].price * row.data.col1["spinbox_val"].get()
+                if row.data.col1["item"].in_stock - row.data.col1["spinbox_val"].get() < 0:
+                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col1['item'].in_stock}")
+                else:
+                    for size in row.data.col1["item"].sizes:
+                        if size.size == row.data.col1["size_box_val"].get() and size.in_stock - row.data.col1["spinbox_val"].get() < 0:
+                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                total += row.data.col1["item"].staff_price * row.data.col1["spinbox_val"].get()
             if row.data.col2["item"] is not None:
-                total += row.data.col2["item"].price * row.data.col2["spinbox_val"].get()
+                if row.data.col2["item"].in_stock - row.data.col2["spinbox_val"].get() < 0:
+                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col2['item'].in_stock}")
+                else:
+                    for size in row.data.col2["item"].sizes:
+                        if size.size == row.data.col2["size_box_val"].get() and size.in_stock - row.data.col2["spinbox_val"].get() < 0:
+                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                total += row.data.col2["item"].staff_price * row.data.col2["spinbox_val"].get()
             if row.data.col3["item"] is not None:
-                total += row.data.col3["item"].price * row.data.col3["spinbox_val"].get()
+                if row.data.col3["item"].in_stock - row.data.col3["spinbox_val"].get() < 0:
+                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col3['item'].in_stock}")
+                else:
+                    for size in row.data.col3["item"].sizes:
+                        if size.size == row.data.col3["size_box_val"].get() and size.in_stock - row.data.col3["spinbox_val"].get() < 0:
+                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                total += row.data.col3["item"].staff_price * row.data.col3["spinbox_val"].get()
             if row.data.col4["item"] is not None:
-                total += row.data.col4["item"].price * row.data.col4["spinbox_val"].get()
+                if row.data.col4["item"].in_stock - row.data.col4["spinbox_val"].get() < 0:
+                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col4['item'].in_stock}")
+                else:
+                    for size in row.data.col4["item"].sizes:
+                        if size.size == row.data.col4["size_box_val"].get() and size.in_stock - row.data.col4["spinbox_val"].get() < 0:
+                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                total += row.data.col4["item"].staff_price * row.data.col4["spinbox_val"].get()
             if row.data.col5["item"] is not None:
-                total += row.data.col5["item"].price * row.data.col5["spinbox_val"].get()
+                if row.data.col5["item"].in_stock - row.data.col5["spinbox_val"].get() < 0:
+                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col5['item'].in_stock}")
+                else:
+                    for size in row.data.col5["item"].sizes:
+                        if size.size == row.data.col5["size_box_val"].get() and size.in_stock - row.data.col5["spinbox_val"].get() < 0:
+                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                total += row.data.col5["item"].staff_price * row.data.col5["spinbox_val"].get()
         
         self.sum_total.set("${:,.2f}".format(total))
         self.remaining_balance.set(
@@ -307,16 +342,8 @@ class StaffTransactions:
             )
         )
         balance_exceeded = self.check_balance()
-        if balance_exceeded[0]:
-            if balance_exceeded[1]:
-                messagebox.showerror("Error:", "Balance has fallen below 0.")
-            else:
-                messagebox.showwarning("Warning:",
-                    """
-                    Balance has reach 0.\n
-                    Please confirm if this is desired.
-                    """
-                )
+        if balance_exceeded:
+            messagebox.showerror("Error:", "Balance has fallen below 0.")
     def reset_content( self ):
         self.staff_name.set("")
         self.free_item_name.set("Select Free Item")
@@ -332,9 +359,14 @@ class StaffTransactions:
         
         self.free_item = None
         self.active_staffer = None
-        
-        for row in self.rows:
+        self.reset_rows()
+    def reset_rows( self ):
+        for idx, row in enumerate(self.rows):
             row.reset_widgets()
+            if idx > 0:
+                row.destroy_row()
+        del self.rows[1:]
+        self.__reset_scrollregion()
     def __cash( self ):
         ip.InputPrompt( title="Cash", return_data=self.cash, update=self.update_values )
     def __donation( self ):
@@ -355,27 +387,16 @@ class StaffTransactions:
             else:
                 self.lbl_last_purchase.config( fg="black" )
     def check_balance( self ):
-        if float(self.remaining_balance.get()[1:]) == 0 and float(self.cash.get()[1:]) <= 0:
-            self.lbl_rem_balance.config( fg="orange" )
-            return (True, False)
-        elif float(self.remaining_balance.get()[1:]) < 0:
+        if float(self.remaining_balance.get()[1:]) < 0:
             self.lbl_rem_balance.config( fg="red" )
-            return (True, True)
+            return True
         else:
             self.lbl_rem_balance.config( fg="black" )
-            return (False, None)
+            return False
     def complete_transaction( self, e=None ):
         balance_exceeded = self.check_balance()
-        if balance_exceeded[0]:
-            if balance_exceeded[1]:
-                messagebox.showerror("Error:", "Balance has fallen below 0.")
-            else:
-                messagebox.showwarning("Warning:",
-                    """
-                    Balance has reach 0.\n
-                    Please confirm if this is desired.
-                    """
-                )
+        if balance_exceeded:
+            messagebox.showerror("Error:", "Balance has fallen below 0.")
         else: # ---------- Complete Transaction.
             items = list()
             if self.free_item != None:
@@ -490,7 +511,7 @@ class StaffTransactions:
                 else:
                     purchase_info["purchase_type"] += f" | {pt}"
             
-            # ----- Updating Camper Account
+            # ----- Updating Staffer Account
             if self.account_total.get() != self.remaining_balance.get():
                 self.active_staffer.curr_spent += float(self.sum_total.get()[1:]) - float(self.cash.get()[1:])
             self.active_staffer.curr_bal = float(self.remaining_balance.get()[1:])

@@ -12,6 +12,10 @@ class Inventory:
         self.catagory = data["catagory"]
         self.in_stock = data["in_stock"]
         self.price = data["price"]
+        try:
+            self.staff_price = data["staff_price"]
+        except:
+            self.staff_price = data["price"]
         self.threshold = data["threshold"]
         
         self.sizes = list()
@@ -40,6 +44,7 @@ class Inventory:
             "catagory": self.catagory,
             "in_stock": self.in_stock,
             "price": self.price,
+            "staff_price": self.staff_price,
             "threshold": self.threshold,
             
             "sizes": dict_sizes,
@@ -53,6 +58,7 @@ class Inventory:
         print( "Catagory:", self.catagory )
         print( "In Stock", self.in_stock )
         print( "Price", self.price )
+        print( "Staff Price", self.staff_price )
         print( "Threshold", self.threshold )
         for size in self.sizes:
             size.display()
@@ -195,6 +201,14 @@ class Inventory:
         data = list()
         for result in results:
             data.append( result["name"] )
+        return data
+    @classmethod
+    def get_all_clothing_names( cls ):
+        results = json.load( open(cls.file_name) )
+        data = list()
+        for result in results:
+            if result["catagory"] == "Clothing":
+                data.append( result["name"] )
         return data
     @classmethod
     def get_all_food_drink_names( cls ):

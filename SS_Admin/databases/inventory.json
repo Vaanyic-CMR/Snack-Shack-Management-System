@@ -2,72 +2,72 @@
     {
         "name": "A&W Root Beer",
         "catagory": "Food & Drink",
-        "in_stock": 48,
+        "in_stock": 46,
         "price": 0.5,
         "threshold": 12,
         "sizes": [],
         "created_at": "2022-05-10 13:22:47.687151",
-        "updated_at": "2022-05-10 13:22:47.687151"
+        "updated_at": "2022-06-05 16:56:37.192758"
     },
     {
         "name": "Butterfinger",
         "catagory": "Food & Drink",
-        "in_stock": 30,
+        "in_stock": 28,
         "price": 0.75,
         "threshold": 5,
         "sizes": [],
         "created_at": "2022-05-10 13:48:09.197688",
-        "updated_at": "2022-05-10 13:48:09.197688"
+        "updated_at": "2022-06-05 16:57:53.561650"
     },
     {
         "name": "Coca Cola",
         "catagory": "Food & Drink",
-        "in_stock": 47,
+        "in_stock": 45,
         "price": 0.5,
         "threshold": 12,
         "sizes": [],
         "created_at": "2022-05-10 13:19:09.905269",
-        "updated_at": "2022-05-10 18:52:47.484022"
+        "updated_at": "2022-06-05 17:00:07.568433"
     },
     {
         "name": "Coca Cola (Cherry)",
         "catagory": "Food & Drink",
-        "in_stock": 47,
+        "in_stock": 46,
         "price": 0.5,
         "threshold": 12,
         "sizes": [],
         "created_at": "2022-05-10 13:38:07.783123",
-        "updated_at": "2022-05-10 19:10:00.297590"
+        "updated_at": "2022-06-05 16:32:25.533531"
     },
     {
         "name": "Coca Cola (Vanilla)",
-        "catagory": "Food & Drink",
-        "in_stock": 48,
-        "price": 0.5,
-        "threshold": 12,
-        "sizes": [],
-        "created_at": "2022-05-10 13:38:28.528258",
-        "updated_at": "2022-05-10 13:38:28.528258"
-    },
-    {
-        "name": "Dr. Pepper",
-        "catagory": "Food & Drink",
-        "in_stock": 48,
-        "price": 0.5,
-        "threshold": 12,
-        "sizes": [],
-        "created_at": "2022-05-10 13:22:04.219441",
-        "updated_at": "2022-05-10 13:22:04.219441"
-    },
-    {
-        "name": "Fresca",
         "catagory": "Food & Drink",
         "in_stock": 47,
         "price": 0.5,
         "threshold": 12,
         "sizes": [],
+        "created_at": "2022-05-10 13:38:28.528258",
+        "updated_at": "2022-06-05 16:32:25.535526"
+    },
+    {
+        "name": "Dr. Pepper",
+        "catagory": "Food & Drink",
+        "in_stock": 46,
+        "price": 0.5,
+        "threshold": 12,
+        "sizes": [],
+        "created_at": "2022-05-10 13:22:04.219441",
+        "updated_at": "2022-06-05 17:01:10.991114"
+    },
+    {
+        "name": "Fresca",
+        "catagory": "Food & Drink",
+        "in_stock": 0,
+        "price": 0.5,
+        "threshold": 12,
+        "sizes": [],
         "created_at": "2022-05-10 13:21:23.851444",
-        "updated_at": "2022-05-18 15:54:41.616330"
+        "updated_at": "2022-06-05 17:08:50.340841"
     },
     {
         "name": "Gatorade (Blue)",
@@ -162,12 +162,12 @@
     {
         "name": "Pixie Stick",
         "catagory": "Food & Drink",
-        "in_stock": 35,
+        "in_stock": 0,
         "price": 0.75,
         "threshold": 10,
         "sizes": [],
         "created_at": "2022-05-10 14:43:47.476881",
-        "updated_at": "2022-05-10 14:43:47.476881"
+        "updated_at": "2022-06-05 14:34:29.292004"
     },
     {
         "name": "SJBC Mug (Blue)",
@@ -194,16 +194,18 @@
         "catagory": "Miscellaneous",
         "in_stock": 30,
         "price": 5.0,
+        "staff_price": 3.0,
         "threshold": 5,
         "sizes": [],
         "created_at": "2022-05-10 14:42:34.892436",
-        "updated_at": "2022-05-10 14:42:53.377207"
+        "updated_at": "2022-06-07 23:27:12.622428"
     },
     {
         "name": "SJBC Pullover Sweatshirt",
         "catagory": "Clothing",
-        "in_stock": 30,
+        "in_stock": 29,
         "price": 30.0,
+        "staff_price": 30.0,
         "threshold": 0,
         "sizes": [
             {
@@ -228,7 +230,7 @@
             },
             {
                 "size": "Medium",
-                "in_stock": 10,
+                "in_stock": 9,
                 "threshold": 5
             },
             {
@@ -248,13 +250,14 @@
             }
         ],
         "created_at": "2022-05-10 14:52:04.515863",
-        "updated_at": "2022-05-10 15:16:24.961124"
+        "updated_at": "2022-06-08 21:49:39.571590"
     },
     {
         "name": "SJBC T-Shirt (Go for the Gold)",
         "catagory": "Clothing",
-        "in_stock": 16,
+        "in_stock": 12,
         "price": 10.0,
+        "staff_price": 10.0,
         "threshold": 0,
         "sizes": [
             {
@@ -279,12 +282,12 @@
             },
             {
                 "size": "Medium",
-                "in_stock": 8,
+                "in_stock": 6,
                 "threshold": 0
             },
             {
                 "size": "Large",
-                "in_stock": 3,
+                "in_stock": 1,
                 "threshold": 0
             },
             {
@@ -299,13 +302,14 @@
             }
         ],
         "created_at": "2022-05-10 14:49:57.216184",
-        "updated_at": "2022-05-10 19:15:04.057804"
+        "updated_at": "2022-06-08 08:37:36.034701"
     },
     {
         "name": "SJBC T-Shirt (Victorious in Christ)",
         "catagory": "Clothing",
-        "in_stock": 30,
+        "in_stock": 27,
         "price": 15.0,
+        "staff_price": 15.0,
         "threshold": 0,
         "sizes": [
             {
@@ -330,12 +334,12 @@
             },
             {
                 "size": "Medium",
-                "in_stock": 5,
+                "in_stock": 4,
                 "threshold": 0
             },
             {
                 "size": "Large",
-                "in_stock": 10,
+                "in_stock": 8,
                 "threshold": 0
             },
             {
@@ -350,7 +354,7 @@
             }
         ],
         "created_at": "2022-05-10 14:51:01.032509",
-        "updated_at": "2022-05-10 19:10:00.299558"
+        "updated_at": "2022-06-08 22:16:02.966947"
     },
     {
         "name": "Skittles",

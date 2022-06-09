@@ -21,6 +21,7 @@ RUNNING = True
 FORMAT = "utf-8"
 DISCONNECT_MSG = "!DISCONNECT"
 SUCCESS_MSG = "!SUCCESS!"
+FAIL_MSG = "!FAILED!"
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDRESS)

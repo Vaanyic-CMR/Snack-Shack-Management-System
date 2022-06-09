@@ -5,6 +5,7 @@ from tkinter.font import Font
 
 from . import (
     camper_transactions as camperT,
+    tshirt_handout as ts_handout,
     staff_transactions as staffT,
     cash_transactions as cashT,
     settings as sett_window
@@ -90,6 +91,9 @@ class Main:
         btnCT = Button(self.master, text="Cash Transaction", font=self.base_font,
                     command=self.open_cash_transactions)
         btnCT.pack( padx=10, pady=5 )
+        btnHandout = Button(self.master, text="T-Shirt Handouts", font=self.base_font,
+                    command=self.open_tshirt_handouts)
+        btnHandout.pack( padx=10, pady=5 )
     
     # ------------------ Open Window Methods
     def open_camper_transactions( self ):
@@ -120,6 +124,17 @@ class Main:
                 client.connect_to_host()
             self.master.destroy()
             cashT.CashTransactions()
+        except Exception as e:
+            messagebox.showerror(
+                "Network Error",
+                f"There was a problem connecting to the server.\n{e}"
+            )
+    def open_tshirt_handouts( self ):
+        try:
+            if client.client is None:
+                client.connect_to_host()
+            self.master.destroy()
+            ts_handout.TShirtHandout()
         except Exception as e:
             messagebox.showerror(
                 "Network Error",

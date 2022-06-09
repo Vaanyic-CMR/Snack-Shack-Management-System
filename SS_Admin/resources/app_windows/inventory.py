@@ -48,6 +48,9 @@ class Inventory:
         # --------------------- Variables
         self.cmbo_item = StringVar()
         self.txt_price = DoubleVar()
+        self.txt_staff_price = DoubleVar()
+        self.txt_staff_price.trace_add( 'write', self.__on_price_change )
+        self.staff_price_state = StringVar( value="disabled" )
         self.txt_total_stock = IntVar()
         self.txt_threshold = IntVar()
         
@@ -134,20 +137,31 @@ class Inventory:
         self.entry_total_stock.bind( "<Shift-Return>", self.delete_item )
         self.entry_total_stock.grid( row=3, column=0, padx=10, pady=5 )
         
+        Checkbutton( self.west_frame, text="Staff Price", font=self.base_font,
+            variable=self.staff_price_state, onvalue="normal", offvalue="disabled",
+            command=self.__handle_staff_price
+        ).grid( row=2, column=1 )
+        self.entry_staff_price = Entry( self.west_frame, borderwidth=5, textvariable=self.txt_staff_price,
+            font=self.base_font, state="disabled"
+        )
+        self.entry_staff_price.bind( "<Return>", self.save_item )
+        self.entry_staff_price.bind( "<Shift-Return>", self.delete_item )
+        self.entry_staff_price.grid( row=3, column=1, padx=10, pady=5 )
+        
         Label( self.west_frame, text="Shopping Threshold", font=self.base_font
-            ).grid( row=2, column=1, padx=10 )
+            ).grid( row=4, column=0, padx=10 )
         self.entry_threshold = Entry( self.west_frame, borderwidth=5, textvariable=self.txt_threshold, font=self.base_font )
         self.entry_threshold.bind( "<Return>", self.save_item )
         self.entry_threshold.bind( "<Shift-Return>", self.delete_item )
-        self.entry_threshold.grid( row=3, column=1, padx=10, pady=5 )
+        self.entry_threshold.grid( row=5, column=0, padx=10, pady=5 )
         
         Label( self.west_frame, text="Item Catagory", font=self.base_font
-            ).grid( row=4, column=0, columnspan=2, padx=10 )
+            ).grid( row=4, column=1, padx=10 )
         self.option_catagory = OptionMenu( self.west_frame, self.catagory, *self.catagory_list, command=self.__check_catagory )
         self.option_catagory.config( font=self.base_font )
         self.cat_menu = self.master.nametowidget(self.option_catagory.menuname)
         self.cat_menu.config( font=self.base_font )
-        self.option_catagory.grid( row=5, column=0, columnspan=2, padx=10, pady=5 )
+        self.option_catagory.grid( row=5, column=1, padx=10, pady=5 )
         
         Button( self.west_frame, text="Save Item\n(Return)", font=self.base_font, command=self.save_item, padx=20
             ).grid( row=6, column=0, padx=10, pady=30 )
@@ -296,8 +310,14 @@ class Inventory:
     def __update_values( self, e=None ):
         selected = inv_m.Inventory.get_by_name( self.cmbo_item.get() )
         
-        self.txt_price.set( selected.price ), self.txt_total_stock.set( selected.in_stock )
-        self.txt_threshold.set( selected.threshold ), self.catagory.set( selected.catagory )
+        if selected.price != selected.staff_price:
+            self.staff_price_state.set("normal")
+        else:
+            self.staff_price_state.set("disabled")
+        
+        self.txt_price.set( selected.price ), self.txt_staff_price.set( selected.staff_price )
+        self.txt_total_stock.set( selected.in_stock ), self.txt_threshold.set( selected.threshold )
+        self.catagory.set( selected.catagory )
         
         if selected.catagory == "Clothing":
             self.txt_Csmall.set( selected.sizes[0].in_stock ), self.txt_Cmedium.set( selected.sizes[1].in_stock )
@@ -318,9 +338,10 @@ class Inventory:
             self.thres_small.set( 0 ), self.thres_medium.set( 0 ), self.thres_large.set( 0 )
             self.thres_Xlarge.set( 0 ), self.thres_XXlarge.set( 0 )
         self.__check_catagory()
+        self.__handle_staff_price()
     def __reset_values( self, e=None ):
-        self.cmbo_item.set(""), self.txt_price.set( 0 ), self.txt_total_stock.set( 0 )
-        self.txt_threshold.set( 0 )
+        self.cmbo_item.set(""), self.txt_price.set( 0 ), self.txt_staff_price.set( 0 )
+        self.txt_total_stock.set( 0 ), self.txt_threshold.set( 0 )
         
         self.txt_Csmall.set( 0 ), self.txt_Cmedium.set( 0 ), self.txt_Clarge.set( 0 )
         self.txt_small.set( 0 ), self.txt_medium.set( 0 ), self.txt_large.set( 0 )
@@ -341,8 +362,21 @@ class Inventory:
                 )
         except:
             pass
+    def __on_price_change( self, *args ):
+        self.__handle_staff_price()
+    def __handle_staff_price( self ):
+        self.entry_staff_price.config( state=self.staff_price_state.get() )
+        
+        try:
+            if self.staff_price_state.get() == "disabled":
+                self.txt_staff_price.set( self.txt_price.get() )
+        except Exception as e:
+            print(e)
     
     def save_item( self, e=None ): 
+        if self.staff_price_state.get() == "disabled":
+            self.txt_staff_price.set( self.txt_price.get() )
+        
         inv_item = inv_m.Inventory.get_by_name( self.cmbo_item.get() )
         if inv_item is None:
             if self.catagory.get() == "Clothing":
@@ -363,6 +397,7 @@ class Inventory:
                 "catagory": self.catagory.get(),
                 "in_stock": int(self.txt_total_stock.get()),
                 "price": self.txt_price.get(),
+                "staff_price": self.txt_staff_price.get(),
                 "threshold": int(self.txt_threshold.get()),
                 "sizes": sizes
             })
@@ -383,6 +418,7 @@ class Inventory:
             inv_item.catagory = self.catagory.get()
             inv_item.in_stock = int(self.txt_total_stock.get())
             inv_item.price = self.txt_price.get()
+            inv_item.staff_price = self.txt_staff_price.get()
             inv_item.threshold = int(self.txt_threshold.get())
             inv_item.sizes = sizes
             inv_m.Inventory.update( inv_item.to_dict() )

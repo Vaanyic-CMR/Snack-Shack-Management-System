@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter import messagebox
-from tkinter import ttk
 from tkinter.font import Font
 
 from ... import (
@@ -24,6 +23,10 @@ class TransactionRow:
             family = vc.settings.base_font["family"],
             size = vc.settings.base_font["size"]
         )
+        self.list_font = Font(
+            family = vc.settings.list_font["family"],
+            size = vc.settings.list_font["size"]
+        )
         
         # ----- Set up row Frame
         self.row_frame = Frame( frame )
@@ -45,44 +48,44 @@ class TransactionRow:
         # ----- Set up spinboxes
         Spinbox( self.row_frame, command=self.on_update, state='readonly',
             textvariable=self.data.col1["spinbox_val"], from_=0, to=50,
-            width=10, font=self.base_font
+            width=10, font=self.list_font
         ).grid( row=0, column=0, padx=5, pady=5 )
         Spinbox( self.row_frame, command=self.on_update, state='readonly',
             textvariable=self.data.col2["spinbox_val"], from_=0, to=50,
-            width=10, font=self.base_font
+            width=10, font=self.list_font
         ).grid( row=0, column=2, padx=5, pady=5 )
         Spinbox( self.row_frame, command=self.on_update, state='readonly',
             textvariable=self.data.col3["spinbox_val"], from_=0, to=50,
-            width=10, font=self.base_font
+            width=10, font=self.list_font
         ).grid( row=0, column=4, padx=5, pady=5 )
         Spinbox( self.row_frame, command=self.on_update, state='readonly',
             textvariable=self.data.col4["spinbox_val"], from_=0, to=50,
-            width=10, font=self.base_font
+            width=10, font=self.list_font
         ).grid( row=0, column=6, padx=5, pady=5 )
         Spinbox( self.row_frame, command=self.on_update, state='readonly',
             textvariable=self.data.col5["spinbox_val"], from_=0, to=50,
-            width=10, font=self.base_font
+            width=10, font=self.list_font
         ).grid( row=0, column=8, padx=5, pady=5 )
         
         # ----- Set up listboxes
         self.listbox_1 = Listbox( self.row_frame, height=18, selectmode='single',
-            exportselection=False, font=self.base_font
+            exportselection=False, font=self.list_font
         )
         self.listbox_1.grid( row=1, column=0, sticky=NSEW, padx=5, pady=5 )
         self.listbox_2 = Listbox( self.row_frame, height=18, selectmode='single',
-            exportselection=False, font=self.base_font
+            exportselection=False, font=self.list_font
         )
         self.listbox_2.grid( row=1, column=2, sticky=NSEW, padx=5, pady=5 )
         self.listbox_3 = Listbox( self.row_frame, height=18, selectmode='single',
-            exportselection=False, font=self.base_font
+            exportselection=False, font=self.list_font
         )
         self.listbox_3.grid( row=1, column=4, sticky=NSEW, padx=5, pady=5 )
         self.listbox_4 = Listbox( self.row_frame, height=18, selectmode='single',
-            exportselection=False, font=self.base_font
+            exportselection=False, font=self.list_font
         )
         self.listbox_4.grid( row=1, column=6, sticky=NSEW, padx=5, pady=5 )
         self.listbox_5 = Listbox( self.row_frame, height=18, selectmode='single',
-            exportselection=False, font=self.base_font
+            exportselection=False, font=self.list_font
         )
         self.listbox_5.grid( row=1, column=8, sticky=NSEW, padx=5, pady=5 )
         
@@ -119,23 +122,23 @@ class TransactionRow:
     def __build_clothing_sizes( self ):
         # ----- Set up listboxes
         self.cloth_listbox_1 = Listbox( self.row_frame, height=8, selectmode='single',
-            exportselection=False, font=self.base_font
+            exportselection=False, font=self.list_font
         )
         self.cloth_listbox_1.grid( row=2, column=0, sticky=NSEW, padx=5, pady=5 )
         self.cloth_listbox_2 = Listbox( self.row_frame, height=8, selectmode='single',
-            exportselection=False, font=self.base_font
+            exportselection=False, font=self.list_font
         )
         self.cloth_listbox_2.grid( row=2, column=2, sticky=NSEW, padx=5, pady=5 )
         self.cloth_listbox_3 = Listbox( self.row_frame, height=8, selectmode='single',
-            exportselection=False, font=self.base_font
+            exportselection=False, font=self.list_font
         )
         self.cloth_listbox_3.grid( row=2, column=4, sticky=NSEW, padx=5, pady=5 )
         self.cloth_listbox_4 = Listbox( self.row_frame, height=8, selectmode='single',
-            exportselection=False, font=self.base_font
+            exportselection=False, font=self.list_font
         )
         self.cloth_listbox_4.grid( row=2, column=6, sticky=NSEW, padx=5, pady=5 )
         self.cloth_listbox_5 = Listbox( self.row_frame, height=8, selectmode='single',
-            exportselection=False, font=self.base_font
+            exportselection=False, font=self.list_font
         )
         self.cloth_listbox_5.grid( row=2, column=8, sticky=NSEW, padx=5, pady=5 )
         
@@ -192,6 +195,10 @@ class TransactionRow:
         self.cloth_listbox_3.selection_clear(0, END)
         self.cloth_listbox_4.selection_clear(0, END)
         self.cloth_listbox_5.selection_clear(0, END)
+    def destroy_row( self ):
+        for widget in self.row_frame.winfo_children():
+            widget.destroy()
+        self.row_frame.destroy()
     
     def listbox_1_select( self, e=None ):
         self.data.col1["listbox_val"].set( self.listbox_1.get(ANCHOR) )
@@ -199,7 +206,9 @@ class TransactionRow:
         client.send( cmd )
         self.data.col1["item"] = client.response_from_server()
         
-        if self.data.col1["item"].catagory == "Clothing":
+        if self.data.col1["item"].in_stock == 0:
+            messagebox.showwarning("Inventory Warning", "This item is out of stock")
+        elif self.data.col1["item"].catagory == "Clothing":
             self.cloth_listbox_1.config( state="normal")
             messagebox.showinfo("Notice:", "Please Select 1 Size")
         else:
@@ -211,7 +220,9 @@ class TransactionRow:
         client.send( cmd )
         self.data.col2["item"] = client.response_from_server()
         
-        if self.data.col2["item"].catagory == "Clothing":
+        if self.data.col2["item"].in_stock == 0:
+            messagebox.showwarning("Inventory Warning", "This item is out of stock")
+        elif self.data.col2["item"].catagory == "Clothing":
             self.cloth_listbox_2.config( state="normal")
             messagebox.showinfo("Notice:", "Please Select 1 Size")
         else:
@@ -223,7 +234,9 @@ class TransactionRow:
         client.send( cmd )
         self.data.col3["item"] = client.response_from_server()
         
-        if self.data.col3["item"].catagory == "Clothing":
+        if self.data.col3["item"].in_stock == 0:
+            messagebox.showwarning("Inventory Warning", "This item is out of stock")
+        elif self.data.col3["item"].catagory == "Clothing":
             self.cloth_listbox_3.config( state="normal")
             messagebox.showinfo("Notice:", "Please Select 1 Size")
         else:
@@ -235,7 +248,9 @@ class TransactionRow:
         client.send( cmd )
         self.data.col4["item"] = client.response_from_server()
         
-        if self.data.col4["item"].catagory == "Clothing":
+        if self.data.col4["item"].in_stock == 0:
+            messagebox.showwarning("Inventory Warning", "This item is out of stock")
+        elif self.data.col4["item"].catagory == "Clothing":
             self.cloth_listbox_4.config( state="normal")
             messagebox.showinfo("Notice:", "Please Select 1 Size")
         else:
@@ -247,7 +262,9 @@ class TransactionRow:
         client.send( cmd )
         self.data.col5["item"] = client.response_from_server()
         
-        if self.data.col5["item"].catagory == "Clothing":
+        if self.data.col5["item"].in_stock == 0:
+            messagebox.showwarning("Inventory Warning", "This item is out of stock")
+        elif self.data.col5["item"].catagory == "Clothing":
             self.cloth_listbox_5.config( state="normal")
             messagebox.showinfo("Notice:", "Please Select 1 Size")
         else:
@@ -256,12 +273,32 @@ class TransactionRow:
     
     def cloth_listbox_1_select( self, e=None ):
         self.data.col1["size_box_val"].set( self.cloth_listbox_1.get(ANCHOR) )
+        for size in self.data.col1["item"].sizes:
+            if size.size == self.data.col1["size_box_val"].get() and size.in_stock == 0:
+                messagebox.showwarning("Inventory Warning", "This item is out of stock")
+        self.on_update()
     def cloth_listbox_2_select( self, e=None ):
         self.data.col2["size_box_val"].set( self.cloth_listbox_2.get(ANCHOR) )
+        for size in self.data.col2["item"].sizes:
+            if size.size == self.data.col2["size_box_val"].get() and size.in_stock == 0:
+                messagebox.showwarning("Inventory Warning", "This item is out of stock")
+        self.on_update()
     def cloth_listbox_3_select( self, e=None ):
         self.data.col3["size_box_val"].set( self.cloth_listbox_3.get(ANCHOR) )
+        for size in self.data.col3["item"].sizes:
+            if size.size == self.data.col3["size_box_val"].get() and size.in_stock == 0:
+                messagebox.showwarning("Inventory Warning", "This item is out of stock")
+        self.on_update()
     def cloth_listbox_4_select( self, e=None ):
         self.data.col4["size_box_val"].set( self.cloth_listbox_4.get(ANCHOR) )
+        for size in self.data.col4["item"].sizes:
+            if size.size == self.data.col4["size_box_val"].get() and size.in_stock == 0:
+                messagebox.showwarning("Inventory Warning", "This item is out of stock")
+        self.on_update()
     def cloth_listbox_5_select( self, e=None ):
         self.data.col5["size_box_val"].set( self.cloth_listbox_5.get(ANCHOR) )
+        for size in self.data.col5["item"].sizes:
+            if size.size == self.data.col5["size_box_val"].get() and size.in_stock == 0:
+                messagebox.showwarning("Inventory Warning", "This item is out of stock")
+        self.on_update()
     

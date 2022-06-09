@@ -4,7 +4,7 @@ from tkinter import ttk
 from tkinter.font import Font
 
 from datetime import datetime
-from turtle import pu
+import time
 
 from . import (
     settings as sett_window,
@@ -114,12 +114,17 @@ class CashTransactions:
         self.t_menu.add_cascade(label='File', menu = self.file_menu)
         self.file_menu.add_command(label='Exit', command = self.master.destroy)
         self.file_menu.add_separator()
+        self.file_menu.add_command(label='Reset Rows', command=self.reset_rows)
+        self.file_menu.add_command(label='Reset Content', command=self.reset_content)
 
         # Options Menu
         self.option_menu = Menu(self.t_menu, tearoff=False)
         self.t_menu.add_cascade(label='Options', menu=self.option_menu)
         self.option_menu.add_command(label='Settings', command=lambda : sett_window.Settings(self, "cash"))
         self.option_menu.add_command(label='About')#, command=self.openAbout)
+    def __reset_scrollregion(self):
+        self.body_frame.update_idletasks()
+        self.body_canvas.configure(scrollregion=self.body_canvas.bbox("all"))
     def __on_mousewheel(self, event):
         self.body_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
     
@@ -168,6 +173,7 @@ class CashTransactions:
         self.__load_inventory_names()
         for idx, row in enumerate(self.rows):
             self.rows[idx].populate_listboxes(self.inventory_names)
+        self.__reset_scrollregion()
     def __build_footer( self ):
         Label(self.footer_frame, text="Sum Total", font=self.base_font, anchor=S
             ).grid(row=0, column=0, padx=10, pady=10)
@@ -201,7 +207,7 @@ class CashTransactions:
         Button(self.footer_frame, text="Complete Transaction", font=self.base_font,
             width=20, borderwidth=5, command = self.complete_transaction
         ).grid(row=0, column=6, padx=10, pady=1)
-        Button(self.footer_frame, text="Add Row", font=self.base_font, state="disabled",
+        Button(self.footer_frame, text="Add Row", font=self.base_font,# state="disabled",
             width=20, borderwidth=5, command=self.__add_row
         ).grid(row=1, column=6, padx=10, pady=1)
         
@@ -219,14 +225,44 @@ class CashTransactions:
         total = 0
         for row in self.rows:
             if row.data.col1["item"] is not None:
+                if row.data.col1["item"].in_stock - row.data.col1["spinbox_val"].get() < 0:
+                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col1['item'].in_stock}")
+                else:
+                    for size in row.data.col1["item"].sizes:
+                        if row.data.col1['size_box_val'].get() == size.size and size.in_stock - row.data.col1["spinbox_val"].get() < 0:
+                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
                 total += row.data.col1["item"].price * row.data.col1["spinbox_val"].get()
             if row.data.col2["item"] is not None:
+                if row.data.col2["item"].in_stock - row.data.col2["spinbox_val"].get() < 0:
+                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col2['item'].in_stock}")
+                else:
+                    for size in row.data.col2["item"].sizes:
+                        if row.data.col2['size_box_val'].get() == size.size and size.in_stock - row.data.col2["spinbox_val"].get() < 0:
+                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
                 total += row.data.col2["item"].price * row.data.col2["spinbox_val"].get()
             if row.data.col3["item"] is not None:
+                if row.data.col3["item"].in_stock - row.data.col3["spinbox_val"].get() < 0:
+                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col3['item'].in_stock}")
+                else:
+                    for size in row.data.col3["item"].sizes:
+                        if row.data.col3['size_box_val'].get() == size.size and size.in_stock - row.data.col3["spinbox_val"].get() < 0:
+                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
                 total += row.data.col3["item"].price * row.data.col3["spinbox_val"].get()
             if row.data.col4["item"] is not None:
+                if row.data.col4["item"].in_stock - row.data.col4["spinbox_val"].get() < 0:
+                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col4['item'].in_stock}")
+                else:
+                    for size in row.data.col4["item"].sizes:
+                        if row.data.col4['size_box_val'].get() == size.size and size.in_stock - row.data.col4["spinbox_val"].get() < 0:
+                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
                 total += row.data.col4["item"].price * row.data.col4["spinbox_val"].get()
             if row.data.col5["item"] is not None:
+                if row.data.col5["item"].in_stock - row.data.col5["spinbox_val"].get() < 0:
+                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col5['item'].in_stock}")
+                else:
+                    for size in row.data.col5["item"].sizes:
+                        if row.data.col5['size_box_val'].get() == size.size and size.in_stock - row.data.col5["spinbox_val"].get() < 0:
+                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
                 total += row.data.col5["item"].price * row.data.col5["spinbox_val"].get()
         
         self.sum_total.set("${:,.2f}".format(total))
@@ -241,8 +277,14 @@ class CashTransactions:
         self.donation.set("${:,.2f}".format(0))
         self.change.set("${:,.2f}".format(0))
         
-        for row in self.rows:
+        self.reset_rows()
+    def reset_rows( self ):
+        for idx, row in enumerate(self.rows):
             row.reset_widgets()
+            if idx > 0:
+                row.destroy_row()
+        del self.rows[1:]
+        self.__reset_scrollregion()
     def __donation( self ):
         ip.InputPrompt( title="Donation", return_data=self.donation, update=self.update_values )
     def __cash( self ):
@@ -378,7 +420,7 @@ class CashTransactions:
             client.send( cmd )
             res = client.response_from_server()
         if float(self.cash_received.get()[1:]) > 0 and res == client.SUCCESS_MSG:
-            cmd = ("api/bank/cash", float(self.cash_received.get()[1:]))
+            cmd = ("api/bank/cash", float(self.sum_total.get()[1:]) + float(self.donation.get()[1:]))
             client.send( cmd )
             res = client.response_from_server()
         

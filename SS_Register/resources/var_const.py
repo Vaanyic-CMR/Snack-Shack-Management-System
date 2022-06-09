@@ -26,6 +26,10 @@ except Exception as e:
         "base_font": {
             "family": "monospace",
             "size": 10
+        },
+        "list_font": {
+            "family": "monospace",
+            "size": 10
         }
     })
 def reload_settings():

@@ -38,4 +38,9 @@ def handle_history_command( data ):
         history.History.create( data[1] )
         return server.SUCCESS_MSG
     
-    
+    if data[0] == "api/history/tshirt_handout":
+        try:
+            inv.Inventory.update( data[1].to_dict() )
+            return server.SUCCESS_MSG
+        except:
+            return server.FAIL_MSG
