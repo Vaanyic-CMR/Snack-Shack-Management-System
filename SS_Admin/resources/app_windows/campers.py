@@ -306,6 +306,9 @@ class Campers:
         except Exception as e:
             messagebox.showerror("Error", f"Something went wrong:\n{e}")
     def save_camper( self, e=None ):
+        if self.camp.get().lower() not in [ "trekker", "pathfinder", "journey", "trail blazer", "navigator" ]:
+            messagebox.showerror("Value Error", "Invalid camp selected")
+            return None
         if self.eow_remainder.get() == "Select Action":
             messagebox.showerror("Error", "Please select an 'End of Week' action.")
             return None

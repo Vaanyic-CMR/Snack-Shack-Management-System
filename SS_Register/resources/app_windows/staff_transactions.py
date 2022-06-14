@@ -48,6 +48,7 @@ class StaffTransactions:
         )
         self.master.option_add('*TCombobox*Listbox.font', self.base_font)
         self.master.option_add('*Dialog.msg.font', self.base_font)
+        self.master.option_add("*TCombobox*Listbox*Background", 'silver')
         
         s = ttk.Style()
         s.theme_use('xpnative') # Default is "vista"
@@ -174,7 +175,7 @@ class StaffTransactions:
         
         free_item_menu = OptionMenu( last_free_item_frame, self.free_item_name, *self.food_drink_names, command=self.__get_free_item )
         free_item_menu.config( font=self.base_font )
-        self.master.nametowidget(free_item_menu.menuname).config( font=self.base_font )
+        self.master.nametowidget(free_item_menu.menuname).config( font=self.base_font, borderwidth=5, bg="lightgrey" )
         free_item_menu.grid(row=0, column=0, rowspan=2, padx=10)
     def __build_body( self ):
         self.body_canvas = Canvas( self.body_frame )
@@ -348,12 +349,14 @@ class StaffTransactions:
         self.staff_name.set("")
         self.free_item_name.set("Select Free Item")
         self.last_free_item.set("Month, day Year | 00:00:00 pm")
+        self.lbl_last_free_item.config( fg="black" )
         
         self.account_total.set("${:,.2f}".format(0))
         self.sum_total.set("${:,.2f}".format(0))
         self.donation.set("${:,.2f}".format(0))
         self.returns.set("${:,.2f}".format(0))
         self.remaining_balance.set("${:,.2f}".format(0))
+        self.lbl_rem_balance.config( fg="black" )
         
         self.cash.set("${:,.2f}".format(0))
         

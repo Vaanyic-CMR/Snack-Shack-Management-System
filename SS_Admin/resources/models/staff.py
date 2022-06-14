@@ -238,7 +238,7 @@ class Staff:
         c = conn.cursor()
         
         c.execute( f"""SELECT name FROM {cls.tbl_name}
-                    ORDER BY name desc""")
+                    ORDER BY name asc""" )
         results = []
         
         for fetch in c.fetchall():

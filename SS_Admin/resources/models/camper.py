@@ -388,7 +388,8 @@ class Camper:
         c = conn.cursor()
         
         c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
-                    ORDER BY camp desc, gender asc, name asc""")
+                    WHERE camp = '{vc.active_camp}'
+                    ORDER BY gender asc, name asc""")
         query = [ dict(row) for row in c.fetchall() ]
         
         results = list()

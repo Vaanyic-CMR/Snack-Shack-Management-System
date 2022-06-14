@@ -29,11 +29,11 @@ def eow_check():
     
     bad_accounts = list()
     for idx, camper in enumerate(campers):
-        if camper.curr_bal > 0 and camper.eow_remainder == "donate":
+        if camper.eow_remainder == "donate":
             campers[idx].total_donated += camper.curr_bal
             campers[idx].curr_bal = 0
-            camper_model.Camper.update(camper.to_dict())
-        else:
+            camper_model.Camper.update(campers[idx].to_dict())
+        elif camper.eow_remainder != "donate" and camper.curr_bal > 0:
             bad_accounts.append(camper)
     
     return bad_accounts
@@ -256,7 +256,7 @@ def __export_history():
     global excel_doc, bold, money, head_row, head_money, error_format, warning_format
     history_sheet = excel_doc.add_worksheet("Purchase History")
     
-    purchases = history_model.History.get_all()
+    purchases = history_model.History.get_all_reversed()
     
     # Adjust the column width.
     history_sheet.set_column('A:D', 30)

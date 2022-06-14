@@ -48,6 +48,7 @@ class CashTransactions:
         )
         self.master.option_add('*TCombobox*Listbox.font', self.base_font)
         self.master.option_add('*Dialog.msg.font', self.base_font)
+        self.master.option_add("*TCombobox*Listbox*Background", 'silver')
         
         s = ttk.Style()
         s.theme_use('xpnative') # Default is "vista"

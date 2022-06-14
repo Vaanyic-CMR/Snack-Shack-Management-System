@@ -48,6 +48,7 @@ class CamperTransactions:
         )
         self.master.option_add('*TCombobox*Listbox.font', self.base_font)
         self.master.option_add('*Dialog.msg.font', self.base_font)
+        self.master.option_add("*TCombobox*Listbox*Background", 'silver')
         
         s = ttk.Style()
         s.theme_use('xpnative') # Default is "vista"
@@ -152,11 +153,11 @@ class CamperTransactions:
         genders = ["Male", "Female"]
         gender_menu = OptionMenu( self.header_frame, self.gender, *genders, command=self.__update_cmbobox )
         gender_menu.config( font=self.base_font )
-        self.master.nametowidget(gender_menu.menuname).config( font=self.base_font )
+        self.master.nametowidget(gender_menu.menuname).config( font=self.base_font, bg="silver" )
         gender_menu.pack(side=LEFT, padx=5, pady=5)
         
-        self.cmbo_name = ttk.Combobox( self.header_frame, font=self.base_font,
-            width=15, textvariable=self.camper_name
+        self.cmbo_name = ttk.Combobox( self.header_frame, font=self.base_font, width=15,
+            textvariable=self.camper_name
         )
         # self.cmbo_name.set_completion_list(self.names)
         self.cmbo_name.bind('<<ComboboxSelected>>', self.populate_fields)
@@ -372,16 +373,19 @@ class CamperTransactions:
     def reset_content( self ):
         self.camper_name.set("")
         self.last_purchase.set("Month, day Year | 00:00:00 pm")
+        self.lbl_last_purchase.config( fg="black" )
         
         self.account_total.set("${:,.2f}".format(0))
         self.sum_total.set("${:,.2f}".format(0))
         self.donation.set("${:,.2f}".format(0))
         self.returns.set("${:,.2f}".format(0))
         self.remaining_balance.set("${:,.2f}".format(0))
+        self.lbl_rem_balance.config( fg="black" )
         
         self.cash.set("${:,.2f}".format(0))
         
         self.food_limit.set("${:,.2f}".format(0) + "/${:,.2f}".format(vc.settings.food_limit))
+        self.lbl_food_limit.config( fg="black" )
         
         self.active_camper = None
         self.reset_rows()
