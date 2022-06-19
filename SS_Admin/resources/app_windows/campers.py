@@ -301,8 +301,11 @@ class Campers:
             bnk.account_scholar_total -= float(self.init_bal.get())
         
         try:
-            camper.Camper.delete( self.name.get() )
+            camper.Camper.delete( self.active_camper.id )
             bank.Bank.save( bnk.to_dict() )
+            self.__reset_content()
+            self.__update_name_cmbo()
+            self.main_window.update_tables()
         except Exception as e:
             messagebox.showerror("Error", f"Something went wrong:\n{e}")
     def save_camper( self, e=None ):

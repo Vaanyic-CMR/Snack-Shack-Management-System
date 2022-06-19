@@ -149,7 +149,7 @@ class Camper:
         
         conn = sql.connect( cls.db_name )
         c = conn.cursor()
-        c.execute( f"DELETE FROM {cls.tbl_name} WHERE oid='{id}'" )
+        c.execute( f"DELETE FROM {cls.tbl_name} WHERE oid={id}" )
         conn.commit()
         conn.close()
     @classmethod
@@ -220,25 +220,6 @@ class Camper:
         conn.commit()
         conn.close()
         return result
-    # @classmethod
-    # def get_id_by_name_and_camp( cls, name, camp ):
-    #     try:
-    #         cls.__table_check()
-    #     except Exception as e:
-    #         # print(e)
-    #         pass
-        
-    #     conn = sql.connect( cls.db_name )
-    #     conn.row_factory = sql.Row
-    #     c = conn.cursor()
-        
-    #     c.execute( f"""SELECT oid FROM {cls.tbl_name}
-    #                 WHERE name={name} camp={camp}""")
-    #     result = c.fetchone()
-        
-    #     conn.commit()
-    #     conn.close()
-    #     return result
     @classmethod
     def get_all( cls ):
         try:
