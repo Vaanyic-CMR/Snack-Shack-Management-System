@@ -1,16 +1,16 @@
 [
     {
         "year": "2022",
-        "bank_total": 211.0,
+        "bank_total": 161.0,
         "cash_total": 41.0,
         "donation_total": 17.5,
-        "account_cash_total": 125.0,
+        "account_cash_total": 175.0,
         "account_check_total": 30.0,
         "account_card_total": 50.0,
         "account_scholar_total": 15.0,
-        "camper_total": 90.0,
+        "camper_total": 40.0,
         "staff_total": 80.0,
         "created_at": "2022-05-10 13:14:24.453837",
-        "updated_at": "2022-06-14 11:06:11.692374"
+        "updated_at": "2022-06-18 12:38:32.351276"
     }
 ]
