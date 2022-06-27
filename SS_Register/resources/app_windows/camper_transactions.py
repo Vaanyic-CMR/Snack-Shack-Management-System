@@ -1,8 +1,6 @@
 from datetime import datetime
-import time
-
 from tkinter import *
-from tkinter import messagebox
+# from tkinter import messagebox
 from tkinter import ttk
 from tkinter.font import Font
 
@@ -13,7 +11,8 @@ from . import (
 )
 from .sub_components import (
     transaction_row as tr,
-    input_prompt as ip
+    input_prompt as ip,
+    msgbox
 )
 from ..models import (
     camper,
@@ -157,12 +156,12 @@ class CamperTransactions:
         gender_menu.pack(side=LEFT, padx=5, pady=5)
         
         self.cmbo_name = ttk.Combobox( self.header_frame, font=self.base_font, width=15,
-            textvariable=self.camper_name
+            textvariable=self.camper_name, state="readonly"
         )
         # self.cmbo_name.set_completion_list(self.names)
         self.cmbo_name.bind('<<ComboboxSelected>>', self.populate_fields)
         self.cmbo_name.pack(side=LEFT, padx=5, pady=5)
-        self.cmbo_name.focus()
+        # self.cmbo_name.focus()
         
         # Cash Button
         self.btnCash = Button(self.header_frame, text="Cash", width=10,
@@ -286,58 +285,58 @@ class CamperTransactions:
         self.check_last_purchase()
     def update_values( self, e=None ):
         if self.camper_name.get() == "":
-            messagebox.showerror("Error", "No camper selected.\nPlease select a camp and/or a camper.")
+            self.master.wait_window( msgbox.showerror("No camper selected.", "Please select a camper.") )
             return None
         total = 0
         food_limit = 0
         for row in self.rows:
             if row.data.col1["item"] is not None:
                 if row.data.col1["item"].in_stock - row.data.col1["spinbox_val"].get() < 0:
-                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col1['item'].in_stock}")
+                    self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col1['item'].in_stock}") )
                 else:
                     for size in row.data.col1["item"].sizes:
                         if size.size == row.data.col1["size_box_val"].get() and size.in_stock - row.data.col1["spinbox_val"].get() < 0:
-                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                            self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}") )
                 if row.data.col1["item"].catagory == "Food & Drink":
                     food_limit += row.data.col1["item"].price * row.data.col1["spinbox_val"].get()
                 total += row.data.col1["item"].price * row.data.col1["spinbox_val"].get()
             if row.data.col2["item"] is not None:
                 if row.data.col2["item"].in_stock - row.data.col2["spinbox_val"].get() < 0:
-                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col2['item'].in_stock}")
+                    self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col2['item'].in_stock}") )
                 else:
                     for size in row.data.col2["item"].sizes:
                         if size.size == row.data.col2["size_box_val"].get() and size.in_stock - row.data.col2["spinbox_val"].get() < 0:
-                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                            self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}") )
                 if row.data.col2["item"].catagory == "Food & Drink":
                     food_limit += row.data.col2["item"].price * row.data.col2["spinbox_val"].get()
                 total += row.data.col2["item"].price * row.data.col2["spinbox_val"].get()
             if row.data.col3["item"] is not None:
                 if row.data.col3["item"].in_stock - row.data.col3["spinbox_val"].get() < 0:
-                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col3['item'].in_stock}")
+                    self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col3['item'].in_stock}") )
                 else:
                     for size in row.data.col3["item"].sizes:
                         if size.size == row.data.col3["size_box_val"].get() and size.in_stock - row.data.col3["spinbox_val"].get() < 0:
-                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                            self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}") )
                 if row.data.col3["item"].catagory == "Food & Drink":
                     food_limit += row.data.col3["item"].price * row.data.col3["spinbox_val"].get()
                 total += row.data.col3["item"].price * row.data.col3["spinbox_val"].get()
             if row.data.col4["item"] is not None:
                 if row.data.col4["item"].in_stock - row.data.col4["spinbox_val"].get() < 0:
-                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col4['item'].in_stock}")
+                    self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col4['item'].in_stock}") )
                 else:
                     for size in row.data.col4["item"].sizes:
                         if size.size == row.data.col4["size_box_val"].get() and size.in_stock - row.data.col4["spinbox_val"].get() < 0:
-                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                            self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}") )
                 if row.data.col4["item"].catagory == "Food & Drink":
                     food_limit += row.data.col4["item"].price * row.data.col4["spinbox_val"].get()
                 total += row.data.col4["item"].price * row.data.col4["spinbox_val"].get()
             if row.data.col5["item"] is not None:
                 if row.data.col5["item"].in_stock - row.data.col5["spinbox_val"].get() < 0:
-                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col5['item'].in_stock}")
+                    self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col5['item'].in_stock}") )
                 else:
                     for size in row.data.col5["item"].sizes:
                         if size.size == row.data.col5["size_box_val"].get() and size.in_stock - row.data.col5["spinbox_val"].get() < 0:
-                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                            self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}") )
                 if row.data.col5["item"].catagory == "Food & Drink":
                     food_limit += row.data.col5["item"].price * row.data.col5["spinbox_val"].get()
                 total += row.data.col5["item"].price * row.data.col5["spinbox_val"].get()
@@ -359,17 +358,12 @@ class CamperTransactions:
         limit_exceeded = self.check_food_limit()
         balance_exceeded = self.check_balance()
         if limit_exceeded:
-            messagebox.showerror("Warning:", "Food Limit has been exceeded.")
+            self.master.wait_window( msgbox.showerror("Warning:", "Food Limit has been exceeded.") )
         elif balance_exceeded[0]:
             if balance_exceeded[1]:
-                messagebox.showerror("Error:", "Balance has fallen below 0.")
+                self.master.wait_window( msgbox.showerror("Error:", "Balance has fallen below 0.") )
             else:
-                messagebox.showwarning("Warning:",
-                    """
-                    Balance has reach 0.\n
-                    Please confirm if this is desired.
-                    """
-                )
+                self.master.wait_window( msgbox.showwarning("Warning:", "Balance has reached 0.\nPlease confirm if this is desired." ) )
     def reset_content( self ):
         self.camper_name.set("")
         self.last_purchase.set("Month, day Year | 00:00:00 pm")
@@ -412,7 +406,7 @@ class CamperTransactions:
             hours = divmod(delta.total_seconds(), 3600)
             if hours[0] < 2:
                 self.lbl_last_purchase.config( fg="orange" )
-                messagebox.showwarning("Warning", "Camper has made a purchase within the last 2 hours.")
+                self.master.wait_window( msgbox.showwarning("Warning", "Camper has made a purchase within the last 2 hours.") )
             else:
                 self.lbl_last_purchase.config( fg="black" )
     def check_food_limit( self ):
@@ -437,11 +431,11 @@ class CamperTransactions:
         limit_exceeded = self.check_food_limit()
         balance_exceeded = self.check_balance()
         if limit_exceeded:
-            messagebox.showerror("Error:", "Food Limit has been exceeded.")
+            self.master.wait_window( msgbox.showerror("Error:", "Food Limit has been exceeded.") )
             return None
         elif balance_exceeded[0]:
             if balance_exceeded[1]:
-                messagebox.showerror("Error:", "Balance has fallen below 0.")
+                self.master.wait_window( msgbox.showerror("Error:", "Balance has fallen below 0.") )
                 return None
         # ---------- Complete Transaction.
         items = list()
@@ -523,7 +517,7 @@ class CamperTransactions:
                     )
         
         if len(items) <= 0:
-            messagebox.showerror("Error", """No list of items.\nMake sure selected items have a quantity.""")
+            self.master.wait_window( msgbox.showerror("Error", """No list of items.\nMake sure selected items have a quantity.""") )
             return None
         
         now = datetime.now()
@@ -579,7 +573,7 @@ class CamperTransactions:
             client.send( cmd )
             self.reset_content()
         else:
-            messagebox.showerror("Error", res)
+            self.master.wait_window( msgbox.showerror("Error", res) )
     
 
 class Row:

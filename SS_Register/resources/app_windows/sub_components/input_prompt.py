@@ -32,7 +32,9 @@ class InputPrompt:
         Button( self.master, text="Submit", font=self.base_font,
             borderwidth=5, padx=5, command=self.handle_submit
         ).pack( side=LEFT, padx=10, pady=10 )
+        
         self.__set_geometery()
+        entry.focus()
     
     # --------------------- Screen and Window Dimensions
     def __set_geometery( self ):
