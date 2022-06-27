@@ -12,7 +12,7 @@ def __set_geometery( box ):
     window_width = box.winfo_width()
     window_height = box.winfo_height()
     
-    window_position_x = int( screen_width/2 - window_width )
+    window_position_x = int(screen_width/2 - window_width )
     window_position_y = int( screen_height/2 - window_height/2 )
     
     box.geometry( f"+{ window_position_x }+{ window_position_y }" )
@@ -74,7 +74,7 @@ def showwarning( title, content, titlebar="Warning" ):
     )
     
     img=ImageTk.PhotoImage(Image.open("resources/images/warning.png"))
-    Label( box, image=img, wraplength=box.winfo_screenwidth()/3, justify=LEFT#, relief="ridge"
+    Label( box, image=img#, relief="ridge"
         ).pack( side=LEFT, padx=10, pady=10 )
     
     # ----- Content Information
