@@ -1,7 +1,8 @@
 from tkinter import *
-from tkinter import messagebox
+# from tkinter import messagebox
 from tkinter.font import Font
 
+from . import msgbox
 from ... import (
     var_const as vc,
     client
@@ -185,16 +186,26 @@ class TransactionRow:
         self.data.col5["spinbox_val"].set(0)
         
         self.listbox_1.selection_clear(0, END)
+        self.listbox_1.yview_moveto("0")
         self.listbox_2.selection_clear(0, END)
+        self.listbox_2.yview_moveto("0")
         self.listbox_3.selection_clear(0, END)
+        self.listbox_3.yview_moveto("0")
         self.listbox_4.selection_clear(0, END)
+        self.listbox_4.yview_moveto("0")
         self.listbox_5.selection_clear(0, END)
+        self.listbox_5.yview_moveto("0")
         
         self.cloth_listbox_1.selection_clear(0, END)
+        self.cloth_listbox_1.config(state="disabled")
         self.cloth_listbox_2.selection_clear(0, END)
+        self.cloth_listbox_2.config(state="disabled")
         self.cloth_listbox_3.selection_clear(0, END)
+        self.cloth_listbox_3.config(state="disabled")
         self.cloth_listbox_4.selection_clear(0, END)
+        self.cloth_listbox_4.config(state="disabled")
         self.cloth_listbox_5.selection_clear(0, END)
+        self.cloth_listbox_5.config(state="disabled")
     def destroy_row( self ):
         for widget in self.row_frame.winfo_children():
             widget.destroy()
@@ -207,10 +218,10 @@ class TransactionRow:
         self.data.col1["item"] = client.response_from_server()
         
         if self.data.col1["item"].in_stock == 0:
-            messagebox.showwarning("Inventory Warning", "This item is out of stock")
+            self.master.wait_window( msgbox.showwarning("Inventory Warning", "This item is out of stock") )
         elif self.data.col1["item"].catagory == "Clothing":
             self.cloth_listbox_1.config( state="normal")
-            messagebox.showinfo("Notice:", "Please Select 1 Size")
+            self.master.wait_window( msgbox.showinfo("Notice:", "Please Select 1 Size") )
         else:
             self.cloth_listbox_1.config( state="disabled")
         self.on_update()
@@ -221,10 +232,10 @@ class TransactionRow:
         self.data.col2["item"] = client.response_from_server()
         
         if self.data.col2["item"].in_stock == 0:
-            messagebox.showwarning("Inventory Warning", "This item is out of stock")
+            self.master.wait_window( msgbox.showwarning("Inventory Warning", "This item is out of stock") )
         elif self.data.col2["item"].catagory == "Clothing":
             self.cloth_listbox_2.config( state="normal")
-            messagebox.showinfo("Notice:", "Please Select 1 Size")
+            self.master.wait_window( msgbox.showinfo("Notice:", "Please Select 1 Size") )
         else:
             self.cloth_listbox_2.config( state="disabled")
         self.on_update()
@@ -235,10 +246,10 @@ class TransactionRow:
         self.data.col3["item"] = client.response_from_server()
         
         if self.data.col3["item"].in_stock == 0:
-            messagebox.showwarning("Inventory Warning", "This item is out of stock")
+            self.master.wait_window( msgbox.showwarning("Inventory Warning", "This item is out of stock") )
         elif self.data.col3["item"].catagory == "Clothing":
             self.cloth_listbox_3.config( state="normal")
-            messagebox.showinfo("Notice:", "Please Select 1 Size")
+            self.master.wait_window( msgbox.showinfo("Notice:", "Please Select 1 Size") )
         else:
             self.cloth_listbox_3.config( state="disabled")
         self.on_update()
@@ -249,10 +260,10 @@ class TransactionRow:
         self.data.col4["item"] = client.response_from_server()
         
         if self.data.col4["item"].in_stock == 0:
-            messagebox.showwarning("Inventory Warning", "This item is out of stock")
+            self.master.wait_window( msgbox.showwarning("Inventory Warning", "This item is out of stock") )
         elif self.data.col4["item"].catagory == "Clothing":
             self.cloth_listbox_4.config( state="normal")
-            messagebox.showinfo("Notice:", "Please Select 1 Size")
+            self.master.wait_window( msgbox.showinfo("Notice:", "Please Select 1 Size") )
         else:
             self.cloth_listbox_4.config( state="disabled")
         self.on_update()
@@ -263,10 +274,10 @@ class TransactionRow:
         self.data.col5["item"] = client.response_from_server()
         
         if self.data.col5["item"].in_stock == 0:
-            messagebox.showwarning("Inventory Warning", "This item is out of stock")
+            self.master.wait_window( msgbox.showwarning("Inventory Warning", "This item is out of stock") )
         elif self.data.col5["item"].catagory == "Clothing":
             self.cloth_listbox_5.config( state="normal")
-            messagebox.showinfo("Notice:", "Please Select 1 Size")
+            self.master.wait_window( msgbox.showinfo("Notice:", "Please Select 1 Size") )
         else:
             self.cloth_listbox_5.config( state="disabled")
         self.on_update()
@@ -275,30 +286,30 @@ class TransactionRow:
         self.data.col1["size_box_val"].set( self.cloth_listbox_1.get(ANCHOR) )
         for size in self.data.col1["item"].sizes:
             if size.size == self.data.col1["size_box_val"].get() and size.in_stock == 0:
-                messagebox.showwarning("Inventory Warning", "This item is out of stock")
+                self.master.wait_window( msgbox.showwarning("Inventory Warning", "This item is out of stock") )
         self.on_update()
     def cloth_listbox_2_select( self, e=None ):
         self.data.col2["size_box_val"].set( self.cloth_listbox_2.get(ANCHOR) )
         for size in self.data.col2["item"].sizes:
             if size.size == self.data.col2["size_box_val"].get() and size.in_stock == 0:
-                messagebox.showwarning("Inventory Warning", "This item is out of stock")
+                self.master.wait_window( msgbox.showwarning("Inventory Warning", "This item is out of stock") )
         self.on_update()
     def cloth_listbox_3_select( self, e=None ):
         self.data.col3["size_box_val"].set( self.cloth_listbox_3.get(ANCHOR) )
         for size in self.data.col3["item"].sizes:
             if size.size == self.data.col3["size_box_val"].get() and size.in_stock == 0:
-                messagebox.showwarning("Inventory Warning", "This item is out of stock")
+                self.master.wait_window( msgbox.showwarning("Inventory Warning", "This item is out of stock") )
         self.on_update()
     def cloth_listbox_4_select( self, e=None ):
         self.data.col4["size_box_val"].set( self.cloth_listbox_4.get(ANCHOR) )
         for size in self.data.col4["item"].sizes:
             if size.size == self.data.col4["size_box_val"].get() and size.in_stock == 0:
-                messagebox.showwarning("Inventory Warning", "This item is out of stock")
+                self.master.wait_window( msgbox.showwarning("Inventory Warning", "This item is out of stock") )
         self.on_update()
     def cloth_listbox_5_select( self, e=None ):
         self.data.col5["size_box_val"].set( self.cloth_listbox_5.get(ANCHOR) )
         for size in self.data.col5["item"].sizes:
             if size.size == self.data.col5["size_box_val"].get() and size.in_stock == 0:
-                messagebox.showwarning("Inventory Warning", "This item is out of stock")
+                self.master.wait_window( msgbox.showwarning("Inventory Warning", "This item is out of stock") )
         self.on_update()
     

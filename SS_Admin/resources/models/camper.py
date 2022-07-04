@@ -325,9 +325,18 @@ class Camper:
                     ORDER BY gender desc, name asc""")
         query = [ dict(row) for row in c.fetchall() ]
         
+        if len(query) == 0 and camp == "trailblazer":
+            c.execute( f"""SELECT oid, * FROM {cls.tbl_name}
+                    WHERE camp='trail blazer'
+                    ORDER BY gender desc, name asc""")
+            query = [ dict(row) for row in c.fetchall() ]
+        
         results = list()
         for q in query:
             results.append( cls(q) )
+            if results[-1].camp == "trail blazer":
+                results[-1].camp = "trailblazer"
+                cls.update(results[-1].to_dict())
         
         conn.commit()
         conn.close()

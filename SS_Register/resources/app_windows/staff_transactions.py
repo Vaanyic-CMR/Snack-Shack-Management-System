@@ -1,8 +1,7 @@
 from datetime import datetime
-import time
 
 from tkinter import *
-from tkinter import messagebox
+# from tkinter import messagebox
 from tkinter import ttk
 from tkinter.font import Font
 
@@ -13,7 +12,8 @@ from . import (
 )
 from .sub_components import (
     transaction_row as tr,
-    input_prompt as ip
+    input_prompt as ip,
+    msgbox
 )
 from ..models import (
     staff,
@@ -150,12 +150,12 @@ class StaffTransactions:
             ).pack(side=LEFT, padx=15, pady=5)
         
         self.cmbo_name = ttk.Combobox( self.header_frame, font=self.base_font,
-            width=15, textvariable=self.staff_name
+            width=15, textvariable=self.staff_name, state="readonly"
         )
         # self.cmbo_name.set_completion_list(self.names)
         self.cmbo_name.bind('<<ComboboxSelected>>', self.populate_fields)
         self.cmbo_name.pack(side=LEFT, padx=5, pady=5)
-        self.cmbo_name.focus()
+        # self.cmbo_name.focus()
         
         # Cash Button
         self.btnCash = Button(self.header_frame, text="Cash", width=10,
@@ -287,49 +287,49 @@ class StaffTransactions:
         self.check_last_free_item()
     def update_values( self, e=None ):
         if self.staff_name.get() == "":
-            messagebox.showerror("Error", "No staffer selected.\nPlease select a staff member.")
+            self.master.wait_window( msgbox.showerror("Error", "No staffer selected.\nPlease select a staff member.") )
             return None
         total = 0.0
         for row in self.rows:
             if row.data.col1["item"] is not None:
                 if row.data.col1["item"].in_stock - row.data.col1["spinbox_val"].get() < 0:
-                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col1['item'].in_stock}")
+                    self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col1['item'].in_stock}") )
                 else:
                     for size in row.data.col1["item"].sizes:
                         if size.size == row.data.col1["size_box_val"].get() and size.in_stock - row.data.col1["spinbox_val"].get() < 0:
-                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                            self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}") )
                 total += row.data.col1["item"].staff_price * row.data.col1["spinbox_val"].get()
             if row.data.col2["item"] is not None:
                 if row.data.col2["item"].in_stock - row.data.col2["spinbox_val"].get() < 0:
-                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col2['item'].in_stock}")
+                    self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col2['item'].in_stock}") )
                 else:
                     for size in row.data.col2["item"].sizes:
                         if size.size == row.data.col2["size_box_val"].get() and size.in_stock - row.data.col2["spinbox_val"].get() < 0:
-                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                            self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}") )
                 total += row.data.col2["item"].staff_price * row.data.col2["spinbox_val"].get()
             if row.data.col3["item"] is not None:
                 if row.data.col3["item"].in_stock - row.data.col3["spinbox_val"].get() < 0:
-                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col3['item'].in_stock}")
+                    self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col3['item'].in_stock}") )
                 else:
                     for size in row.data.col3["item"].sizes:
                         if size.size == row.data.col3["size_box_val"].get() and size.in_stock - row.data.col3["spinbox_val"].get() < 0:
-                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                            self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}") )
                 total += row.data.col3["item"].staff_price * row.data.col3["spinbox_val"].get()
             if row.data.col4["item"] is not None:
                 if row.data.col4["item"].in_stock - row.data.col4["spinbox_val"].get() < 0:
-                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col4['item'].in_stock}")
+                    self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col4['item'].in_stock}") )
                 else:
                     for size in row.data.col4["item"].sizes:
                         if size.size == row.data.col4["size_box_val"].get() and size.in_stock - row.data.col4["spinbox_val"].get() < 0:
-                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                            self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}") )
                 total += row.data.col4["item"].staff_price * row.data.col4["spinbox_val"].get()
             if row.data.col5["item"] is not None:
                 if row.data.col5["item"].in_stock - row.data.col5["spinbox_val"].get() < 0:
-                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col5['item'].in_stock}")
+                    self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col5['item'].in_stock}") )
                 else:
                     for size in row.data.col5["item"].sizes:
                         if size.size == row.data.col5["size_box_val"].get() and size.in_stock - row.data.col5["spinbox_val"].get() < 0:
-                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                            self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}") )
                 total += row.data.col5["item"].staff_price * row.data.col5["spinbox_val"].get()
         
         self.sum_total.set("${:,.2f}".format(total))
@@ -344,7 +344,7 @@ class StaffTransactions:
         )
         balance_exceeded = self.check_balance()
         if balance_exceeded:
-            messagebox.showerror("Error:", "Balance has fallen below 0.")
+            self.master.wait_window( msgbox.showerror("Error:", "Balance has fallen below 0.") )
     def reset_content( self ):
         self.staff_name.set("")
         self.free_item_name.set("Select Free Item")
@@ -386,7 +386,7 @@ class StaffTransactions:
             hours = divmod(delta.total_seconds(), 3600)
             if hours[0] < 12:
                 self.lbl_last_free_item.config( fg="orange" )
-                messagebox.showwarning("Warning", "staff member has recieved a free item within the last 12 hours.")
+                self.master.wait_window( msgbox.showwarning("Warning", "staff member has recieved a free item within the last 12 hours.") )
             else:
                 self.lbl_last_purchase.config( fg="black" )
     def check_balance( self ):
@@ -399,152 +399,153 @@ class StaffTransactions:
     def complete_transaction( self, e=None ):
         balance_exceeded = self.check_balance()
         if balance_exceeded:
-            messagebox.showerror("Error:", "Balance has fallen below 0.")
-        else: # ---------- Complete Transaction.
-            items = list()
-            if self.free_item != None:
-                items.append((self.free_item_name.get(), 1))
-            
-            for row in self.rows:
-                if row.data.col1["spinbox_val"].get() > 0 and row.data.col1["item"] is not None:
-                    if row.data.col1["item"].catagory == "Clothing":
-                        items.append(
-                            (
-                                f"{row.data.col1['listbox_val'].get()} | {row.data.col1['size_box_val'].get()}",
-                                row.data.col1["spinbox_val"].get()
-                            )
+            self.master.wait_window( msgbox.showerror("Error:", "Balance has fallen below 0.") )
+            return None
+        # ---------- Complete Transaction.
+        items = list()
+        if self.free_item != None:
+            items.append((self.free_item_name.get(), 1))
+        
+        for row in self.rows:
+            if row.data.col1["spinbox_val"].get() > 0 and row.data.col1["item"] is not None:
+                if row.data.col1["item"].catagory == "Clothing":
+                    items.append(
+                        (
+                            f"{row.data.col1['listbox_val'].get()} | {row.data.col1['size_box_val'].get()}",
+                            row.data.col1["spinbox_val"].get()
                         )
-                    else:
-                        items.append(
-                            (
-                                row.data.col1["listbox_val"].get(),
-                                row.data.col1["spinbox_val"].get()
-                            )
-                        )
-                if row.data.col2["spinbox_val"].get() > 0 and row.data.col2["item"] is not None:
-                    if row.data.col2["item"].catagory == "Clothing":
-                        items.append(
-                            (
-                                f"{row.data.col2['listbox_val'].get()} | {row.data.col2['size_box_val'].get()}",
-                                row.data.col2["spinbox_val"].get()
-                            )
-                        )
-                    else:
-                        items.append(
-                            (
-                                row.data.col2["listbox_val"].get(),
-                                row.data.col2["spinbox_val"].get()
-                            )
-                        )
-                if row.data.col3["spinbox_val"].get() > 0 and row.data.col3["item"] is not None:
-                    if row.data.col3["item"].catagory == "Clothing":
-                        items.append(
-                            (
-                                f"{row.data.col3['listbox_val'].get()} | {row.data.col3['size_box_val'].get()}",
-                                row.data.col3["spinbox_val"].get()
-                            )
-                        )
-                    else:
-                        items.append(
-                            (
-                                row.data.col3["listbox_val"].get(),
-                                row.data.col3["spinbox_val"].get()
-                            )
-                        )
-                if row.data.col4["spinbox_val"].get() > 0 and row.data.col4["item"] is not None:
-                    if row.data.col4["item"].catagory == "Clothing":
-                        items.append(
-                            (
-                                f"{row.data.col4['listbox_val'].get()} | {row.data.col4['size_box_val'].get()}",
-                                row.data.col4["spinbox_val"].get()
-                            )
-                        )
-                    else:
-                        items.append(
-                            (
-                                row.data.col4["listbox_val"].get(),
-                                row.data.col4["spinbox_val"].get()
-                            )
-                        )
-                if row.data.col5["spinbox_val"].get() > 0 and row.data.col5["item"] is not None:
-                    if row.data.col5["item"].catagory == "Clothing":
-                        items.append(
-                            (
-                                f"{row.data.col5['listbox_val'].get()} | {row.data.col5['size_box_val'].get()}",
-                                row.data.col5["spinbox_val"].get()
-                            )
-                        )
-                    else:
-                        items.append(
-                            (
-                                row.data.col5["listbox_val"].get(),
-                                row.data.col5["spinbox_val"].get()
-                            )
-                        )
-            
-            if len(items) <= 0:
-                messagebox.showerror("Error", """No list of items.\nMake sure selected items have a quantity.""")
-                return None
-            
-            now = datetime.now()
-            purchase_info = {
-                "date_time": now.strftime(self.__class__.purchase_time_format),
-                "customer_name": self.staff_name.get(),
-                "purchase_type": "",
-                "items": items,
-                "sum_total": self.sum_total.get()
-            }
-            purchase_types = list()
-            if self.free_item_name.get() != "Select Free Item":
-                purchase_types.append("Free Item")
-            if float(self.remaining_balance.get()[1:]) != self.active_staffer.curr_bal and float(self.sum_total.get()[1:]) > 0:
-                purchase_types.append("Account")
-            if float(self.donation.get()[1:]) > 0:
-                purchase_types.append("Donation")
-                items.append( ( "Donation", self.donation.get() ) )
-            if float(self.returns.get()[1:]) > 0:
-                purchase_types.append("Returns")
-                items.append( ( "Return", self.returns.get() ) )
-            if float(self.cash.get()[1:]) > 0 and float(self.sum_total.get()[1:]) > 0:
-                purchase_types.append("Cash")
-            
-            for idx, pt in enumerate(purchase_types):
-                if idx == 0:
-                    purchase_info["purchase_type"] += pt
+                    )
                 else:
-                    purchase_info["purchase_type"] += f" | {pt}"
-            
-            # ----- Updating Staffer Account
-            if self.account_total.get() != self.remaining_balance.get():
-                self.active_staffer.curr_spent += float(self.sum_total.get()[1:]) - float(self.cash.get()[1:])
-            self.active_staffer.curr_bal = float(self.remaining_balance.get()[1:])
-            self.active_staffer.total_donated += float(self.donation.get()[1:])
-            self.active_staffer.eos_return += float(self.returns.get()[1:])
-            if self.free_item_name.get() != "Select Free Item": # Check if staff member is getting a free item.
-                self.active_staffer.num_of_free_items += 1
-                self.active_staffer.last_free_item = now.strftime(self.__class__.purchase_time_format)
-            if float(self.sum_total.get()[1:]) > 0:
-                self.active_staffer.last_purchase = now.strftime(self.__class__.purchase_time_format)
-            
-            cmd = ("api/history/new_purchase", purchase_info)
+                    items.append(
+                        (
+                            row.data.col1["listbox_val"].get(),
+                            row.data.col1["spinbox_val"].get()
+                        )
+                    )
+            if row.data.col2["spinbox_val"].get() > 0 and row.data.col2["item"] is not None:
+                if row.data.col2["item"].catagory == "Clothing":
+                    items.append(
+                        (
+                            f"{row.data.col2['listbox_val'].get()} | {row.data.col2['size_box_val'].get()}",
+                            row.data.col2["spinbox_val"].get()
+                        )
+                    )
+                else:
+                    items.append(
+                        (
+                            row.data.col2["listbox_val"].get(),
+                            row.data.col2["spinbox_val"].get()
+                        )
+                    )
+            if row.data.col3["spinbox_val"].get() > 0 and row.data.col3["item"] is not None:
+                if row.data.col3["item"].catagory == "Clothing":
+                    items.append(
+                        (
+                            f"{row.data.col3['listbox_val'].get()} | {row.data.col3['size_box_val'].get()}",
+                            row.data.col3["spinbox_val"].get()
+                        )
+                    )
+                else:
+                    items.append(
+                        (
+                            row.data.col3["listbox_val"].get(),
+                            row.data.col3["spinbox_val"].get()
+                        )
+                    )
+            if row.data.col4["spinbox_val"].get() > 0 and row.data.col4["item"] is not None:
+                if row.data.col4["item"].catagory == "Clothing":
+                    items.append(
+                        (
+                            f"{row.data.col4['listbox_val'].get()} | {row.data.col4['size_box_val'].get()}",
+                            row.data.col4["spinbox_val"].get()
+                        )
+                    )
+                else:
+                    items.append(
+                        (
+                            row.data.col4["listbox_val"].get(),
+                            row.data.col4["spinbox_val"].get()
+                        )
+                    )
+            if row.data.col5["spinbox_val"].get() > 0 and row.data.col5["item"] is not None:
+                if row.data.col5["item"].catagory == "Clothing":
+                    items.append(
+                        (
+                            f"{row.data.col5['listbox_val'].get()} | {row.data.col5['size_box_val'].get()}",
+                            row.data.col5["spinbox_val"].get()
+                        )
+                    )
+                else:
+                    items.append(
+                        (
+                            row.data.col5["listbox_val"].get(),
+                            row.data.col5["spinbox_val"].get()
+                        )
+                    )
+        
+        if len(items) <= 0:
+            self.master.wait_window( msgbox.showerror("Error", """No list of items.\nMake sure selected items have a quantity.""") )
+            return None
+        
+        now = datetime.now()
+        purchase_info = {
+            "date_time": now.strftime(self.__class__.purchase_time_format),
+            "customer_name": self.staff_name.get(),
+            "purchase_type": "",
+            "items": items,
+            "sum_total": self.sum_total.get()
+        }
+        purchase_types = list()
+        if self.free_item_name.get() != "Select Free Item":
+            purchase_types.append("Free Item")
+        if float(self.remaining_balance.get()[1:]) != self.active_staffer.curr_bal and float(self.sum_total.get()[1:]) > 0:
+            purchase_types.append("Account")
+        if float(self.donation.get()[1:]) > 0:
+            purchase_types.append("Donation")
+            items.append( ( "Donation", self.donation.get() ) )
+        if float(self.returns.get()[1:]) > 0:
+            purchase_types.append("Returns")
+            items.append( ( "Return", self.returns.get() ) )
+        if float(self.cash.get()[1:]) > 0 and float(self.sum_total.get()[1:]) > 0:
+            purchase_types.append("Cash")
+        
+        for idx, pt in enumerate(purchase_types):
+            if idx == 0:
+                purchase_info["purchase_type"] += pt
+            else:
+                purchase_info["purchase_type"] += f" | {pt}"
+        
+        # ----- Updating Staffer Account
+        if self.account_total.get() != self.remaining_balance.get():
+            self.active_staffer.curr_spent += float(self.sum_total.get()[1:]) - float(self.cash.get()[1:])
+        self.active_staffer.curr_bal = float(self.remaining_balance.get()[1:])
+        self.active_staffer.total_donated += float(self.donation.get()[1:])
+        self.active_staffer.eos_return += float(self.returns.get()[1:])
+        if self.free_item_name.get() != "Select Free Item": # Check if staff member is getting a free item.
+            self.active_staffer.num_of_free_items += 1
+            self.active_staffer.last_free_item = now.strftime(self.__class__.purchase_time_format)
+        if float(self.sum_total.get()[1:]) > 0:
+            self.active_staffer.last_purchase = now.strftime(self.__class__.purchase_time_format)
+        
+        cmd = ("api/history/new_purchase", purchase_info)
+        client.send( cmd )
+        res = client.response_from_server()
+        
+        if float(self.cash.get()[1:]) > 0 and res == client.SUCCESS_MSG:
+            cmd = ("api/bank/cash", float(self.cash.get()[1:]))
             client.send( cmd )
             res = client.response_from_server()
-            
-            if float(self.cash.get()[1:]) > 0 and res == client.SUCCESS_MSG:
-                cmd = ("api/bank/cash", float(self.cash.get()[1:]))
-                client.send( cmd )
-                res = client.response_from_server()
-            if float(self.donation.get()[1:]) > 0 and res == client.SUCCESS_MSG:
-                cmd = ("api/bank/donation", float(self.donation.get()[1:]))
-                client.send( cmd )
-                res = client.response_from_server()
-            
-            if res == client.SUCCESS_MSG:
-                cmd = ("api/staff/update", self.active_staffer)
-                client.send( cmd )
-                self.reset_content()
-            else:
-                messagebox.showerror("Error", res)
+        if float(self.donation.get()[1:]) > 0 and res == client.SUCCESS_MSG:
+            cmd = ("api/bank/donation", float(self.donation.get()[1:]))
+            client.send( cmd )
+            res = client.response_from_server()
+        
+        if res == client.SUCCESS_MSG:
+            cmd = ("api/staff/update", self.active_staffer)
+            client.send( cmd )
+            self.reset_content()
+        else:
+            self.master.wait_window( msgbox.showerror("Error", res) )
     
 
 class Row:

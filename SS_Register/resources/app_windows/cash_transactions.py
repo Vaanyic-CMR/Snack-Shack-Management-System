@@ -13,7 +13,8 @@ from . import (
 )
 from .sub_components import (
     transaction_row as tr,
-    input_prompt as ip
+    input_prompt as ip,
+    msgbox
 )
 from ..models import (
     camper,
@@ -227,43 +228,43 @@ class CashTransactions:
         for row in self.rows:
             if row.data.col1["item"] is not None:
                 if row.data.col1["item"].in_stock - row.data.col1["spinbox_val"].get() < 0:
-                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col1['item'].in_stock}")
+                    self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col1['item'].in_stock}") )
                 else:
                     for size in row.data.col1["item"].sizes:
                         if row.data.col1['size_box_val'].get() == size.size and size.in_stock - row.data.col1["spinbox_val"].get() < 0:
-                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                            self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}") )
                 total += row.data.col1["item"].price * row.data.col1["spinbox_val"].get()
             if row.data.col2["item"] is not None:
                 if row.data.col2["item"].in_stock - row.data.col2["spinbox_val"].get() < 0:
-                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col2['item'].in_stock}")
+                    self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col2['item'].in_stock}") )
                 else:
                     for size in row.data.col2["item"].sizes:
                         if row.data.col2['size_box_val'].get() == size.size and size.in_stock - row.data.col2["spinbox_val"].get() < 0:
-                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                            self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}") )
                 total += row.data.col2["item"].price * row.data.col2["spinbox_val"].get()
             if row.data.col3["item"] is not None:
                 if row.data.col3["item"].in_stock - row.data.col3["spinbox_val"].get() < 0:
-                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col3['item'].in_stock}")
+                    self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col3['item'].in_stock}") )
                 else:
                     for size in row.data.col3["item"].sizes:
                         if row.data.col3['size_box_val'].get() == size.size and size.in_stock - row.data.col3["spinbox_val"].get() < 0:
-                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                            self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}") )
                 total += row.data.col3["item"].price * row.data.col3["spinbox_val"].get()
             if row.data.col4["item"] is not None:
                 if row.data.col4["item"].in_stock - row.data.col4["spinbox_val"].get() < 0:
-                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col4['item'].in_stock}")
+                    self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col4['item'].in_stock}") )
                 else:
                     for size in row.data.col4["item"].sizes:
                         if row.data.col4['size_box_val'].get() == size.size and size.in_stock - row.data.col4["spinbox_val"].get() < 0:
-                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                            self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}") )
                 total += row.data.col4["item"].price * row.data.col4["spinbox_val"].get()
             if row.data.col5["item"] is not None:
                 if row.data.col5["item"].in_stock - row.data.col5["spinbox_val"].get() < 0:
-                    messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col5['item'].in_stock}")
+                    self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {row.data.col5['item'].in_stock}") )
                 else:
                     for size in row.data.col5["item"].sizes:
                         if row.data.col5['size_box_val'].get() == size.size and size.in_stock - row.data.col5["spinbox_val"].get() < 0:
-                            messagebox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}")
+                            self.master.wait_window( msgbox.showwarning("Inventory Error", f"Not enough in inventory for purchase.\nIn Stock: {size.in_stock}") )
                 total += row.data.col5["item"].price * row.data.col5["spinbox_val"].get()
         
         self.sum_total.set("${:,.2f}".format(total))
@@ -301,7 +302,7 @@ class CashTransactions:
             return True
     def complete_transaction( self, e=None ):
         if not self.__check_change():
-            messagebox.showerror("Error", "Change is Negative\nMore cash from customer is required.")
+            self.master.wait_window( msgbox.showerror("Error", "Change is Negative\nMore cash from customer is required.") )
             return None
         
         items = list()
@@ -383,7 +384,7 @@ class CashTransactions:
                     )
         
         if len(items) <= 0:
-            messagebox.showerror("Error", """No list of items.\nMake sure selected items have a quantity.""")
+            self.master.wait_window( msgbox.showerror("Error", """No list of items.\nMake sure selected items have a quantity.""") )
             return None
         
         now = datetime.now()
@@ -428,7 +429,7 @@ class CashTransactions:
         if res == client.SUCCESS_MSG:
             self.reset_content()
         else:
-            messagebox.showerror("Error", res)
+            self.master.wait_window( msgbox.showerror("Error", res) )
     
 
 class Row:

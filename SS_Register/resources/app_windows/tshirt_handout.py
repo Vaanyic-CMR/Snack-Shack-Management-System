@@ -9,6 +9,7 @@ from . import (
     main as main_window,
     settings as sett_window
 )
+from .sub_components import msgbox
 from .. import (
     var_const as vc,
     client
@@ -133,19 +134,16 @@ class TShirtHandout:
         self.tshirt = client.response_from_server()
         
         if self.tshirt.in_stock == 0:
-            messagebox.showwarning("Inventory Warning", "This item is out of stock")
+            self.master.wait_window( msgbox.showwarning("Inventory Warning", "This item is out of stock") )
     def __cloth_listbox_select( self, e=None ):
         self.selected_size.set( self.cloth_listbox.get(ANCHOR) )
         for size in self.tshirt.sizes:
             if size.size == self.selected_size.get() and size.in_stock == 0:
-                messagebox.showwarning("Inventory Warning", "This item is out of stock")
+                self.master.wait_window( msgbox.showwarning("Inventory Warning", "This item is out of stock") )
     
     # --------------------- Button Interactions
     def submit( self ):
-        items = [(
-            f"{self.tshirt_name.get()} | {self.selected_size.get()}",
-            1
-        )]
+        items = [( f"{self.tshirt_name.get()} | {self.selected_size.get()}", 1 )]
         
         now = datetime.now()
         purchase_info = {
@@ -156,7 +154,7 @@ class TShirtHandout:
             "sum_total": "$0.00"
         }
         if self.name.get() == "":
-            messagebox.showerror("Invalid Input", "Please enter name into name field.")
+            self.master.wait_window( msgbox.showerror("Invalid Input", "Please enter name into name field.") )
             return None
         else:
             purchase_info["customer_name"] = self.name.get()
@@ -170,7 +168,7 @@ class TShirtHandout:
             self.__get_tshirt()
             self.__reset_selection()
         elif res == client.FAIL_MSG:
-            messagebox.showerror("Error", "Failed to process request.")
+            self.master.wait_window( msgbox.showerror("Error", "Failed to process request.") )
             return None
     def return_to_menu( self ):
         self.master.destroy()

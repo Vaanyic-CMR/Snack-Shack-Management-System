@@ -10,6 +10,7 @@ from . import (
     cash_transactions as cashT,
     settings as sett_window
 )
+from .sub_components import msgbox
 from .. import (
     var_const as vc,
     client
@@ -103,10 +104,7 @@ class Main:
             self.master.destroy()
             camperT.CamperTransactions()
         except Exception as e:
-            messagebox.showerror(
-                "Network Error",
-                f"There was a problem connecting to the server.\n{e}"
-            )
+            self.master.wait_window( msgbox.showerror( "Network Error", f"There was a problem connecting to the server.\n{e}" ) )
     def open_staff_transactions( self ):
         try:
             if client.client is None:
@@ -114,10 +112,7 @@ class Main:
             self.master.destroy()
             staffT.StaffTransactions()
         except Exception as e:
-            messagebox.showerror(
-                "Network Error",
-                f"There was a problem connecting to the server.\n{e}"
-            )
+            self.master.wait_window( msgbox.showerror( "Network Error", f"There was a problem connecting to the server.\n{e}" ) )
     def open_cash_transactions( self ):
         try:
             if client.client is None:
@@ -125,10 +120,7 @@ class Main:
             self.master.destroy()
             cashT.CashTransactions()
         except Exception as e:
-            messagebox.showerror(
-                "Network Error",
-                f"There was a problem connecting to the server.\n{e}"
-            )
+            self.master.wait_window( msgbox.showerror( "Network Error", f"There was a problem connecting to the server.\n{e}" ) )
     def open_tshirt_handouts( self ):
         try:
             if client.client is None:
@@ -136,7 +128,4 @@ class Main:
             self.master.destroy()
             ts_handout.TShirtHandout()
         except Exception as e:
-            messagebox.showerror(
-                "Network Error",
-                f"There was a problem connecting to the server.\n{e}"
-            )
+            self.master.wait_window( msgbox.showerror( "Network Error", f"There was a problem connecting to the server.\n{e}" ) )

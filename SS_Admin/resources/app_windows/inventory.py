@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter.font import Font
 
 from .. import var_const as vc
+from .sub_components import msgbox
 from ..models import (
     inventory as inv_m,
     shopping_list as shop_m
@@ -373,7 +374,11 @@ class Inventory:
         except Exception as e:
             print(e)
     
-    def save_item( self, e=None ): 
+    def save_item( self, e=None ):
+        if "|" in self.cmbo_item.get():
+            msgbox.showerror("Inventory Name Error", "Inventory item cannot contain '|' character")
+            return None
+        
         if self.staff_price_state.get() == "disabled":
             self.txt_staff_price.set( self.txt_price.get() )
         

@@ -49,7 +49,7 @@ class Campers:
             "init_bal": 0, "curr_bal": 0, "curr_spent": 0, "total_donated": 0, "eow_return": 0,
             "last_purchase": None, "eow_remainder": "", "created_at": None, "updated_at": None
         })
-        self.camp_list = [ "Trekker", "Pathfinder", "Journey", "Trail Blazer", "Navigator" ]
+        self.camp_list = [ "Trekker", "Pathfinder", "Journey", "Trailblazer", "Navigator" ]
         self.pay_methods = [ "Cash", "Check", "Card", "Scholarship", "Multiple" ]
         self.eow_remainder_options = [ "Unknown", "Return", "Donate", "Transfer" ]
         
@@ -207,6 +207,7 @@ class Campers:
         self.eow_return.set(0)
         self.last_purchase.set( "Month, day Year | 00:00:00 pm" )
         self.eow_remainder.set("Select Action")
+        self.name_cmbo.focus()
     def __update_content( self, e=None ):
         if self.create_update.get() == "update":
             self.active_camper = camper.Camper.get_by_name_and_camp(
@@ -309,7 +310,7 @@ class Campers:
         except Exception as e:
             messagebox.showerror("Error", f"Something went wrong:\n{e}")
     def save_camper( self, e=None ):
-        if self.camp.get().lower() not in [ "trekker", "pathfinder", "journey", "trail blazer", "navigator" ]:
+        if self.camp.get().lower() not in [ "trekker", "pathfinder", "journey", "trailblazer", "navigator" ]:
             messagebox.showerror("Value Error", "Invalid camp selected")
             return None
         if self.eow_remainder.get() == "Select Action":
