@@ -1,5 +1,5 @@
 {
-    "host_ip": "192.168.1.174",
+    "host_ip": "192.168.1.102",
     "port": 9000,
     "station": "male",
     "food_limit": 2.0,

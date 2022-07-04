@@ -552,7 +552,7 @@ class CamperTransactions:
             self.active_camper.curr_spent += float(self.sum_total.get()[1:]) - float(self.cash.get()[1:])
         self.active_camper.curr_bal = float(self.remaining_balance.get()[1:])
         self.active_camper.total_donated += float(self.donation.get()[1:])
-        self.active_camper.eow_return += float(self.donation.get()[1:])
+        self.active_camper.eow_return += float(self.returns.get()[1:])
         self.active_camper.last_purchase = now.strftime(self.__class__.purchase_time_format)
         
         cmd = ("api/history/new_purchase", purchase_info)
@@ -567,6 +567,10 @@ class CamperTransactions:
             cmd = ("api/bank/donation", float(self.donation.get()[1:]))
             client.send( cmd )
             res = client.response_from_server()
+        # if float(self.returns.get()[1:]) > 0 and res == client.SUCCESS_MSG:
+        #     cmd = ("api/bank/eow_return", float(self.returns.get()[1:]))
+        #     client.send( cmd )
+        #     res = client.response_from_server()
         
         if res == client.SUCCESS_MSG:
             cmd = ("api/campers/update", self.active_camper)

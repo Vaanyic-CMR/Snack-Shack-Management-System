@@ -74,7 +74,7 @@ def showwarning( title, content, titlebar="Warning" ):
     )
     
     img=ImageTk.PhotoImage(Image.open("resources/images/warning.png"))
-    Label( box, image=img, wraplength=box.winfo_screenwidth()/3, justify=LEFT#, relief="ridge"
+    Label( box, image=img#, relief="ridge"
         ).pack( side=LEFT, padx=10, pady=10 )
     
     # ----- Content Information
