@@ -4,6 +4,8 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.font import Font
 
+from click import command
+
 from . import (
     settings as sett_window,
     staff_transactions,
@@ -121,11 +123,11 @@ class CamperTransactions:
         self.master.geometry( f"+{ self.window_position_x }+{ self.window_position_y }" )
     # ---------------------- Construct Menu Bar
     def __menu_bar( self ):
-        self.t_menu = Menu(self.master)
+        self.t_menu = Menu(self.master, font=self.base_font)
         self.master.config(menu=self.t_menu, padx=20, pady=20)
 
         # File Menu
-        self.file_menu = Menu(self.t_menu, tearoff = False)
+        self.file_menu = Menu(self.t_menu, tearoff=False, font=self.base_font)
         self.t_menu.add_cascade(label='File', menu = self.file_menu)
         self.file_menu.add_command(label='Exit', command = self.master.destroy)
         self.file_menu.add_separator()
@@ -134,7 +136,7 @@ class CamperTransactions:
         self.file_menu.add_command(label='Reload Camper Names', command=self.__update_cmbobox)
 
         # Options Menu
-        self.option_menu = Menu(self.t_menu, tearoff=False)
+        self.option_menu = Menu(self.t_menu, tearoff=False, font=self.base_font)
         self.t_menu.add_cascade(label='Options', menu=self.option_menu)
         self.option_menu.add_command(label='Settings', command=lambda : sett_window.Settings(self, "campers"))
         self.option_menu.add_command(label='About')#, command=self.openAbout)
@@ -155,7 +157,7 @@ class CamperTransactions:
         self.master.nametowidget(gender_menu.menuname).config( font=self.base_font, bg="silver" )
         gender_menu.pack(side=LEFT, padx=5, pady=5)
         
-        self.cmbo_name = ttk.Combobox( self.header_frame, font=self.base_font, width=15,
+        self.cmbo_name = ttk.Combobox( self.header_frame, font=self.base_font, width=20,
             textvariable=self.camper_name, state="readonly"
         )
         # self.cmbo_name.set_completion_list(self.names)
@@ -239,23 +241,22 @@ class CamperTransactions:
         self.lbl_food_limit.grid(row=1, column=5, padx=5)
         
         # Footer Right side
-        Button(self.footer_frame, text="Cash\n(With Account)", font=self.base_font,
-            width=15, borderwidth=5, command=self.__cash
-            ).grid(row=0, column=7, rowspan=2, padx=5, pady=1)
-        
-        Button(self.footer_frame, text="Donation", font=self.base_font,
-            width=10, borderwidth=5, command=self.__donation
-        ).grid(row=0, column=8, padx=5, pady=1)
-        Button(self.footer_frame, text="Return", font=self.base_font,
-            width=10, borderwidth=5, command=self.__returns
-        ).grid(row=1, column=8, padx=5, pady=1)
-        
         Button(self.footer_frame, text="Complete\nTransaction", font=self.base_font,
-            width=15, borderwidth=5, command = self.complete_transaction
-        ).grid(row=0, column=9, padx=5, pady=1)
-        Button(self.footer_frame, text="Add Row", font=self.base_font,# state="disabled",
-            width=15, borderwidth=5, command=self.__add_row
-        ).grid(row=1, column=9, padx=5, pady=1)
+            width=15, borderwidth=5, command=self.complete_transaction
+        ).grid(row=0, column=7, padx=5, pady=1)
+        
+        actions_button = Menubutton(self.footer_frame, text="Actions", font=self.base_font,
+            width=15, borderwidth=5, relief="raised", direction='above'
+        )
+        actions_button.grid(row=1, column=7, padx=5, pady=1)
+        actions_button.menu = Menu(actions_button, tearoff=False, font=self.base_font)
+        actions_button["menu"] = actions_button.menu
+        actions_button.menu.add_command( label="Add Row", command=self.__add_row )
+        actions_button.menu.add_command( label="View Camper Data", command=self.__camper_data )
+        actions_button.menu.add_separator()
+        actions_button.menu.add_command( label="Add Account Returns", command=self.__returns )
+        actions_button.menu.add_command( label="Add Donation", command=self.__donation )
+        actions_button.menu.add_command( label="Add Cash (With Account)", command=self.__cash )
         
         # configure colume to seperate left and right
         Grid.columnconfigure(self.footer_frame, 6, weight=1)
@@ -390,6 +391,11 @@ class CamperTransactions:
                 row.destroy_row()
         del self.rows[1:]
         self.__reset_scrollregion()
+    def __camper_data( self ):
+        if self.active_camper != None:
+            msgbox.showcamper( self.active_camper )
+        else:
+            msgbox.showerror( "Error", "No Camper Selected.")
     def __cash( self ):
         ip.InputPrompt( title="Cash", return_data=self.cash, update=self.update_values )
     def __donation( self ):

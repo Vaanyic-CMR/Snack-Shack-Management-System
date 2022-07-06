@@ -112,7 +112,7 @@ class CashTransactions:
         self.master.config(menu=self.t_menu, padx=20, pady=20)
 
         # File Menu
-        self.file_menu = Menu(self.t_menu, tearoff = False)
+        self.file_menu = Menu(self.t_menu, tearoff = False, font=self.base_font)
         self.t_menu.add_cascade(label='File', menu = self.file_menu)
         self.file_menu.add_command(label='Exit', command = self.master.destroy)
         self.file_menu.add_separator()
@@ -120,7 +120,7 @@ class CashTransactions:
         self.file_menu.add_command(label='Reset Content', command=self.reset_content)
 
         # Options Menu
-        self.option_menu = Menu(self.t_menu, tearoff=False)
+        self.option_menu = Menu(self.t_menu, tearoff=False, font=self.base_font)
         self.t_menu.add_cascade(label='Options', menu=self.option_menu)
         self.option_menu.add_command(label='Settings', command=lambda : sett_window.Settings(self, "cash"))
         self.option_menu.add_command(label='About')#, command=self.openAbout)
@@ -135,7 +135,7 @@ class CashTransactions:
         Label(self.header_frame, text = "Cash Transactions", font = self.title_font
             ).pack(side=LEFT, padx=15, pady=5)
         
-        self.name_entry = Entry( self.header_frame, font=self.base_font, width=15,
+        self.name_entry = Entry( self.header_frame, font=self.base_font, width=20,
             textvariable=self.name
         )
         self.name_entry.pack(side=LEFT, padx=5, pady=5)
@@ -199,19 +199,20 @@ class CashTransactions:
         self.lbl_change.grid(row=1, column=3, padx=5)
         
         # Footer Right side
-        Button(self.footer_frame, text="Donation", font=self.base_font,
-            width=10, borderwidth=5, command=self.__donation
-        ).grid(row=1, column=5, padx=10, pady=1)
-        Button(self.footer_frame, text="Cash", font=self.base_font,
-            width=10, borderwidth=5, command=self.__cash
-            ).grid(row=0, column=5, padx=10, pady=1)
+        Button(self.footer_frame, text="Complete\nTransaction", font=self.base_font,
+            width=15, borderwidth=5, command=self.complete_transaction
+        ).grid(row=0, column=5, padx=5, pady=1)
         
-        Button(self.footer_frame, text="Complete Transaction", font=self.base_font,
-            width=20, borderwidth=5, command = self.complete_transaction
-        ).grid(row=0, column=6, padx=10, pady=1)
-        Button(self.footer_frame, text="Add Row", font=self.base_font,# state="disabled",
-            width=20, borderwidth=5, command=self.__add_row
-        ).grid(row=1, column=6, padx=10, pady=1)
+        actions_button = Menubutton(self.footer_frame, text="Actions", font=self.base_font,
+            width=15, borderwidth=5, relief="raised", direction='above'
+        )
+        actions_button.grid(row=1, column=5, padx=5, pady=1)
+        actions_button.menu = Menu(actions_button, tearoff=False, font=self.base_font)
+        actions_button["menu"] = actions_button.menu
+        actions_button.menu.add_command( label="Add Row", command=self.__add_row )
+        actions_button.menu.add_separator()
+        actions_button.menu.add_command( label="Add Donation", command=self.__donation )
+        actions_button.menu.add_command( label="Add Cash", command=self.__cash )
         
         # configure colume to seperate left and right
         Grid.columnconfigure(self.footer_frame, 4, weight=1)
