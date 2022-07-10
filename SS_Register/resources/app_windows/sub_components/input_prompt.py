@@ -9,6 +9,8 @@ class InputPrompt:
         self.master.title(f"SSMS | {title}")
         self.master.iconbitmap("resources/images/logo.ico")
         self.master.config( bg="light grey" )
+        self.master.transient()
+        self.master.grab_set()
         
         # --------------------- Fonts & Style
         self.title_font = Font(
@@ -28,6 +30,7 @@ class InputPrompt:
         Label( self.master, text=f"Enter {title}:", font=self.title_font, bg="light grey" ).pack( side=LEFT, padx=10, pady=10 )
         entry = Entry( self.master, textvariable=self.entry_data, font=self.base_font, borderwidth=5 )
         entry.pack( side=LEFT, padx=10, pady=10 )
+        entry.bind('<FocusIn>', lambda x: entry.selection_range(0, END))
         entry.bind("<Return>", self.handle_submit)
         Button( self.master, text="Submit", font=self.base_font,
             borderwidth=5, padx=5, command=self.handle_submit
@@ -41,8 +44,8 @@ class InputPrompt:
         self.screen_width = self.master.winfo_screenwidth()
         self.screen_height = self.master.winfo_screenheight()
         
-        self.window_width = int( self.screen_width*0.30 )
-        self.window_height = int( self.screen_height*0.30 )
+        self.window_width = self.master.winfo_width()
+        self.window_height = self.master.winfo_width()
         
         self.window_position_x = int( self.screen_width/2 - self.window_width/2 )
         self.window_position_y = int( self.screen_height/2 - self.window_height/2 )
@@ -55,3 +58,4 @@ class InputPrompt:
         )
         self.update()
         self.master.destroy()
+    

@@ -125,7 +125,7 @@ class StaffTransactions:
         self.master.config(menu=self.t_menu, padx=20, pady=20)
 
         # File Menu
-        self.file_menu = Menu(self.t_menu, tearoff = False)
+        self.file_menu = Menu(self.t_menu, tearoff = False, font=self.base_font)
         self.t_menu.add_cascade(label='File', menu = self.file_menu)
         self.file_menu.add_command(label='Exit', command = self.master.destroy)
         self.file_menu.add_separator()
@@ -134,7 +134,7 @@ class StaffTransactions:
         self.file_menu.add_command(label='Reload Staff Names', command=self.__update_cmbobox)
 
         # Options Menu
-        self.option_menu = Menu(self.t_menu, tearoff=False)
+        self.option_menu = Menu(self.t_menu, tearoff=False, font=self.base_font)
         self.t_menu.add_cascade(label='Options', menu=self.option_menu)
         self.option_menu.add_command(label='Settings', command=lambda : sett_window.Settings(self, "staff"))
         self.option_menu.add_command(label='About')#, command=self.openAbout)
@@ -149,8 +149,8 @@ class StaffTransactions:
         Label(self.header_frame, text="Staff Transactions", font=self.title_font
             ).pack(side=LEFT, padx=15, pady=5)
         
-        self.cmbo_name = ttk.Combobox( self.header_frame, font=self.base_font,
-            width=15, textvariable=self.staff_name, state="readonly"
+        self.cmbo_name = ttk.Combobox( self.header_frame, font=self.base_font, width=20,
+            textvariable=self.staff_name, state="readonly"
         )
         # self.cmbo_name.set_completion_list(self.names)
         self.cmbo_name.bind('<<ComboboxSelected>>', self.populate_fields)
@@ -232,23 +232,22 @@ class StaffTransactions:
         self.lbl_rem_balance.grid(row=1, column=4, padx=5)
         
         # Footer Right side
-        Button(self.footer_frame, text="Cash\n(With Account)", font=self.base_font,
-            width=15, borderwidth=5, command=self.__cash
-            ).grid(row=0, column=6, rowspan=2, padx=5, pady=1)
+        Button(self.footer_frame, text="Complete\nTransaction", font=self.base_font,
+            width=15, borderwidth=5, command=self.complete_transaction
+        ).grid(row=0, column=6, padx=5, pady=1)
         
-        Button(self.footer_frame, text="Donation", font=self.base_font,
-            width=10, borderwidth=5, command=self.__donation
-        ).grid(row=0, column=7, padx=5, pady=1)
-        Button(self.footer_frame, text="Return", font=self.base_font,
-            width=10, borderwidth=5, command=self.__returns
-        ).grid(row=1, column=7, padx=5, pady=1)
-        
-        Button(self.footer_frame, text="Complete Transaction", font=self.base_font,
-            width=20, borderwidth=5, command = self.complete_transaction
-        ).grid(row=0, column=8, padx=5, pady=1)
-        Button(self.footer_frame, text="Add Row", font=self.base_font,# state="disabled",
-            width=20, borderwidth=5, command=self.__add_row
-        ).grid(row=1, column=8, padx=5, pady=1)
+        actions_button = Menubutton(self.footer_frame, text="Actions", font=self.base_font,
+            width=15, borderwidth=5, relief="raised", direction='above'
+        )
+        actions_button.grid(row=1, column=6, padx=5, pady=1)
+        actions_button.menu = Menu(actions_button, tearoff=False, font=self.base_font)
+        actions_button["menu"] = actions_button.menu
+        actions_button.menu.add_command( label="Add Row", command=self.__add_row )
+        actions_button.menu.add_command( label="View Staff Data", command=self.__staff_data )
+        actions_button.menu.add_separator()
+        actions_button.menu.add_command( label="Add Account Returns", command=self.__returns )
+        actions_button.menu.add_command( label="Add Donation", command=self.__donation )
+        actions_button.menu.add_command( label="Add Cash (With Account)", command=self.__cash )
         
         # configure colume to seperate left and right
         Grid.columnconfigure(self.footer_frame, 5, weight=1)
@@ -370,6 +369,13 @@ class StaffTransactions:
                 row.destroy_row()
         del self.rows[1:]
         self.__reset_scrollregion()
+    
+    # ----- Data Popups
+    def __staff_data( self ):
+        if self.active_staffer != None:
+            msgbox.showstaff( self.active_staffer )
+        else:
+            msgbox.showerror( "Error", "No Staff Selected.")
     def __cash( self ):
         ip.InputPrompt( title="Cash", return_data=self.cash, update=self.update_values )
     def __donation( self ):

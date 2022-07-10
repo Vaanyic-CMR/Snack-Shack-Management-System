@@ -39,12 +39,12 @@ def eow_check():
     return bad_accounts
 
 def export_to_excel():
-    if vc.active_camp not in [ "trekker", "pathfinder", "journey", "trail blazer", "navigator" ]:
+    if vc.active_camp not in [ "trekker", "pathfinder", "journey", "trailblazer", "navigator" ]:
         messagebox.showerror("Value Error", "Invalid camp selected")
         raise Exception("Invalid camp selected")
     
     global excel_doc
-    excel_doc = xlsxwriter.Workbook(f"databases/reports/{vc.active_year}_{vc.active_camp}-report.xlsx")
+    excel_doc = xlsxwriter.Workbook(f"databases/reports/{vc.active_year}_{vc.active_camp}-snack_shack_report.xlsx")
     
     # Cell Formating
     global bold, money, align_left, head_row, head_money, error_format, warning_format

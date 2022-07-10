@@ -18,3 +18,10 @@ def handle_bank_command( data ):
         b.donation_total += data[1]
         bank.Bank.save(b.to_dict())
         return server.SUCCESS_MSG
+    if data[0] == "api/bank/eow_return":
+        b = bank.Bank.get_by_year(vc.active_year)
+        b.bank_total -= data[1]
+        b.cash_total -= data[1]
+        bank.Bank.save(b.to_dict())
+        return server.SUCCESS_MSG
+    
